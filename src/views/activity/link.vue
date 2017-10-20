@@ -1,20 +1,23 @@
 <template>
     <div>
         <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="70" inline>
-            <Form-item class="fn-hide" label="类型">
+            <Form-item class="fn-hide" label="活动类型">
                 <Select v-model="searchForm.promotionallinkstable_type" filterable>
-                    <Option value="Event" key="Event">赛事</Option>
+                    <Option value="Event" key="Event">不限</Option>
+                    <Option :value="0" :key="0">赛事</Option>
+                    <Option :value="1" :key="1">任务</Option>
+                    <Option :value="2" :key="2">第三方推广</Option>
                 </Select>
             </Form-item>
-            <Form-item label="推广主体">
+            <Form-item label="活动名称">
                 <Select v-model="searchForm.promotionallinkstable_id" @on-change="getPlinks" filterable clearable style="width: 280px">
                     <Option v-for="item in promotionallinkstable_ids" :value="item.value" :key="item.value">{{ item.label }}</Option>
                 </Select>
             </Form-item>
-            <Form-item label="名称">
+            <Form-item label="链接名称">
                 <Input v-model="searchForm.name" placeholder="请输入推广链接名称"></Input>
             </Form-item>
-            <Form-item label="状态">
+            <Form-item label="链接状态">
                 <Select v-model="searchForm.status" filterable @on-change="getPlinks">
                     <Option :value="0" :key="0">不限</Option>
                     <Option :value="1" :key="1">启用</Option>
@@ -30,7 +33,7 @@
         </Form>
 
         <Table :columns="list_columns" :data="list"></Table>
-        <Page v-if="isShowPage" :total="count" show-total show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
+        <Page v-if="isShowPage" :total="count" show-total :page-size-opts="[10,20,30,40]" show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
 
         <!-- 添加推广链接弹框 -->
         <Modal v-model="addPlinksModalVisible" title="添加推广链接" width="800">
@@ -39,17 +42,20 @@
                 <Button type="primary" size="large" :loading="addPlinksFormLoading" @click="addPlinks('addPlinksForm')">确定</Button>
             </div>
             <Form ref="addPlinksForm" :model="addPlinksForm" :rules="addPlinksFormRules" label-position="right" :label-width="80">
-                <Form-item class="fn-hide" label="类型" prop="promotionallinkstable_type">
-                    <Select v-model="addPlinksForm.promotionallinkstable_type" filterable size="large" placeholder="请选择推广类型">
-                        <Option value="Event" key="Event">赛事</Option>
+                <Form-item class="fn-hide" label="活动类型" prop="promotionallinkstable_type">
+                    <Select v-model="addPlinksForm.promotionallinkstable_type" filterable size="large" placeholder="请选择活动类型">
+                        <Option value="Event" key="Event">不限</Option>
+                        <Option :value="0" :key="0">赛事</Option>
+                        <Option :value="1" :key="1">任务</Option>
+                        <Option :value="2" :key="2">第三方推广</Option>
                     </Select>
                 </Form-item>
-                <Form-item label="推广主体" prop="promotionallinkstable_id">
-                    <Select v-model="addPlinksForm.promotionallinkstable_id" filterable clearable size="large" placeholder="请选择推广主体">
+                <Form-item label="活动名称" prop="promotionallinkstable_id">
+                    <Select v-model="addPlinksForm.promotionallinkstable_id" filterable clearable size="large" placeholder="请选择需要推广的活动">
                         <Option v-for="item in promotionallinkstable_ids" :value="item.value" :key="item.value">{{ item.label }}</Option>
                     </Select>
                 </Form-item>
-                <Form-item label="名称" prop="name">
+                <Form-item label="链接名称" prop="name">
                     <Input v-model="addPlinksForm.name" placeholder="请输入推广链接名称" size="large" @keyup.enter.native="addPlinks('addPlinksForm')"></Input>
                 </Form-item>
                 <Form-item label="页面链接" prop="jump_link">
@@ -67,17 +73,20 @@
                 <Button type="primary" size="large" :loading="updatePlinksFormLoading" @click="updatePlinks('updatePlinksForm')">确定</Button>
             </div>
             <Form ref="updatePlinksForm" :model="updatePlinksForm" :rules="addPlinksFormRules" label-position="right" :label-width="80">
-                <Form-item class="fn-hide" label="类型" prop="promotionallinkstable_type">
-                    <Select v-model="updatePlinksForm.promotionallinkstable_type" disabled size="large" placeholder="请选择推广类型">
-                        <Option value="Event" key="Event">赛事</Option>
+                <Form-item class="fn-hide" label="活动类型" prop="promotionallinkstable_type">
+                    <Select v-model="updatePlinksForm.promotionallinkstable_type" disabled size="large" placeholder="请选择活动类型">
+                        <Option value="Event" key="Event">不限</Option>
+                        <Option :value="0" :key="0">赛事</Option>
+                        <Option :value="1" :key="1">任务</Option>
+                        <Option :value="2" :key="2">第三方推广</Option>
                     </Select>
                 </Form-item>
-                <Form-item label="推广主体" prop="promotionallinkstable_id">
-                    <Select v-model="updatePlinksForm.promotionallinkstable_id" disabled size="large" placeholder="请选择推广主体">
+                <Form-item label="活动名称" prop="promotionallinkstable_id">
+                    <Select v-model="updatePlinksForm.promotionallinkstable_id" disabled size="large" placeholder="请选择需要推广的活动">
                         <Option v-for="item in promotionallinkstable_ids" :value="item.value" :key="item.value">{{ item.label }}</Option>
                     </Select>
                 </Form-item>
-                <Form-item label="名称" prop="name">
+                <Form-item label="链接名称" prop="name">
                     <Input v-model="updatePlinksForm.name" placeholder="请输入推广链接名称" size="large" @keyup.enter.native="updatePlinks('updatePlinksForm')"></Input>
                 </Form-item>
                 <Form-item label="页面链接" prop="jump_link">
@@ -86,7 +95,7 @@
                 <Form-item label="备注" prop="mark">
                     <Input v-model="updatePlinksForm.mark" placeholder="请输入备注" size="large" @keyup.enter.native="updatePlinks('updatePlinksForm')"></Input>
                 </Form-item>
-                <Form-item label="状态" prop="status">
+                <Form-item label="链接状态" prop="status">
                     <Select v-model="updatePlinksForm.status" size="large">
                         <Option :value="1" :key="1">启用</Option>
                         <Option :value="2" :key="2">禁用</Option>
@@ -105,34 +114,60 @@ export default {
                 page: 1,
                 page_size: 10,
                 name: null, // 名称
-                status: 0, // 状态：1:启用；2:禁用
-                promotionallinkstable_type: 'Event', // 推广主体类名。 目前全部是Event
+                status: 0, // 状态：0:不限；1:启用；2:禁用
+                promotionallinkstable_type: 'Event', // 推广主体类型，0:赛事；1:任务；2:第三方推广
                 promotionallinkstable_id: null // 推广主体id。目前为活动id
             },
             promotionallinkstable_ids: [], // 活动列表
             isShowPage: false,
             list: [], // 推广链接列表
             list_columns: [
+                {
+                    type: 'index',
+                    width: 50,
+                    align: 'center'
+                },
                 // {
-                //     title: '推广类型',
+                //     title: '活动类型',
                 //     key: 'promotionallinkstable_type',
+                //     width: 120,
                 //     render: (h, params) => {
                 //         let promotionallinkstable_type = params.row.promotionallinkstable_type;
-                //         if (promotionallinkstable_type == 'Event') {
-                //             promotionallinkstable_type = '活动';
+                //         let promotionallinkstable_type_str = '';
+                //         let promotionallinkstable_type_color = '';
+                //         if (promotionallinkstable_type == 0) {
+                //             promotionallinkstable_type_str = '赛事';
+                //             promotionallinkstable_type_color = 'blue';
+                //         } else if (promotionallinkstable_type == 1) {
+                //             promotionallinkstable_type_str = '任务';
+                //             promotionallinkstable_type_color = 'gree';
+                //         } else if (promotionallinkstable_type == 2) {
+                //             promotionallinkstable_type_str = '推广';
+                //             promotionallinkstable_type_color = 'yellow';
+                //         } else {
+                //             promotionallinkstable_type_str = '其他';
+                //             promotionallinkstable_type_color = 'red';
                 //         }
-                //         return h('span', promotionallinkstable_type);
+
+                //         return h('Tag', {
+                //             props: {
+                //                 color: promotionallinkstable_type_color,
+                //                 type: 'dot',
+                //                 size: 'small'
+                //             }
+                //         }, promotionallinkstable_type_str);
                 //     }
                 // },
                 {
-                    title: '推广主体',
-                    key: 'subject',
+                    title: '活动名称',
+                    key: 'promotionallinkstable_id',
+                    sortable: true,
                     render: (h, params) => {
                         let subject = params.row.promotionallinkstable.subject;
                         return h('span', subject);
                     }
                 }, {
-                    title: '名称',
+                    title: '链接名称',
                     key: 'name',
                     sortable: true
                 }, {
@@ -140,7 +175,28 @@ export default {
                     key: 'out_link',
                     render: (h, params) => {
                         let out_link = window.location.host + params.row.out_link;
-                        return h('span', out_link);
+                        return h('span',[
+                            h('a', {
+                                domProps: {
+                                    href: out_link,
+                                    target: '_blank'
+                                }
+                            }, out_link)
+                            // ,
+                            // h('Icon', {
+                            //     props: {
+                            //         size: 16,
+                            //         type: 'clipboard'
+                            //     },
+                            //     style: {
+                            //         marginLeft: '5px'
+                            //     },
+                            //     domProps: {
+                            //         data: '123'
+                            //     }
+                            // })
+                        ]);
+                        
                     },
                 }, {
                     title: '备注',
@@ -208,7 +264,7 @@ export default {
                 name: null, // 名称
                 jump_link: null, // 跳转的页面
                 mark: null, // 备注
-                promotionallinkstable_type: 'Event', // 推广主体类名。 目前全部是Event
+                promotionallinkstable_type: 'Event', // 推广主体类型，0:赛事；1:任务；2:第三方推广
                 promotionallinkstable_id: null // 推广主体id。目前为活动id
             },
             addPlinksFormRules: {
@@ -352,12 +408,3 @@ export default {
     }
 }
 </script>
-
-<style lang="less">
-.fn-hide {
-    display: none !important;
-}
-.ivu-form .ivu-form-item-label {
-    font-size: 14px !important;
-}
-</style>

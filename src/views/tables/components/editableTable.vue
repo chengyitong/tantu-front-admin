@@ -1,7 +1,12 @@
 <style lang="less">
-    @import './editable-table.less';
+.show-edit-btn{
+    display: none;
+    margin-left: -10px;
+}
+.ivu-table-cell:hover .show-edit-btn{
+    display: inline-block;
+}
 </style>
-
 
 <template>
     <div>

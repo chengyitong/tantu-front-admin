@@ -84,19 +84,17 @@ export default {
         // 获取当前时间
         getNowFormatDate() {
             let date = new Date();
-            let seperator1 = '-';
-            let seperator2 = ':';
             let month = date.getMonth() + 1;
             let strDate = date.getDate();
-            if (month >= 1 && month <= 9) {
-                month = '0' + month;
-            }
-            if (strDate >= 0 && strDate <= 9) {
-                strDate = '0' + strDate;
-            }
-            let currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
-                    + ' ' + date.getHours() + seperator2 + date.getMinutes()
-                    + seperator2 + date.getSeconds();
+            let H = date.getHours();
+            let M = date.getMinutes();
+            let S = date.getSeconds();
+            month = month < 10 && month >= 1 ? '0' + month : month;
+            strDate = strDate < 10 && strDate >= 0 ? '0' + strDate : strDate;
+            H = H < 10 && H >= 0 ? '0' + H : H;
+            M = M < 10 && M >= 0 ? '0' + M : M;
+            S = S < 10 && S >= 0 ? '0' + S : S;
+            let currentdate = date.getFullYear() + '-' + month + '-' + strDate + ' ' + H + ':' + M + ':' + S;
             return currentdate;
         }
     }

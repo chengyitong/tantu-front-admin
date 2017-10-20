@@ -8,7 +8,7 @@
                 <img v-show="!hideMenuText"  src="http://og91leroh.bkt.clouddn.com/static/admin/logo_rose.png">
                 <img v-show="hideMenuText" src="http://og91leroh.bkt.clouddn.com/static/admin/logo_min.png">
             </div>
-            <sidebar-menu v-if="!hideMenuText" :menuList="menuList" :iconSize="14"/>
+            <sidebar-menu v-if="!hideMenuText" :menuList="menuList" :iconSize="16"/>
             <sidebar-menu-shrink :icon-color="menuIconColor" v-else :menuList="menuList"/>
         </div>
         <div class="main-header-con" :style="{paddingLeft: hideMenuText?'60px':'200px'}">
@@ -74,6 +74,7 @@
                 <router-view></router-view>
             </div>
         </div>
+        <BackTop></BackTop>
     </div>
 </template>
 <script>

@@ -1,16 +1,4 @@
-<p align="center">
-    <a href="https://www.iviewui.com">
-        <img width="200" src="https://file.iviewui.com/logo.svg">
-    </a>
-</p>
-
-# iView Admin
-[![](https://img.shields.io/travis/iview/iview-admin.svg?style=flat-square)](https://travis-ci.org/iview/iview-admin)
-[![vue](https://img.shields.io/badge/vue-2.5.2-brightgreen.svg?style=flat-square)](https://github.com/vuejs/vue)
-[![element-ui](https://img.shields.io/badge/iview-2.5.0-brightgreen.svg?style=flat-square)](https://github.com/iview/iview)
-
-[在线访问](https://iview.github.io/iview-admin)
-
+# tantu-front-admin（探图网管理系统）
 ## Run
 
 ```
@@ -18,7 +6,7 @@ npm run dev
 ```
 
 ## 简介
-iView admin是基于Vue.js，搭配使用[iView](https://www.iviewui.com) UI组件库形成的一套后台集成解决方案，由TalkingData前端可视化团队部分成员开发维护。iView admin遵守iView设计和开发约定，风格统一，设计考究，并且更多功能在不停开发中。
+该系统是使用TalkingData前端可视化团队开源的 [iView](https://www.iviewui.com) UI组件库形成的一套后台集成解决方案 [iView admin](https://github.com/iview/iview-admin)。
 
 ## 功能
 

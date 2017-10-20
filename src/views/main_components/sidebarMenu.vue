@@ -2,8 +2,8 @@
     <Menu ref="sideMenu" :active-name="currentPageName" :open-names="openedSubmenuArr" :theme="$store.state.menuTheme" width="auto" @on-select="changeMenu">
         <template v-for="item in menuList">
             <MenuItem v-if="item.children.length<=1 && item.available && item.children[0].available" :name="item.children[0].name" :key="item.path">
-                <Icon :type="item.icon" :size="iconSize" :key="item.path"></Icon>
-                <span class="layout-text" :key="item.path">{{ item.title }}</span>
+                <Icon :type="item.children[0].icon" :size="iconSize" :key="item.path"></Icon>
+                <span class="layout-text" :key="item.path">{{ item.children[0].title }}</span>
             </MenuItem>
 
             <Submenu v-if="item.children.length>1 && item.available" :name="item.name" :key="item.path">
