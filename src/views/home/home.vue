@@ -44,7 +44,7 @@ export default {
     },
     computed: {
         username () {
-            return this.$cookie.get('username');
+            return this.$cookie.get('tt_a_un');
         },
         avatorPath () {
             return localStorage.avatorImgPath;

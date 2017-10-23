@@ -230,7 +230,8 @@ export default {
                     width: 130,
                     align: 'center',
                     render: (h, params) => {
-                        return h('ButtonGroup', [
+                        let currentRow = params.row;
+                        return h('span', [
                             h('Button', {
                                 props: {
                                     type: 'primary',
@@ -238,23 +239,36 @@ export default {
                                 },
                                 on: {
                                     click: () => {
-                                        // this.show(params.index)
                                         this.updatePlinksModal(params.row);
                                     }
                                 }
                             }, '编辑'),
-                            h('Button', {
+                            h('Poptip',{
                                 props: {
-                                    type: 'error',
-                                    size: 'small'
+                                    confirm: true,
+                                    title: '您确定要删除这条数据吗?',
+                                    transfer: true,
+                                    placement: 'top-end'
                                 },
                                 on: {
-                                    click: () => {
-                                        // this.remove(params.index)
+                                    'on-ok': () => {
+                                        currentRow.isDeleting = true;
                                         this.delPlinks(params);
                                     }
                                 }
-                            }, '删除')
+                            },[
+                                h('Button', {
+                                    props: {
+                                        type: 'error',
+                                        size: 'small',
+                                        placement: 'top',
+                                        loading: currentRow.isDeleting
+                                    },
+                                    style: {
+                                        margin: '0 5px'
+                                    }
+                                }, '删除')
+                            ])
                         ]);
                     }
                 }],
@@ -392,17 +406,10 @@ export default {
                 }
             })
         },
-        // 点击“删除”按钮
+        // 删除推广链接
         delPlinks(params) {
-            this.$Modal.confirm({
-                title: '温馨提示',
-                content: '<p>确定删除该推广链接吗？</p><p>该操作不可逆转，请谨慎操作！</p>',
-                loading: false,
-                onOk: () => {
-                    this.$axios.delete('/admin/plinks/' + params.row.id).then(res => {
-                        this.list.splice(params.index, 1);
-                    })
-                }
+            this.$axios.delete('/admin/plinks/' + params.row.id).then(res => {
+                this.list.splice(params.index, 1);
             })
         }
     }

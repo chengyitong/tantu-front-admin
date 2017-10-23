@@ -2,3 +2,4 @@ src/vendors.js
 src/libs/table2excel.js
 src/main.js
 src/libs/fetch.js
+build/

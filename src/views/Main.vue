@@ -56,7 +56,7 @@
                                     <Icon type="arrow-down-b"></Icon>
                                 </a>
                                 <DropdownMenu slot="list">
-                                    <!-- <DropdownItem name="ownSpace">个人中心</DropdownItem> -->
+                                    <DropdownItem name="ownSpace">个人中心</DropdownItem>
                                     <DropdownItem name="loginout" divided>退出登录</DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
@@ -133,7 +133,7 @@
                 if (pathArr.length >= 2) {
                     this.$store.commit('addOpenSubmenu', pathArr[1].name);
                 }
-                this.userName = this.$cookie.get('username');
+                this.userName = this.$cookie.get('tt_a_un');
                 let messageCount = 3;
                 this.messageCount = messageCount.toString();
             },
@@ -144,28 +144,30 @@
                 if (name === 'ownSpace') {
                     util.openPage(this, 'ownspace_index', '个人中心');
                 } else if (name === 'loginout') {
-                    // 退出登录
-                    this.$cookie.remove('username');
-                    this.$cookie.remove('_p');
-                    this.$cookie.remove('hasGreet');
-                    this.$cookie.remove('access');
-                    this.$Notice.close('greeting');
-                    this.$store.commit('clearOpenedSubmenu');
-                    // 回复默认样式
-                    let themeLink = document.querySelector('link[name="theme"]');
-                    themeLink.setAttribute('href', '');
-                    // 清空打开的页面等数据，但是保存主题数据
-                    let theme = '';
-                    if (localStorage.theme) {
-                        theme = localStorage.theme;
-                    }
-                    localStorage.clear();
-                    if (theme) {
-                        localStorage.theme = theme;
-                    }
-                    this.$router.push({
-                        name: 'login'
-                    });
+                    this.$axios.get('/admin/auth/logout').then(res=>{
+                        // 退出登录
+                        this.$cookie.remove('tt_a_un');
+                        this.$cookie.remove('_p');
+                        this.$cookie.remove('hasGreet');
+                        this.$cookie.remove('access');
+                        this.$Notice.close('greeting');
+                        this.$store.commit('clearOpenedSubmenu');
+                        // 回复默认样式
+                        let themeLink = document.querySelector('link[name="theme"]');
+                        themeLink.setAttribute('href', '');
+                        // 清空打开的页面等数据，但是保存主题数据
+                        let theme = '';
+                        if (localStorage.theme) {
+                            theme = localStorage.theme;
+                        }
+                        localStorage.clear();
+                        if (theme) {
+                            localStorage.theme = theme;
+                        }
+                        this.$router.push({
+                            name: 'login'
+                        });
+                    })
                 }
             },
             handleFullScreen () {
@@ -260,7 +262,7 @@
                     title: '',
                     words: ''
                 };
-                let userName = this.$cookie.get('username');
+                let userName = this.$cookie.get('tt_a_un');
                 if (hour < 6) {
                     greetingWord = {title: '凌晨好~' + userName, words: '早起的鸟儿有虫吃~'};
                 } else if (hour >= 6 && hour < 9) {
@@ -294,7 +296,7 @@
             // 权限菜单过滤相关
             this.$store.commit('updateMenulist');
             // 查找当前用户之前登录时设置的主题
-            let name = this.$cookie.get('username');
+            let name = this.$cookie.get('tt_a_un');
             if (localStorage.theme) {
                 let hasThisUser = JSON.parse(localStorage.theme).some(item => {
                     if (item.userName === name) {

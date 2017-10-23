@@ -71,7 +71,7 @@ export default {
                     this.$store.commit('isLoginLoading', true);
                     this.$axios.post('/admin/auth/login', options).then(res => {
                         this.$store.commit('setAvator', 'http://og91leroh.bkt.clouddn.com/static/admin/avator.jpg');
-                        this.$cookie.set('username', this.loginForm.username);
+                        this.$cookie.set('tt_a_un', this.loginForm.username);
                         this.$cookie.set('login_time',this.getNowFormatDate());
                         this.$store.commit('isLoginLoading', false);
                         this.$router.push({ name: 'home_index' });

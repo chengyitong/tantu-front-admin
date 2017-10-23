@@ -169,7 +169,7 @@ export const appRouter = [
         name: 'picture',
         title: '图片管理',
         component: Main,
-        available: false,
+        available: true,
         children: [
             { path: 'upload', title: '上传图片', name: 'picture_upload', icon: 'upload', available: true, component: resolve => { require(['./views/picture/upload.vue'], resolve); } },
             { path: 'repository', title: '图片库', name: 'picture_repository', icon: 'android-image', available: true, component: resolve => { require(['./views/picture/repository.vue'], resolve); } },
@@ -184,7 +184,7 @@ export const appRouter = [
         name: 'banner',
         title: 'Banner管理',
         component: Main,
-        available: false,
+        available: true,
         children: [
             { path: '', title: 'Banner管理', name: 'banner_index', icon: 'android-image', available: true, component: resolve => { require(['./views/banner/banner.vue'], resolve); } }
         ]
@@ -195,7 +195,7 @@ export const appRouter = [
         name: 'user',
         title: '用户管理',
         component: Main,
-        available: false,
+        available: true,
         children: [
             { path: 'all', title: '所有用户', name: 'user_all', icon: 'android-contacts', available: true, component: resolve => { require(['./views/user/all.vue'], resolve); } },
             { path: 'fans', title: '关注及粉丝', name: 'user_fans', icon: 'android-contact', available: true, component: resolve => { require(['./views/user/fans.vue'], resolve); } },
@@ -210,23 +210,23 @@ export const appRouter = [
         component: Main,
         available: true,
         children: [
-            { path: 'add', title: '新建活动', name: 'activity_add', icon: 'plus', available: false, component: resolve => { require(['./views/activity/add.vue'], resolve); } },
-            { path: 'list', title: '活动列表', name: 'activity_list', icon: 'ios-keypad', available: false, component: resolve => { require(['./views/activity/list.vue'], resolve); } },
-            { path: 'link', title: '活动推广', name: 'extend_link', icon: 'compose', available: true, component: resolve => { require(['./views/activity/link.vue'], resolve); } },
+            { path: 'add', title: '新建活动', name: 'activity_add', icon: 'plus', available: true, component: resolve => { require(['./views/activity/add.vue'], resolve); } },
+            { path: 'list', title: '活动列表', name: 'activity_list', icon: 'ios-keypad', available: true, component: resolve => { require(['./views/activity/list.vue'], resolve); } },
+            { path: 'link', title: '活动推广', name: 'extend_link', icon: 'paper-airplane', available: true, component: resolve => { require(['./views/activity/link.vue'], resolve); } },
             { path: 'analysis', title: '推广统计', name: 'extend_analysis', icon: 'ios-analytics', available: true, component: resolve => { require(['./views/activity/analysis.vue'], resolve); } }
         ]
     },
     {
         path: '/access',
-        icon: 'settings',
+        icon: 'lock-combination',
         name: 'access',
-        title: '高级管理',
+        title: '权限控制',
         component: Main,
-        available: false,
+        available: true,
         children: [
             { path: 'menu', title: '菜单管理', name: 'access_menu', icon: 'android-menu', available: true, component: resolve => { require(['./views/access/menu.vue'], resolve); } },
-            { path: 'role', title: '权限设置', name: 'access_role', icon: 'lock-combination', available: true, component: resolve => { require(['./views/access/role.vue'], resolve); } },
-            { path: 'user', title: '角色管理', name: 'access_user', icon: 'person-stalker', available: true, component: resolve => { require(['./views/access/user.vue'], resolve); } }
+            { path: 'role', title: '角色管理', name: 'access_role', icon: 'settings', available: true, component: resolve => { require(['./views/access/role.vue'], resolve); } },
+            { path: 'user', title: '用户管理', name: 'access_user', icon: 'person-add', available: true, component: resolve => { require(['./views/access/user.vue'], resolve); } }
         ]
     },
     {

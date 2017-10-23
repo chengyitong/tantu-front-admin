@@ -2,12 +2,12 @@ import axios from 'axios';
 import qs from 'qs';
 import { LoadingBar, Message } from 'iview';
 import router from '../router';
-// import env from '../config/env';
-// const ajaxUrl = env === 'development' ? 'http://tantupix2.com/' : env === 'production' ? 'https://www.url.com' : 'https://debug.url.com';
+import env from '../config/env';
+const ajaxUrl = env === 'development' ? '/api' : env === 'production' ? '' : '/mock';
 
 // 创建axios实例
 const service = axios.create({
-    // baseURL: ajaxUrl, // api的base_url，使用代理模式时需要注释掉该行
+    baseURL: ajaxUrl, // api的base_url，使用代理模式时需要注释掉该行
     headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
     timeout: 30000                  // 请求超时时间
 });

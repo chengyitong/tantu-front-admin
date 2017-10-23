@@ -45,7 +45,7 @@ const router = new VueRouter(RouterConfig);
 
 router.beforeEach((to, from, next) => {
     iView.LoadingBar.start();
-    Util.title(to.meta.title);
+    Util.title(to.title);
     if (Cookies.get('locking') === '1' && to.name !== 'locking') {  // 判断当前是否是锁定状态
         iView.LoadingBar.finish();
         next(false);
@@ -56,11 +56,11 @@ router.beforeEach((to, from, next) => {
         iView.LoadingBar.finish();
         next(false);
     } else {
-        if (!Cookies.get('username') && to.name !== 'login') {  // 判断是否已经登录且前往的页面不是登录页
+        if (!Cookies.get('tt_a_un') && to.name !== 'login') {  // 判断是否已经登录且前往的页面不是登录页
             next({
                 name: 'login'
             });
-        } else if (Cookies.get('username') && to.name === 'login') {  // 判断是否已经登录且前往的是登录页
+        } else if (Cookies.get('tt_a_un') && to.name === 'login') {  // 判断是否已经登录且前往的是登录页
             next({
                 name: 'home'
             });

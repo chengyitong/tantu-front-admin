@@ -1,5 +1,4 @@
 const path = require('path');
-const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 function resolve(dir) {
@@ -77,9 +76,9 @@ module.exports = {
     },
     devServer: {
         proxy: {
-            '/admin': { // 表示当前项目请求的key
+            '/api': { // 表示当前项目请求的key
                 target: 'http://tantupix2.com/', // 代理服务器路径
-                // pathRewrite: { '^/api': '' }, // 重写路径
+                pathRewrite: { '^/api': '' }, // 重写路径
                 changeOrigin: true
             }
         }

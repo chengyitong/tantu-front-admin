@@ -55,18 +55,20 @@ export default {
             this.$refs.inputEle.focus();
         },
         handleUnlock () {
-            let username = this.$cookie.get('username');
+            let username = this.$cookie.get('tt_a_un');
             let options = {
                 username: username,
                 password: md5(this.password)
             }
             this.$axios.post('/admin/auth/login', options).then(res => {
-                this.$cookie.set('username', username);
+                this.$cookie.set('tt_a_un', username);
                 this.avatorLeft = '0px';
                 this.inputLeft = '400px';
                 this.password = '';
                 this.$store.commit('unlock');
                 this.$emit('on-unlock');
+            }).catch(error=>{
+
             })
         },
         unlockMousedown () {
