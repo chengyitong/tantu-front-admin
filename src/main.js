@@ -11,10 +11,15 @@ import Locales from './locale';
 import zhLocale from 'iview/src/locale/lang/zh-CN';
 import enLocale from 'iview/src/locale/lang/en-US';
 import Cookies from 'js-cookie';
-import $axios from './libs/fetch';
+import axios from 'axios';
+import qs from 'qs';
+import env from './config/env';
+
+import $mock from 'mockjs';
 
 Vue.prototype.$cookie = Cookies;
-Vue.prototype.$axios = $axios;
+Vue.prototype.$mock = $mock;
+Vue.prototype.$util = Util;
 
 Vue.use(VueRouter);
 Vue.use(Vuex);
@@ -40,12 +45,10 @@ const RouterConfig = {
     // mode: 'history',
     routes: routers
 };
-
 const router = new VueRouter(RouterConfig);
-
 router.beforeEach((to, from, next) => {
     iView.LoadingBar.start();
-    Util.title(to.title);
+    Util.title(to.meta.title);
     if (Cookies.get('locking') === '1' && to.name !== 'locking') {  // 判断当前是否是锁定状态
         iView.LoadingBar.finish();
         next(false);
@@ -69,7 +72,6 @@ router.beforeEach((to, from, next) => {
         }
     }
 });
-
 router.afterEach(() => {
     iView.LoadingBar.finish();
     window.scrollTo(0, 0);
@@ -95,7 +97,8 @@ const store = new Vuex.Store({
         openedSubmenuArr: [],  // 要展开的菜单数组
         menuTheme: '', // 主题
         theme: '',
-        loginLoading: false
+        loginLoading: false,
+        token: ''
     },
     getters: {
 
@@ -209,12 +212,80 @@ const store = new Vuex.Store({
         },
         isLoginLoading: (state, isloading) => {
             state.loginLoading = isloading;
+        },
+        setToken: (state, token) => {
+            state.token = token;
         }
     },
     actions: {
 
     }
 });
+
+// axios 配置
+const ajaxUrl = env === 'development' ? '/api' : env === 'production' ? '' : '/mock';
+// 创建axios实例
+const service = axios.create({
+    baseURL: ajaxUrl, // api的base_url，使用代理模式时需要注释掉该行
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        '__token__': Cookies.get('__token__')
+    },
+    timeout: 30000 // 请求超时时间
+});
+// request 拦截器
+service.interceptors.request.use((config) => {
+    iView.LoadingBar.start();
+    config.withCredentials = true; // 设置发送post请求自动set cookie
+    // POST 传参序列化
+    if (config.method === 'post') {
+        config.data = qs.stringify(config.data);
+    }
+    return config;
+}, (error) => {
+    iView.Message.error(error);
+    return Promise.reject(error);
+});
+// response 拦截器
+service.interceptors.response.use((res) => {
+    iView.LoadingBar.finish();
+    if (res.data.code !== 0) {
+        // 用户未登录
+        if (res.data.code === 1) {
+            Cookies.remove('tt_a_un');
+            Cookies.remove('_p');
+            Cookies.remove('hasGreet');
+            Cookies.remove('access');
+            Cookies.remove('locking');
+            Cookies.remove('tt_a_login_time');
+            store.commit('clearOpenedSubmenu');
+            // 回复默认样式
+            let themeLink = document.querySelector('link[name="theme"]');
+            themeLink.setAttribute('href', '');
+            // 清空打开的页面等数据，但是保存主题数据
+            let theme = '';
+            if (localStorage.theme) {
+                theme = localStorage.theme;
+            }
+            localStorage.clear();
+            if (theme) {
+                localStorage.theme = theme;
+            }
+            router.push({
+                name: 'login'
+            });
+        } else {
+            iView.Message.error(res.data.msg);
+            return Promise.reject(res);
+        }
+    }
+    return res.data;
+}, (error) => {
+    iView.Message.error(error.message);
+    return Promise.reject(error.message);
+});
+
+Vue.prototype.$axios = service;
 
 new Vue({
     el: '#app',
@@ -237,5 +308,8 @@ new Vue({
             }
         });
         this.$store.commit('setTagsList', tagsList);
+        this.$axios.get('/safe/token').then(res => {
+            Cookies.set('__token__', res.data);
+        })
     }
 });

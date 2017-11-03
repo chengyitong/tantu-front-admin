@@ -1,4 +1,4 @@
 <template>
     <div>
-        图片分类</div>
+        认证管理</div>
 </template>

@@ -50,7 +50,7 @@ export default {
             return localStorage.avatorImgPath;
         },
         loginTime () {
-            return this.$cookie.get('login_time');
+            return this.$cookie.get('tt_a_login_time');
         }
     },
     methods: {

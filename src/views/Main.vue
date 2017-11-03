@@ -34,7 +34,7 @@
                             <Icon type="locked" :size="20"></Icon>
                         </Tooltip>
                     </div>
-                    <div v-if="false" @click="showMessage" class="message-con">
+                    <div v-if="true" @click="showMessage" class="message-con">
                         <Tooltip :content="messageCount > 0 ? '有' + messageCount + '条未读消息' : '无未读消息'" placement="bottom">
                             <Badge :count="messageCount" dot>
                                 <Icon type="ios-bell" :size="22"></Icon>
@@ -146,10 +146,13 @@
                 } else if (name === 'loginout') {
                     this.$axios.get('/admin/auth/logout').then(res=>{
                         // 退出登录
+                        this.$cookie.remove('__token__');
                         this.$cookie.remove('tt_a_un');
                         this.$cookie.remove('_p');
                         this.$cookie.remove('hasGreet');
                         this.$cookie.remove('access');
+                        this.$cookie.remove('locking');
+                        this.$cookie.remove('tt_a_login_time');
                         this.$Notice.close('greeting');
                         this.$store.commit('clearOpenedSubmenu');
                         // 回复默认样式

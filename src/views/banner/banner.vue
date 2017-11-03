@@ -60,7 +60,7 @@ export default {
                     title: '名称',
                     key: 'subject',
                     render: (h, params) => {
-                        let subject = params.row.promotionallinkstable.subject;
+                        let subject = params.row.event.subject;
                         return h('span', subject);
                     }
                 }, {
@@ -145,14 +145,14 @@ export default {
                 name: null, // 名称
                 jump_link: null, // 跳转的页面
                 mark: null, // 备注
-                promotionallinkstable_type: 'Event', // 推广主体类名。 目前全部是Event
-                promotionallinkstable_id: null // 推广主体id。目前为活动id
+                event_type: 'Event', // 推广主体类名。 目前全部是Event
+                event_id: null // 推广主体id。目前为活动id
             },
             addBannerFormRules: {
                 banner_type: [
                     { type: 'number', required: true, message: '请选择Banner类型', trigger: 'change' }
                 ],
-                promotionallinkstable_id: [
+                event_id: [
                     { type: 'number', required: true, message: '请选择推广主体', trigger: 'change' }
                 ]
             },
@@ -164,7 +164,7 @@ export default {
     },
     mounted: function() {
         this.$nextTick(function() {
-            this.getEventList();
+            // this.getEventList();
             this.getPlinks();
         })
     },
@@ -182,7 +182,7 @@ export default {
                     const options = {};
                     options.label = list[i].subject;
                     options.value = list[i].id;
-                    this.promotionallinkstable_ids.push(options);
+                    this.event_ids.push(options);
                 }
             })
         },
@@ -239,8 +239,8 @@ export default {
                 name: row.name, // 名称
                 jump_link: row.jump_link, // 跳转的页面
                 mark: row.mark, // 备注
-                promotionallinkstable_type: row.promotionallinkstable_type, // 推广主体类名。 目前全部是Event
-                promotionallinkstable_id: row.promotionallinkstable_id, // 推广主体id。目前为活动id
+                event_type: row.event_type, // 推广主体类名。 目前全部是Event
+                event_id: row.event_id, // 推广主体id。目前为活动id
                 status: row.status
             }
             this.updatePlinksForm = options;

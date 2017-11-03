@@ -173,33 +173,9 @@ export const appRouter = [
         children: [
             { path: 'upload', title: '上传图片', name: 'picture_upload', icon: 'upload', available: true, component: resolve => { require(['./views/picture/upload.vue'], resolve); } },
             { path: 'repository', title: '图片库', name: 'picture_repository', icon: 'android-image', available: true, component: resolve => { require(['./views/picture/repository.vue'], resolve); } },
-            { path: 'classification', title: '图片分类', name: 'picture_classification', icon: 'android-list', available: true, component: resolve => { require(['./views/picture/classification.vue'], resolve); } },
+            { path: 'category', title: '图片分类', name: 'picture_category', icon: 'android-list', available: true, component: resolve => { require(['./views/picture/category.vue'], resolve); } },
             { path: 'tag', title: '图片标签', name: 'picture_tag', icon: 'flag', available: true, component: resolve => { require(['./views/picture/tag.vue'], resolve); } },
             { path: 'color', title: '图片颜色', name: 'picture_color', icon: 'android-color-palette', available: true, component: resolve => { require(['./views/picture/color.vue'], resolve); } }
-        ]
-    },
-    {
-        path: '/banner',
-        icon: 'android-image',
-        name: 'banner',
-        title: 'Banner管理',
-        component: Main,
-        available: true,
-        children: [
-            { path: '', title: 'Banner管理', name: 'banner_index', icon: 'android-image', available: true, component: resolve => { require(['./views/banner/banner.vue'], resolve); } }
-        ]
-    },
-    {
-        path: '/user',
-        icon: 'person-stalker',
-        name: 'user',
-        title: '用户管理',
-        component: Main,
-        available: true,
-        children: [
-            { path: 'all', title: '所有用户', name: 'user_all', icon: 'android-contacts', available: true, component: resolve => { require(['./views/user/all.vue'], resolve); } },
-            { path: 'fans', title: '关注及粉丝', name: 'user_fans', icon: 'android-contact', available: true, component: resolve => { require(['./views/user/fans.vue'], resolve); } },
-            { path: 'message', title: '站内消息', name: 'user_message', icon: 'android-textsms', available: true, component: resolve => { require(['./views/user/message.vue'], resolve); } }
         ]
     },
     {
@@ -214,6 +190,41 @@ export const appRouter = [
             { path: 'list', title: '活动列表', name: 'activity_list', icon: 'ios-keypad', available: true, component: resolve => { require(['./views/activity/list.vue'], resolve); } },
             { path: 'link', title: '活动推广', name: 'extend_link', icon: 'paper-airplane', available: true, component: resolve => { require(['./views/activity/link.vue'], resolve); } },
             { path: 'analysis', title: '推广统计', name: 'extend_analysis', icon: 'ios-analytics', available: true, component: resolve => { require(['./views/activity/analysis.vue'], resolve); } }
+        ]
+    },
+    {
+        path: '/banner',
+        icon: 'android-image',
+        name: 'banner',
+        title: 'Banner管理',
+        component: Main,
+        available: true,
+        children: [
+            { path: 'banner', title: 'Banner管理', name: 'banner_index', icon: 'android-image', available: true, component: resolve => { require(['./views/banner/banner.vue'], resolve); } }
+        ]
+    },
+    {
+        path: '/user',
+        icon: 'person-stalker',
+        name: 'user',
+        title: '用户管理',
+        component: Main,
+        available: true,
+        children: [
+            { path: 'all', title: '所有用户', name: 'user_all', icon: 'android-contacts', available: true, component: resolve => { require(['./views/user/all.vue'], resolve); } },
+            { path: 'cert', title: '认证管理', name: 'user_cert', icon: 'android-contact', available: true, component: resolve => { require(['./views/user/cert.vue'], resolve); } },
+            { path: 'message', title: '第三方绑定', name: 'user_message', icon: 'android-textsms', available: true, component: resolve => { require(['./views/user/message.vue'], resolve); } }
+        ]
+    },
+    {
+        path: '/message',
+        icon: 'android-textsms',
+        name: 'message',
+        title: '消息管理',
+        component: Main,
+        available: true,
+        children: [
+            { path: 'list', title: '消息管理', name: 'message_list', icon: 'android-textsms', available: true, component: resolve => { require(['./views/message/list.vue'], resolve); } }
         ]
     },
     {

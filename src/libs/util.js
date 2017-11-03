@@ -1,24 +1,10 @@
-// import axios from 'axios';
-// import env from '../config/env';
-
 let util = {
 
 };
 util.title = function (title) {
-    title = title || '探图网管理系统';
-    window.document.title = title;
+    title = title || '';
+    window.document.title = title + ' 探图网管理系统';
 };
-
-// const ajaxUrl = env === 'development'
-//     ? 'http://127.0.0.1:8888'
-//     : env === 'production'
-//     ? 'https://www.url.com'
-//     : 'https://debug.url.com';
-
-// util.ajax = axios.create({
-//     baseURL: ajaxUrl,
-//     timeout: 30000
-// });
 
 util.inOf = function (arr, targetArr) {
     let res = true;
@@ -184,5 +170,25 @@ util.openPage = function (vm, name, title) {
         vm.$store.commit('increateTag', { name: name, title: title });
     }
 };
+
+// 去掉字符串中所有空格(包括中间空格,需要设置第2个参数为:g)。
+util.trim = function (str, is_global) {
+    var result;
+    result = str.replace(/(^\s+)|(\s+$)/g, '');
+    if (is_global && is_global.toLowerCase() == 'g') {
+        result = result.replace(/\s/g, '');
+    }
+    return result;
+}
+// 去掉字符串左边空格
+util.trimLeft = function (str) {
+    str = String(str);
+    return str.replace(/(^\s*)/g, '');
+}
+// 去掉字符串右边空格
+util.trimRight = function (str) {
+    str = String(str);
+    return str.replace(/(\s*$)/g, '');
+}
 
 export default util;

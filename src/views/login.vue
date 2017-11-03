@@ -42,8 +42,8 @@ export default {
     data () {
         return {
             loginForm: {
-                username: '',
-                password: ''
+                username: 'admin',
+                password: 'bingo1208'
             },
             rules: {
                 username: [
@@ -72,9 +72,9 @@ export default {
                     this.$axios.post('/admin/auth/login', options).then(res => {
                         this.$store.commit('setAvator', 'http://og91leroh.bkt.clouddn.com/static/admin/avator.jpg');
                         this.$cookie.set('tt_a_un', this.loginForm.username);
-                        this.$cookie.set('login_time',this.getNowFormatDate());
+                        this.$cookie.set('tt_a_login_time',this.getNowFormatDate());
                         this.$store.commit('isLoginLoading', false);
-                        this.$router.push({ name: 'home_index' });
+                        this.$router.push({ path: '/home' });
                     }).catch(error => {
                         this.$store.commit('isLoginLoading', false);
                     })

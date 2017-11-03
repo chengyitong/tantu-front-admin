@@ -5,6 +5,22 @@
 npm run dev
 ```
 
+## 七牛图片压缩规则：
+```
+slist
+imageView2/2/h/300/interlace/1/q/75|imageslim
+
+nlist
+imageView2/2/h/800/interlace/1/q/75|imageslim
+
+ndetail
+imageView2/2/w/1200/h/800/interlace/1/q/75|imageslim
+  
+topimg
+imageView2/2/w/1920/interlace/1/q/100|imageslim
+```
+- 压缩规则使用方式：key-value  即：文件路径-slist
+
 ## 简介
 该系统是使用TalkingData前端可视化团队开源的 [iView](https://www.iviewui.com) UI组件库形成的一套后台集成解决方案 [iView admin](https://github.com/iview/iview-admin)。
 
