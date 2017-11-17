@@ -4,14 +4,17 @@
             <Form-item label="用户ID" prop="id">
                 <Input v-model="searchForm.id" placeholder="用户ID" @keyup.enter.native="getUserLists"></Input>
             </Form-item>
-            <Form-item label="手机号" prop="mobile_num">
-                <Input v-model="searchForm.mobile_num" placeholder="手机号" @keyup.enter.native="getUserLists"></Input>
-            </Form-item>
-            <Form-item label="邮箱" prop="email">
-                <Input v-model="searchForm.email" placeholder="邮箱" @keyup.enter.native="getUserLists"></Input>
+            <Form-item label="用户名" prop="account">
+                <Input v-model="searchForm.account" placeholder="用户名" @keyup.enter.native="getUserLists"></Input>
             </Form-item>
             <Form-item label="昵称" prop="nickname">
                 <Input v-model="searchForm.nickname" placeholder="昵称" @keyup.enter.native="getUserLists"></Input>
+            </Form-item>
+            <Form-item label="手机号" prop="mobile_9_num">
+                <Input v-model="searchForm.mobile_9_num" placeholder="手机号" @keyup.enter.native="getUserLists"></Input>
+            </Form-item>
+            <Form-item label="邮箱" prop="email">
+                <Input v-model="searchForm.email" placeholder="邮箱" @keyup.enter.native="getUserLists"></Input>
             </Form-item>
             <Form-item label="账号状态" prop="status">
                 <Select v-model="searchForm.status" filterable clearable placeholder="默认全部" @on-change="getUserLists" style="width: 141px;">
@@ -28,8 +31,8 @@
                     <Option :value="4" :key="4">认证失败</Option>
                 </Select>
             </Form-item>
-            <Form-item label="注册时间" prop="create_at">
-                <DatePicker type="daterange" v-model="searchForm.create_at" :options="datePickerOptions" placeholder="请选择注册时间周期" style="width: 180px" @on-change="searchForm.create_at=$event"></DatePicker>
+            <Form-item label="注册时间" prop="create_time">
+                <DatePicker type="daterange" v-model="searchForm.create_time" :options="datePickerOptions" placeholder="请选择注册时间周期" style="width: 180px" @on-change="searchForm.create_time=$event"></DatePicker>
             </Form-item>
             <Button type="primary" @click="getUserLists">
                 <Icon type="search" size="14"></Icon>&nbsp;查询
@@ -52,8 +55,8 @@
                 <Button type="primary" size="large" :loading="addUserFormLoading" @click="addUser('addUserForm')">确定</Button>
             </div>
             <Form ref="addUserForm" :model="addUserForm" :rules="addUserFormRules" label-position="right" :label-width="80">
-                <Form-item label="手机号" prop="mobile_num">
-                    <Input v-model="addUserForm.mobile_num" placeholder="请输入手机号，可用于登录"></Input>
+                <Form-item label="手机号" prop="mobile_9_num">
+                    <Input v-model="addUserForm.mobile_9_num" placeholder="请输入手机号，可用于登录"></Input>
                 </Form-item>
                 <Form-item label="昵称" prop="nickname">
                     <Input v-model="addUserForm.nickname" placeholder="请输入用户昵称，用于展示在前端"></Input>
@@ -128,13 +131,13 @@ export default {
             searchForm: {
                 page: 1,
                 page_size: 10,
-                id: '',
-                mobile_num: '',
-                email: '',
-                nickname: '', // 用户昵称
-                status: '', // 账号状态：1:正常；2:普通禁用；3:永久封号
-                cert_status: '', // 认证状态: 1:未认证；2:认证中；3:已认证；4:认证失败
-                create_at: ''
+                id: null,
+                mobile_9_num: null,
+                email: null,
+                nickname: null, // 用户昵称
+                status: null, // 账号状态：1:正常；2:普通禁用；3:永久封号
+                cert_status: null, // 认证状态: 1:未认证；2:认证中；3:已认证；4:认证失败
+                create_time: null
             },
             datePickerOptions: {
                 shortcuts: [
@@ -168,14 +171,14 @@ export default {
             addUserFormLoading: false,
             addUserModalVisible: false,
             addUserForm: {
-                mobile_num: null,
+                mobile_9_num: null,
                 name: null,
                 nickname: null,
                 email: null,
                 password: null
             },
             addUserFormRules: {
-                mobile_num: [
+                mobile_9_num: [
                     { required: true, message: '请输入手机号码' },
                     { validator: validePhone }
                 ],
@@ -245,7 +248,7 @@ export default {
                 },
                 {
                     title: '手机号',
-                    key: 'mobile_num',
+                    key: 'mobile_9_num',
                     width: 160,
                     align: 'center',
                     sortable: true,
@@ -443,7 +446,7 @@ export default {
                 },
                 {
                     title: '注册时间',
-                    key: 'create_at',
+                    key: 'create_time',
                     width: 160,
                     sortable: true
                 },
@@ -469,13 +472,13 @@ export default {
                             h('div', {
                                 slot: 'content'
                             }, [
-                                h('p','出生日期：' + params.row.birth || ''),
-                                h('p','学校：' + params.row.school || ''),
-                                h('p','所在地：' + params.row.address || ''),
-                                h('p','职业：' + params.row.occupation || ''),
-                                h('p','空间签名：' + params.row.signature || ''),
-                                h('p','自我介绍：' + params.row.introduce || ''),
-                                h('p','摄影装备：' + params.row.equip || ''),
+                                h('p','出生日期：' + params.row.birth),
+                                h('p','学校：' + params.row.school),
+                                h('p','所在地：' + params.row.address),
+                                h('p','职业：' + params.row.occupation),
+                                h('p','空间签名：' + params.row.signature),
+                                h('p','自我介绍：' + params.row.introduce),
+                                h('p','摄影装备：' + params.row.equip),
                             ])
                         ])
                     }

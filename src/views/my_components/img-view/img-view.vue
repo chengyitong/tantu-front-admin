@@ -6,6 +6,10 @@
             <div class="img-layer">
                 <img :src="imgSrc">
                 <Icon type="close-circled" class="img-close" size="30" @click="imgView"></Icon>
+                <Spin fix>
+                    <Icon type="load-c" size=18 class="demo-spin-icon-load"></Icon>
+                    <div>Loading</div>
+                </Spin>
             </div>
         </div>
     </transition>
@@ -38,6 +42,10 @@ export default {
     position: relative;
     width: 100%;
     height: 100%;
+    .ivu-spin-fix {
+        background: rgba(0, 0, 0, 0) !important;
+        color: #fff;
+    }
     /*遮罩层样式*/
     .img-layer {
         position: fixed;

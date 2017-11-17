@@ -13,7 +13,7 @@
             <Button type="primary" @click="getTagLists">
                 <Icon type="search" size="14"></Icon>&nbsp;查询
             </Button>
-            <Button type="info" @click="$refs['searchForm'].resetFields()">
+            <Button type="info" @click="$refs['searchForm'].resetFields();getTagLists();">
                 <Icon type="reply" size="14"></Icon>&nbsp;重置
             </Button>
             <Button type="success" @click="addTagModalVisible = true">
@@ -80,9 +80,8 @@ export default {
             searchForm: {
                 page: 1,
                 page_size: 10,
-                name: '', // 名称
-                status: '', // 状态：1:正常；2:禁用
-                is_recommend: '' // 是否推荐：0：不推荐；1:推荐
+                name: null, // 名称
+                status: 1 // 状态：1:正常；2:禁用
             },
             category_ids: [],
             isShowPage: false,
@@ -118,7 +117,7 @@ export default {
                     sortable: true
                 }, {
                     title: '添加时间',
-                    key: 'create_at',
+                    key: 'create_time',
                     sortable: true
                 }, {
                     title: '操作',
@@ -213,11 +212,12 @@ export default {
         },
         // 获取图片标签列表
         getTagLists() {
-            this.searchForm.name = this.$util.trim(this.searchForm.name);
+            let name = this.searchForm.name;
+            name = name == null ? '' : this.$util.trim(name);
             this.$axios.get('/admin/tag', { params: this.searchForm }).then(res => {
                 this.list = res.data.list;
+                this.count = res.data.count;
                 if (res.data.count > 0) {
-                    this.count = res.data.count;
                     this.isShowPage = true;
                 } else {
                     this.isShowPage = false;

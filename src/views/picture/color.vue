@@ -124,7 +124,7 @@ export default {
                     sortable: true
                 }, {
                     title: '添加时间',
-                    key: 'create_at',
+                    key: 'create_time',
                     align: 'center',
                     sortable: true
                 }, {

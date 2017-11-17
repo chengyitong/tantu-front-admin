@@ -13,7 +13,7 @@
             <Button type="primary" @click="getCategoryLists">
                 <Icon type="search" size="14"></Icon>&nbsp;查询
             </Button>
-            <Button type="info" @click="$refs['searchForm'].resetFields()">
+            <Button type="info" @click="$refs['searchForm'].resetFields();getCategoryLists()">
                 <Icon type="reply" size="14"></Icon>&nbsp;重置
             </Button>
             <Button type="success" @click="addCategoryModalVisible = true">
@@ -70,8 +70,8 @@ export default {
             searchForm: {
                 page: 1,
                 page_size: 10,
-                name: '', // 名称
-                status: '' // 状态：1:正常；2:禁用
+                name: null, // 名称
+                status: null // 状态：1:正常；2:禁用
             },
             isShowPage: false,
             list: [], // 分类列表
@@ -107,7 +107,7 @@ export default {
                 sortable: true
             }, {
                 title: '添加时间',
-                key: 'create_at',
+                key: 'create_time',
                 align: 'center',
                 sortable: true
             }, {
@@ -194,11 +194,12 @@ export default {
     methods: {
         // 获取图片分类列表
         getCategoryLists() {
-            this.searchForm.name = this.$util.trim(this.searchForm.name);
+            let name = this.searchForm.name;
+            name = name == null ? '' : this.$util.trim(name);
             this.$axios.get('/admin/category', { params: this.searchForm }).then(res => {
                 this.list = res.data.list;
+                this.count = res.data.count;
                 if (res.data.count > 0) {
-                    this.count = res.data.count;
                     this.isShowPage = true;
                 } else {
                     this.isShowPage = false;
