@@ -1,112 +1,112 @@
 <template>
-    <div>
-        <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="70" inline>
-            <Form-item label="用户ID" prop="id">
-                <Input v-model="searchForm.id" placeholder="用户ID" @keyup.enter.native="getUserLists"></Input>
-            </Form-item>
-            <Form-item label="用户名" prop="account">
-                <Input v-model="searchForm.account" placeholder="用户名" @keyup.enter.native="getUserLists"></Input>
-            </Form-item>
-            <Form-item label="昵称" prop="nickname">
-                <Input v-model="searchForm.nickname" placeholder="昵称" @keyup.enter.native="getUserLists"></Input>
-            </Form-item>
-            <Form-item label="手机号" prop="mobile_9_num">
-                <Input v-model="searchForm.mobile_9_num" placeholder="手机号" @keyup.enter.native="getUserLists"></Input>
-            </Form-item>
-            <Form-item label="邮箱" prop="email_9_account">
-                <Input v-model="searchForm.email_9_account" placeholder="邮箱" @keyup.enter.native="getUserLists"></Input>
-            </Form-item>
-            <Form-item label="账号状态" prop="status">
-                <Select v-model="searchForm.status" filterable clearable placeholder="默认全部" @on-change="getUserLists" style="width: 141px;">
-                    <Option :value="1" :key="1">正常</Option>
-                    <Option :value="2" :key="2">普通禁用</Option>
-                    <Option :value="3" :key="3">永久封号</Option>
-                </Select>
-            </Form-item>
-            <Form-item label="认证状态" prop="cert_9_status">
-                <Select v-model="searchForm.cert_9_status" filterable clearable placeholder="默认全部" @on-change="getUserLists" style="width: 141px;">
-                    <Option :value="1" :key="1">未认证</Option>
-                    <Option :value="2" :key="2">认证中</Option>
-                    <Option :value="3" :key="3">已认证</Option>
-                    <Option :value="4" :key="4">认证失败</Option>
-                </Select>
-            </Form-item>
-            <Form-item label="注册时间" prop="create_at">
-                <DatePicker type="daterange" v-model="searchForm.create_at" :options="datePickerOptions" placeholder="请选择注册时间周期" style="width: 180px" @on-change="searchForm.create_at=$event"></DatePicker>
-            </Form-item>
-            <Button type="primary" @click="getUserLists">
-                <Icon type="search" size="14"></Icon>&nbsp;查询
-            </Button>
-            <Button type="info" @click="$refs['searchForm'].resetFields()">
-                <Icon type="reply" size="14"></Icon>&nbsp;重置
-            </Button>
-            <Button type="success" @click="addUserModalVisible = true">
-                <Icon type="plus" size="14"></Icon>&nbsp;添加用户
-            </Button>
-        </Form>
+  <div>
+    <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="70" inline>
+      <Form-item label="用户ID" prop="id">
+        <Input v-model="searchForm.id" placeholder="用户ID" @keyup.enter.native="getUserLists"></Input>
+      </Form-item>
+      <Form-item label="用户名" prop="account">
+        <Input v-model="searchForm.account" placeholder="用户名" @keyup.enter.native="getUserLists"></Input>
+      </Form-item>
+      <Form-item label="昵称" prop="nickname">
+        <Input v-model="searchForm.nickname" placeholder="昵称" @keyup.enter.native="getUserLists"></Input>
+      </Form-item>
+      <Form-item label="手机号" prop="mobile_9_num">
+        <Input v-model="searchForm.mobile_9_num" placeholder="手机号" @keyup.enter.native="getUserLists"></Input>
+      </Form-item>
+      <Form-item label="邮箱" prop="email_9_account">
+        <Input v-model="searchForm.email_9_account" placeholder="邮箱" @keyup.enter.native="getUserLists"></Input>
+      </Form-item>
+      <Form-item label="账号状态" prop="status">
+        <Select v-model="searchForm.status" filterable clearable placeholder="默认全部" @on-change="getUserLists" style="width: 141px;">
+          <Option :value="1" :key="1">正常</Option>
+          <Option :value="2" :key="2">普通禁用</Option>
+          <Option :value="3" :key="3">永久封号</Option>
+        </Select>
+      </Form-item>
+      <Form-item label="认证状态" prop="cert_9_status">
+        <Select v-model="searchForm.cert_9_status" filterable clearable placeholder="默认全部" @on-change="getUserLists" style="width: 141px;">
+          <Option :value="1" :key="1">未认证</Option>
+          <Option :value="2" :key="2">认证中</Option>
+          <Option :value="3" :key="3">已认证</Option>
+          <Option :value="4" :key="4">认证失败</Option>
+        </Select>
+      </Form-item>
+      <Form-item label="注册时间" prop="create_at">
+        <DatePicker type="daterange" v-model="searchForm.create_at" :options="datePickerOptions" placeholder="请选择注册时间周期" style="width: 180px" @on-change="searchForm.create_at=$event"></DatePicker>
+      </Form-item>
+      <Button type="primary" @click="getUserLists">
+        <Icon type="search" size="14"></Icon>&nbsp;查询
+      </Button>
+      <Button type="info" @click="$refs['searchForm'].resetFields()">
+        <Icon type="reply" size="14"></Icon>&nbsp;重置
+      </Button>
+      <Button type="success" @click="addUserModalVisible = true">
+        <Icon type="plus" size="14"></Icon>&nbsp;添加用户
+      </Button>
+    </Form>
 
-        <Table :columns="list_columns" :data="list"></Table>
-        <Page v-if="count > 0" :total="count" show-total :page-size-opts="[10,20,30,40]" show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
+    <Table :columns="list_columns" :data="list"></Table>
+    <Page v-if="count > 0" :total="count" show-total :page-size-opts="[10,20,30,40]" show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
 
-        <!-- 添加用户弹框 -->
-        <Modal v-model="addUserModalVisible" title="添加用户">
-            <div slot="footer">
-                <Button type="text" size="large" @click="addUserCancel('addUserForm')">取消</Button>
-                <Button type="primary" size="large" :loading="addUserFormLoading" @click="addUser('addUserForm')">确定</Button>
-            </div>
-            <Form ref="addUserForm" :model="addUserForm" :rules="addUserFormRules" label-position="right" :label-width="80">
-                <Form-item label="手机号" prop="mobile_num">
-                    <Input v-model="addUserForm.mobile_num" placeholder="请输入手机号，可用于登录"></Input>
-                </Form-item>
-                <Form-item label="昵称" prop="nickname">
-                    <Input v-model="addUserForm.nickname" placeholder="请输入用户昵称，用于展示在前端"></Input>
-                </Form-item>
-                <Form-item label="邮箱" prop="email_account">
-                    <Input v-model="addUserForm.email_account" placeholder="请输入邮箱，可用于登录"></Input>
-                </Form-item>
-                <Form-item label="登录密码" prop="password">
-                    <Input type="password" v-model="addUserForm.password" placeholder="请输入登录密码，默认密码六个8"></Input>
-                </Form-item>
-            </Form>
-        </Modal>
+    <!-- 添加用户弹框 -->
+    <Modal v-model="addUserModalVisible" title="添加用户">
+      <div slot="footer">
+        <Button type="text" size="large" @click="addUserCancel('addUserForm')">取消</Button>
+        <Button type="primary" size="large" :loading="addUserFormLoading" @click="addUser('addUserForm')">确定</Button>
+      </div>
+      <Form ref="addUserForm" :model="addUserForm" :rules="addUserFormRules" label-position="right" :label-width="80">
+        <Form-item label="手机号" prop="mobile_num">
+          <Input v-model="addUserForm.mobile_num" placeholder="请输入手机号，可用于登录"></Input>
+        </Form-item>
+        <Form-item label="昵称" prop="nickname">
+          <Input v-model="addUserForm.nickname" placeholder="请输入用户昵称，用于展示在前端"></Input>
+        </Form-item>
+        <Form-item label="邮箱" prop="email_account">
+          <Input v-model="addUserForm.email_account" placeholder="请输入邮箱，可用于登录"></Input>
+        </Form-item>
+        <Form-item label="登录密码" prop="password">
+          <Input type="password" v-model="addUserForm.password" placeholder="请输入登录密码，默认密码六个8"></Input>
+        </Form-item>
+      </Form>
+    </Modal>
 
-        <!-- 修改用户状态弹框 -->
-        <Modal v-model="updateStatusModalVisible" title="修改用户状态">
-            <div slot="footer">
-                <Button type="text" size="large" @click="updateStatusCancel('updateStatusForm')">取消</Button>
-                <Button type="primary" size="large" :loading="updateStatusFormLoading" @click="updateStatus('updateStatusForm')">确定</Button>
-            </div>
-            <Form ref="updateStatusForm" :model="updateStatusForm" label-position="right" :label-width="100">
-                <Form-item label="状态" prop="status">
-                    <RadioGroup v-model="updateStatusForm.status">
-                        <Radio :label="1">正常</Radio>
-                        <Radio :label="2">禁用</Radio>
-                        <Radio :label="3">永久封号</Radio>
-                    </RadioGroup>
-                </Form-item>
-                <Form-item v-if="updateStatusForm.status != 1" label="禁用/封号的原因" prop="reason">
-                    <Input v-model="updateStatusForm.reason" placeholder="禁用/封号的原因"></Input>
-                    <small v-if="updateStatusForm.status == 3">永久封号之后，不可解封！</small>
-                </Form-item>
-            </Form>
-        </Modal>
+    <!-- 修改用户状态弹框 -->
+    <Modal v-model="updateStatusModalVisible" title="修改用户状态">
+      <div slot="footer">
+        <Button type="text" size="large" @click="updateStatusCancel('updateStatusForm')">取消</Button>
+        <Button type="primary" size="large" :loading="updateStatusFormLoading" @click="updateStatus('updateStatusForm')">确定</Button>
+      </div>
+      <Form ref="updateStatusForm" :model="updateStatusForm" label-position="right" :label-width="100">
+        <Form-item label="状态" prop="status">
+          <RadioGroup v-model="updateStatusForm.status">
+            <Radio :label="1">正常</Radio>
+            <Radio :label="2">禁用</Radio>
+            <Radio :label="3">永久封号</Radio>
+          </RadioGroup>
+        </Form-item>
+        <Form-item v-if="updateStatusForm.status != 1" label="禁用/封号的原因" prop="reason">
+          <Input v-model="updateStatusForm.reason" placeholder="禁用/封号的原因"></Input>
+          <small v-if="updateStatusForm.status == 3">永久封号之后，不可解封！</small>
+        </Form-item>
+      </Form>
+    </Modal>
 
-        <!-- 重置用户密码弹框 -->
-        <Modal v-model="resetPasswordModalVisible" title="重置用户登录密码">
-            <div slot="footer">
-                <Button type="text" size="large" @click="resetPasswordCancel('resetPasswordForm')">取消</Button>
-                <Button type="primary" size="large" :loading="resetPasswordFormLoading" @click="resetPassword('resetPasswordForm')">确定</Button>
-            </div>
-            <Form ref="resetPasswordForm" :model="resetPasswordForm" :rules="resetPasswordFormRules" label-position="right" :label-width="100">
-                <Form-item label="新密码" prop="password">
-                    <Input v-model="resetPasswordForm.password" placeholder="请输入新密码"></Input>
-                </Form-item>
-                <Form-item label="确认新密码" prop="confirm_password">
-                    <Input v-model="resetPasswordForm.confirm_password" placeholder="请再次确认新密码"></Input>
-                </Form-item>
-            </Form>
-        </Modal>
-    </div>
+    <!-- 重置用户密码弹框 -->
+    <Modal v-model="resetPasswordModalVisible" title="重置用户登录密码">
+      <div slot="footer">
+        <Button type="text" size="large" @click="resetPasswordCancel('resetPasswordForm')">取消</Button>
+        <Button type="primary" size="large" :loading="resetPasswordFormLoading" @click="resetPassword('resetPasswordForm')">确定</Button>
+      </div>
+      <Form ref="resetPasswordForm" :model="resetPasswordForm" :rules="resetPasswordFormRules" label-position="right" :label-width="100">
+        <Form-item label="新密码" prop="password">
+          <Input v-model="resetPasswordForm.password" placeholder="请输入新密码"></Input>
+        </Form-item>
+        <Form-item label="确认新密码" prop="confirm_password">
+          <Input v-model="resetPasswordForm.confirm_password" placeholder="请再次确认新密码"></Input>
+        </Form-item>
+      </Form>
+    </Modal>
+  </div>
 </template>
 
 <script>

@@ -1,66 +1,66 @@
 <template>
-    <div>
-        <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="50" inline>
-            <Form-item label="名称" prop="name">
-                <Input v-model="searchForm.name" placeholder="请输入分类名称" @keyup.enter.native="getCategoryLists"></Input>
-            </Form-item>
-            <Form-item label="状态" prop="status">
-                <Select v-model="searchForm.status" filterable clearable @on-change="getCategoryLists" style="width: 70px;">
-                    <Option :value="1" :key="1">正常</Option>
-                    <Option :value="2" :key="2">禁用</Option>
-                </Select>
-            </Form-item>
-            <Button type="primary" @click="getCategoryLists">
-                <Icon type="search" size="14"></Icon>&nbsp;查询
-            </Button>
-            <Button type="info" @click="$refs['searchForm'].resetFields();getCategoryLists()">
-                <Icon type="reply" size="14"></Icon>&nbsp;重置
-            </Button>
-            <Button type="success" @click="addCategoryModalVisible = true">
-                <Icon type="plus" size="14"></Icon>&nbsp;新增
-            </Button>
-        </Form>
+  <div>
+    <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="50" inline>
+      <Form-item label="名称" prop="name">
+        <Input v-model="searchForm.name" placeholder="请输入分类名称" @keyup.enter.native="getCategoryLists"></Input>
+      </Form-item>
+      <Form-item label="状态" prop="status">
+        <Select v-model="searchForm.status" filterable clearable @on-change="getCategoryLists" style="width: 70px;">
+          <Option :value="1" :key="1">正常</Option>
+          <Option :value="2" :key="2">禁用</Option>
+        </Select>
+      </Form-item>
+      <Button type="primary" @click="getCategoryLists">
+        <Icon type="search" size="14"></Icon>&nbsp;查询
+      </Button>
+      <Button type="info" @click="$refs['searchForm'].resetFields();getCategoryLists()">
+        <Icon type="reply" size="14"></Icon>&nbsp;重置
+      </Button>
+      <Button type="success" @click="addCategoryModalVisible = true">
+        <Icon type="plus" size="14"></Icon>&nbsp;新增
+      </Button>
+    </Form>
 
-        <Table :columns="list_columns" :data="list"></Table>
-        <Page v-if="isShowPage" :total="count" show-total :page-size-opts="[10,20,30,40]" show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
+    <Table :columns="list_columns" :data="list"></Table>
+    <Page v-if="isShowPage" :total="count" show-total :page-size-opts="[10,20,30,40]" show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
 
-        <!-- 新增分类弹框 -->
-        <Modal v-model="addCategoryModalVisible" title="新增分类">
-            <div slot="footer">
-                <Button type="text" size="large" @click="$refs['addCategoryForm'].resetFields();addCategoryModalVisible = false;">取消</Button>
-                <Button type="primary" size="large" :loading="addCategoryFormLoading" @click="addCategory('addCategoryForm')">确定</Button>
-            </div>
-            <Form ref="addCategoryForm" :model="addCategoryForm" :rules="addCategoryFormRules" label-position="right" :label-width="80">
-                <Form-item label="名称" prop="name">
-                    <Input v-model="addCategoryForm.name" placeholder="请输入分类名称" size="large" @keyup.enter.native="addCategory('addCategoryForm')"></Input>
-                </Form-item>
-                <Form-item label="状态" prop="status">
-                    <RadioGroup v-model="addCategoryForm.status">
-                        <Radio :label="1">正常</Radio>
-                        <Radio :label="2">禁用</Radio>
-                    </RadioGroup>
-                </Form-item>
-            </Form>
-        </Modal>
-        <!-- 更新分类弹框 -->
-        <Modal v-model="updateCategoryModalVisible" title="更新分类">
-            <div slot="footer">
-                <Button type="text" size="large" @click="updateCategoryModalVisible = false">取消</Button>
-                <Button type="primary" size="large" :loading="updateCategoryFormLoading" @click="updateCategory('updateCategoryForm')">确定</Button>
-            </div>
-            <Form ref="updateCategoryForm" :model="updateCategoryForm" :rules="addCategoryFormRules" label-position="right" :label-width="80">
-                <Form-item label="名称" prop="name">
-                    <Input v-model="updateCategoryForm.name" placeholder="请输入分类名称" size="large" @keyup.enter.native="updateCategory('updateCategoryForm')"></Input>
-                </Form-item>
-                <Form-item label="状态" prop="status">
-                    <RadioGroup v-model="updateCategoryForm.status">
-                        <Radio :label="1">正常</Radio>
-                        <Radio :label="2">禁用</Radio>
-                    </RadioGroup>
-                </Form-item>
-            </Form>
-        </Modal>
-    </div>
+    <!-- 新增分类弹框 -->
+    <Modal v-model="addCategoryModalVisible" title="新增分类">
+      <div slot="footer">
+        <Button type="text" size="large" @click="$refs['addCategoryForm'].resetFields();addCategoryModalVisible = false;">取消</Button>
+        <Button type="primary" size="large" :loading="addCategoryFormLoading" @click="addCategory('addCategoryForm')">确定</Button>
+      </div>
+      <Form ref="addCategoryForm" :model="addCategoryForm" :rules="addCategoryFormRules" label-position="right" :label-width="80">
+        <Form-item label="名称" prop="name">
+          <Input v-model="addCategoryForm.name" placeholder="请输入分类名称" size="large" @keyup.enter.native="addCategory('addCategoryForm')"></Input>
+        </Form-item>
+        <Form-item label="状态" prop="status">
+          <RadioGroup v-model="addCategoryForm.status">
+            <Radio :label="1">正常</Radio>
+            <Radio :label="2">禁用</Radio>
+          </RadioGroup>
+        </Form-item>
+      </Form>
+    </Modal>
+    <!-- 更新分类弹框 -->
+    <Modal v-model="updateCategoryModalVisible" title="更新分类">
+      <div slot="footer">
+        <Button type="text" size="large" @click="updateCategoryModalVisible = false">取消</Button>
+        <Button type="primary" size="large" :loading="updateCategoryFormLoading" @click="updateCategory('updateCategoryForm')">确定</Button>
+      </div>
+      <Form ref="updateCategoryForm" :model="updateCategoryForm" :rules="addCategoryFormRules" label-position="right" :label-width="80">
+        <Form-item label="名称" prop="name">
+          <Input v-model="updateCategoryForm.name" placeholder="请输入分类名称" size="large" @keyup.enter.native="updateCategory('updateCategoryForm')"></Input>
+        </Form-item>
+        <Form-item label="状态" prop="status">
+          <RadioGroup v-model="updateCategoryForm.status">
+            <Radio :label="1">正常</Radio>
+            <Radio :label="2">禁用</Radio>
+          </RadioGroup>
+        </Form-item>
+      </Form>
+    </Modal>
+  </div>
 </template>
 
 <script>

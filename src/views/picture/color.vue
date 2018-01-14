@@ -1,58 +1,58 @@
 <template>
-    <div>
-        <Form>
-            <Button type="success" @click="addColorModalVisible = true">
-                <Icon type="plus" size="14"></Icon>&nbsp;新增
-            </Button>
-        </Form>
+  <div>
+    <Form>
+      <Button type="success" @click="addColorModalVisible = true">
+        <Icon type="plus" size="14"></Icon>&nbsp;新增
+      </Button>
+    </Form>
 
-        <Table :columns="list_columns" :data="list"></Table>
+    <Table :columns="list_columns" :data="list"></Table>
 
-        <!-- 新增颜色弹框 -->
-        <Modal v-model="addColorModalVisible" title="新增颜色">
-            <div slot="footer">
-                <Button type="text" size="large" @click="$refs['addColorForm'].resetFields();addColorModalVisible = false">取消</Button>
-                <Button type="primary" size="large" :loading="addColorFormLoading" @click="addColor('addColorForm')">确定</Button>
-            </div>
-            <Form ref="addColorForm" :model="addColorForm" :rules="addColorFormRules" label-position="right" :label-width="80">
-                <Form-item label="颜色名称" prop="name">
-                    <Input v-model="addColorForm.name" placeholder="请输入颜色名称" size="large" @keyup.enter.native="addColor('addColorForm')"></Input>
-                </Form-item>
-                <Form-item label="颜色代码" prop="color_value">
-                    <Input v-model="addColorForm.color_value" placeholder="请输入颜色代码，十六进制，如：#e07303" size="large" @keyup.enter.native="addColor('addColorForm')"></Input>
-                    <a href="http://www.atool.org/colorpicker.php" target="_blank">颜色代码表</a>
-                </Form-item>
-                <Form-item label="状态" prop="status">
-                    <RadioGroup v-model="addColorForm.status">
-                        <Radio :label="1">正常</Radio>
-                        <Radio :label="2">禁用</Radio>
-                    </RadioGroup>
-                </Form-item>
-            </Form>
-        </Modal>
-        <!-- 更新颜色弹框 -->
-        <Modal v-model="updateColorModalVisible" title="更新颜色">
-            <div slot="footer">
-                <Button type="text" size="large" @click="updateColorModalVisible = false">取消</Button>
-                <Button type="primary" size="large" :loading="updateColorFormLoading" @click="updateColor('updateColorForm')">确定</Button>
-            </div>
-            <Form ref="updateColorForm" :model="updateColorForm" :rules="addColorFormRules" label-position="right" :label-width="80">
-                <Form-item label="颜色名称" prop="name">
-                    <Input v-model="updateColorForm.name" placeholder="请输入颜色名称" size="large" @keyup.enter.native="updateColor('updateColorForm')"></Input>
-                </Form-item>
-                <Form-item label="颜色代码" prop="color_value">
-                    <Input v-model="updateColorForm.color_value" placeholder="请输入颜色代码，十六进制，如：#e07303" size="large" @keyup.enter.native="updateColor('updateColorForm')"></Input>
-                    <a href="http://www.atool.org/colorpicker.php" target="_blank">颜色代码表</a>
-                </Form-item>
-                <Form-item label="状态" prop="status">
-                    <RadioGroup v-model="updateColorForm.status">
-                        <Radio :label="1">正常</Radio>
-                        <Radio :label="2">禁用</Radio>
-                    </RadioGroup>
-                </Form-item>
-            </Form>
-        </Modal>
-    </div>
+    <!-- 新增颜色弹框 -->
+    <Modal v-model="addColorModalVisible" title="新增颜色">
+      <div slot="footer">
+        <Button type="text" size="large" @click="$refs['addColorForm'].resetFields();addColorModalVisible = false">取消</Button>
+        <Button type="primary" size="large" :loading="addColorFormLoading" @click="addColor('addColorForm')">确定</Button>
+      </div>
+      <Form ref="addColorForm" :model="addColorForm" :rules="addColorFormRules" label-position="right" :label-width="80">
+        <Form-item label="颜色名称" prop="name">
+          <Input v-model="addColorForm.name" placeholder="请输入颜色名称" size="large" @keyup.enter.native="addColor('addColorForm')"></Input>
+        </Form-item>
+        <Form-item label="颜色代码" prop="color_value">
+          <Input v-model="addColorForm.color_value" placeholder="请输入颜色代码，十六进制，如：#e07303" size="large" @keyup.enter.native="addColor('addColorForm')"></Input>
+          <a href="http://www.atool.org/colorpicker.php" target="_blank">颜色代码表</a>
+        </Form-item>
+        <Form-item label="状态" prop="status">
+          <RadioGroup v-model="addColorForm.status">
+            <Radio :label="1">正常</Radio>
+            <Radio :label="2">禁用</Radio>
+          </RadioGroup>
+        </Form-item>
+      </Form>
+    </Modal>
+    <!-- 更新颜色弹框 -->
+    <Modal v-model="updateColorModalVisible" title="更新颜色">
+      <div slot="footer">
+        <Button type="text" size="large" @click="updateColorModalVisible = false">取消</Button>
+        <Button type="primary" size="large" :loading="updateColorFormLoading" @click="updateColor('updateColorForm')">确定</Button>
+      </div>
+      <Form ref="updateColorForm" :model="updateColorForm" :rules="addColorFormRules" label-position="right" :label-width="80">
+        <Form-item label="颜色名称" prop="name">
+          <Input v-model="updateColorForm.name" placeholder="请输入颜色名称" size="large" @keyup.enter.native="updateColor('updateColorForm')"></Input>
+        </Form-item>
+        <Form-item label="颜色代码" prop="color_value">
+          <Input v-model="updateColorForm.color_value" placeholder="请输入颜色代码，十六进制，如：#e07303" size="large" @keyup.enter.native="updateColor('updateColorForm')"></Input>
+          <a href="http://www.atool.org/colorpicker.php" target="_blank">颜色代码表</a>
+        </Form-item>
+        <Form-item label="状态" prop="status">
+          <RadioGroup v-model="updateColorForm.status">
+            <Radio :label="1">正常</Radio>
+            <Radio :label="2">禁用</Radio>
+          </RadioGroup>
+        </Form-item>
+      </Form>
+    </Modal>
+  </div>
 </template>
 
 <script>

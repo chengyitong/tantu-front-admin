@@ -1,76 +1,76 @@
 <template>
-    <div>
-        <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="50" inline>
-            <Form-item label="名称" prop="name">
-                <Input v-model="searchForm.name" placeholder="请输入标签名称" @keyup.enter.native="getTagLists"></Input>
-            </Form-item>
-            <Form-item label="状态" prop="status">
-                <Select v-model="searchForm.status" filterable clearable @on-change="getTagLists" style="width: 70px;">
-                    <Option :value="1" :key="1">正常</Option>
-                    <Option :value="2" :key="2">禁用</Option>
-                </Select>
-            </Form-item>
-            <Button type="primary" @click="getTagLists">
-                <Icon type="search" size="14"></Icon>&nbsp;查询
-            </Button>
-            <Button type="info" @click="$refs['searchForm'].resetFields();getTagLists();">
-                <Icon type="reply" size="14"></Icon>&nbsp;重置
-            </Button>
-            <Button type="success" @click="addTagModalVisible = true">
-                <Icon type="plus" size="14"></Icon>&nbsp;新增
-            </Button>
-        </Form>
+  <div>
+    <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="50" inline>
+      <Form-item label="名称" prop="name">
+        <Input v-model="searchForm.name" placeholder="请输入标签名称" @keyup.enter.native="getTagLists"></Input>
+      </Form-item>
+      <Form-item label="状态" prop="status">
+        <Select v-model="searchForm.status" filterable clearable @on-change="getTagLists" style="width: 70px;">
+          <Option :value="1" :key="1">正常</Option>
+          <Option :value="2" :key="2">禁用</Option>
+        </Select>
+      </Form-item>
+      <Button type="primary" @click="getTagLists">
+        <Icon type="search" size="14"></Icon>&nbsp;查询
+      </Button>
+      <Button type="info" @click="$refs['searchForm'].resetFields();getTagLists();">
+        <Icon type="reply" size="14"></Icon>&nbsp;重置
+      </Button>
+      <Button type="success" @click="addTagModalVisible = true">
+        <Icon type="plus" size="14"></Icon>&nbsp;新增
+      </Button>
+    </Form>
 
-        <Table :columns="list_columns" :data="list"></Table>
-        <Page v-if="isShowPage" :total="count" show-total :page-size-opts="[10,20,30,40]" show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
+    <Table :columns="list_columns" :data="list"></Table>
+    <Page v-if="isShowPage" :total="count" show-total :page-size-opts="[10,20,30,40]" show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
 
-        <!-- 新增标签弹框 -->
-        <Modal v-model="addTagModalVisible" title="新增标签">
-            <div slot="footer">
-                <Button type="text" size="large" @click="$refs['addTagForm'].resetFields();addTagModalVisible = false;">取消</Button>
-                <Button type="primary" size="large" :loading="addTagFormLoading" @click="addTag('addTagForm')">确定</Button>
-            </div>
-            <Form ref="addTagForm" :model="addTagForm" :rules="addTagFormRules" label-position="right" :label-width="80">
-                <Form-item label="所属分类" prop="category_id">
-                    <Select v-model="addTagForm.category_id" multiple>
-                        <Option v-for="item in category_ids" :value="item.id" :key="item.id">{{ item.name }}</Option>
-                    </Select>
-                </Form-item>
-                <Form-item label="名称" prop="name">
-                    <Input v-model="addTagForm.name" placeholder="请输入标签名称" size="large" @keyup.enter.native="addTag('addTagForm')"></Input>
-                </Form-item>
-                <Form-item label="状态" prop="status">
-                    <RadioGroup v-model="addTagForm.status">
-                        <Radio :label="1">正常</Radio>
-                        <Radio :label="2">禁用</Radio>
-                    </RadioGroup>
-                </Form-item>
-            </Form>
-        </Modal>
-        <!-- 更新标签弹框 -->
-        <Modal v-model="updateTagModalVisible" title="更新标签">
-            <div slot="footer">
-                <Button type="text" size="large" @click="updateTagModalVisible = false">取消</Button>
-                <Button type="primary" size="large" :loading="updateTagFormLoading" @click="updateTag('updateTagForm')">确定</Button>
-            </div>
-            <Form ref="updateTagForm" :model="updateTagForm" :rules="addTagFormRules" label-position="right" :label-width="80">
-                <Form-item label="所属分类" prop="category_id">
-                    <Select v-model="updateTagForm.category_id" multiple>
-                        <Option v-for="item in category_ids" :value="item.id" :key="item.id">{{ item.name }}</Option>
-                    </Select>
-                </Form-item>
-                <Form-item label="名称" prop="name">
-                    <Input v-model="updateTagForm.name" placeholder="请输入标签名称" size="large" @keyup.enter.native="updateTag('updateTagForm')"></Input>
-                </Form-item>
-                <Form-item label="状态" prop="status">
-                    <RadioGroup v-model="updateTagForm.status">
-                        <Radio :label="1">正常</Radio>
-                        <Radio :label="2">禁用</Radio>
-                    </RadioGroup>
-                </Form-item>
-            </Form>
-        </Modal>
-    </div>
+    <!-- 新增标签弹框 -->
+    <Modal v-model="addTagModalVisible" title="新增标签">
+      <div slot="footer">
+        <Button type="text" size="large" @click="$refs['addTagForm'].resetFields();addTagModalVisible = false;">取消</Button>
+        <Button type="primary" size="large" :loading="addTagFormLoading" @click="addTag('addTagForm')">确定</Button>
+      </div>
+      <Form ref="addTagForm" :model="addTagForm" :rules="addTagFormRules" label-position="right" :label-width="80">
+        <Form-item label="所属分类" prop="category_id">
+          <Select v-model="addTagForm.category_id" multiple>
+            <Option v-for="item in category_ids" :value="item.id" :key="item.id">{{ item.name }}</Option>
+          </Select>
+        </Form-item>
+        <Form-item label="名称" prop="name">
+          <Input v-model="addTagForm.name" placeholder="请输入标签名称" size="large" @keyup.enter.native="addTag('addTagForm')"></Input>
+        </Form-item>
+        <Form-item label="状态" prop="status">
+          <RadioGroup v-model="addTagForm.status">
+            <Radio :label="1">正常</Radio>
+            <Radio :label="2">禁用</Radio>
+          </RadioGroup>
+        </Form-item>
+      </Form>
+    </Modal>
+    <!-- 更新标签弹框 -->
+    <Modal v-model="updateTagModalVisible" title="更新标签">
+      <div slot="footer">
+        <Button type="text" size="large" @click="updateTagModalVisible = false">取消</Button>
+        <Button type="primary" size="large" :loading="updateTagFormLoading" @click="updateTag('updateTagForm')">确定</Button>
+      </div>
+      <Form ref="updateTagForm" :model="updateTagForm" :rules="addTagFormRules" label-position="right" :label-width="80">
+        <Form-item label="所属分类" prop="category_id">
+          <Select v-model="updateTagForm.category_id" multiple>
+            <Option v-for="item in category_ids" :value="item.id" :key="item.id">{{ item.name }}</Option>
+          </Select>
+        </Form-item>
+        <Form-item label="名称" prop="name">
+          <Input v-model="updateTagForm.name" placeholder="请输入标签名称" size="large" @keyup.enter.native="updateTag('updateTagForm')"></Input>
+        </Form-item>
+        <Form-item label="状态" prop="status">
+          <RadioGroup v-model="updateTagForm.status">
+            <Radio :label="1">正常</Radio>
+            <Radio :label="2">禁用</Radio>
+          </RadioGroup>
+        </Form-item>
+      </Form>
+    </Modal>
+  </div>
 </template>
 
 <script>

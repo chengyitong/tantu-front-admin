@@ -1,6 +1,6 @@
 <template>
   <div>
-    新建活动
+    编辑活动
   </div>
 </template>
 

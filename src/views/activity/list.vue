@@ -1,63 +1,60 @@
 <template>
-    <div>
-        <img-view v-if="showImg" @click="showImg = false" :imgSrc="imgSrc"></img-view>
-        <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="70" inline>
-            <Form-item label="活动类型">
-                <Select v-model="searchForm.event_type" filterable @on-change="getActivityLists" style="width: 100px;">
-                    <Option :value="0" :key="0">赛事</Option>
-                    <Option :value="1" :key="1">任务</Option>
-                    <!-- <Option :value="2" :key="2">第三方推广</Option> -->
-                </Select>
-            </Form-item>
-            <Form-item label="活动状态">
-                <Select v-model="searchForm.status" filterable @on-change="getActivityLists" style="width: 100px;">
-                    <Option :value="1" :key="1">草稿</Option>
-                    <Option :value="2" :key="2">已发布(进行中)</Option>
-                    <Option :value="3" :key="3">评奖中</Option>
-                    <Option :value="4" :key="4">公示中</Option>
-                    <Option :value="5" :key="5">已结束</Option>
-                </Select>
-            </Form-item>
-            <Form-item label="开始日期">
-                <DatePicker type="date" v-model="searchForm.start_time" :options="datePickerOptions" placeholder="选择开始日期" style="width: 120px" @on-change="searchForm.start_time=$event"></DatePicker>
-            </Form-item>
-            <Form-item label="结束日期">
-                <DatePicker type="date" v-model="searchForm.end_time" :options="datePickerOptions" placeholder="选择结束日期" style="width: 120px" @on-change="searchForm.end_time=$event"></DatePicker>
-            </Form-item>
-            <Form-item label="标题">
-                <Input v-model="searchForm.subject" placeholder="活动标题" @keyup.enter.native="getActivityLists"></Input>
-            </Form-item>
-            <Form-item label="奖品">
-                <Input v-model="searchForm.award" placeholder="活动奖品" @keyup.enter.native="getActivityLists"></Input>
-            </Form-item>
-            <Button type="primary" @click="getActivityLists">
-                <Icon type="search" size="14"></Icon>&nbsp;查询
-            </Button>
-        </Form>
+  <div>
+    <img-view v-if="showImg" @click="showImg = false" :imgSrc="imgSrc"></img-view>
+    <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="70" inline>
+      <Form-item label="活动类型">
+        <Select v-model="searchForm.event_type" filterable @on-change="getActivityLists" style="width: 100px;">
+          <Option :value="0" :key="0">赛事</Option>
+          <Option :value="1" :key="1">任务</Option>
+          <!-- <Option :value="2" :key="2">第三方推广</Option> -->
+        </Select>
+      </Form-item>
+      <Form-item label="活动状态">
+        <Select v-model="searchForm.status" clearable filterable placeholder="默认为全部" @on-change="getActivityLists" style="width: 100px;">
+          <Option :value="1" :key="1">草稿</Option>
+          <Option :value="2" :key="2">已发布(进行中)</Option>
+          <Option :value="3" :key="3">评奖中</Option>
+          <Option :value="4" :key="4">公示中</Option>
+          <Option :value="5" :key="5">已结束</Option>
+        </Select>
+      </Form-item>
+      <Form-item label="活动时间" prop="datePickerValue">
+        <DatePicker type="daterange" v-model="datePickerValue" :options="datePickerOptions" placeholder="请选择时间周期" style="width: 180px" @on-change="datePickerValue=$event"></DatePicker>
+      </Form-item>
+      <Form-item label="标题">
+        <Input v-model="searchForm.subject" placeholder="活动标题" @keyup.enter.native="getActivityLists"></Input>
+      </Form-item>
+      <Form-item label="奖品">
+        <Input v-model="searchForm.award" placeholder="活动奖品" @keyup.enter.native="getActivityLists"></Input>
+      </Form-item>
+      <Button type="primary" @click="getActivityLists">
+        <Icon type="search" size="14"></Icon>&nbsp;查询
+      </Button>
+    </Form>
 
-        <Table :columns="list_columns" :data="list"></Table>
-        <Page v-if="isShowPage" :total="count" show-total show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
-        
-        <!-- S 投稿明细 -->
-        <Modal v-model="productCountModalVisible" title="投稿明细" width="95%" :styles="{top: '20px'}">
-            <div slot="footer">
-                <Button type="primary" size="large" @click="productCountModalVisible = false">关闭</Button>
-            </div>
-            <Table :columns="product_list_columns" :data="product_list"></Table>
-            <Page v-if="isShowPageProduct" :total="product_count" show-total @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
-        </Modal>
-        <!-- E 投稿明细 -->
+    <Table :columns="list_columns" :data="list"></Table>
+    <Page v-if="isShowPage" :total="count" show-total show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
 
-        <!-- S 参与用户明细 -->
-        <Modal v-model="userCountModalVisible" title="参与用户明细" :styles="{top: '20px'}">
-            <div slot="footer">
-                <Button type="primary" size="large" @click="userCountModalVisible = false">关闭</Button>
-            </div>
-            <Table :columns="user_list_columns" :data="user_list"></Table>
-            <Page v-if="isShowPageUser" :total="user_count" show-total @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
-        </Modal>
-        <!-- E 参与用户明细 -->
-    </div>
+    <!-- S 投稿明细 -->
+    <Modal v-model="productCountModalVisible" title="投稿明细" width="95%" :styles="{top: '20px'}">
+      <div slot="footer">
+        <Button type="primary" size="large" @click="productCountModalVisible = false">关闭</Button>
+      </div>
+      <Table :columns="product_list_columns" :data="product_list"></Table>
+      <Page v-if="isShowPageProduct" :total="product_count" show-total @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
+    </Modal>
+    <!-- E 投稿明细 -->
+
+    <!-- S 参与用户明细 -->
+    <Modal v-model="userCountModalVisible" title="参与用户明细" :styles="{top: '20px'}">
+      <div slot="footer">
+        <Button type="primary" size="large" @click="userCountModalVisible = false">关闭</Button>
+      </div>
+      <Table :columns="user_list_columns" :data="user_list"></Table>
+      <Page v-if="isShowPageUser" :total="user_count" show-total @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
+    </Modal>
+    <!-- E 参与用户明细 -->
+  </div>
 </template>
 
 <script>
@@ -69,59 +66,41 @@ export default {
       searchForm: {
         page: 1,
         page_size: 10,
-        event_type: 0, // 活动类型
-        start_time: "", // 活动开始时间 2017-08-10
-        end_time: "", // 活动结束时间
-        subject: "", // 活动标题
-        award: "", // 奖品
-        status: 1 // 活动状态：1草稿，2发布，3评奖，4公示，5结束
+        event_type: null, // 活动类型
+        start_time: [], // 活动开始时间 2017-08-10
+        end_time: [], // 活动结束时间
+        subject: null, // 活动标题
+        award: null, // 奖品
+        status: null // 活动状态：1草稿，2发布，3评奖，4公示，5结束
       },
+      datePickerValue: ["", ""],
       datePickerOptions: {
         shortcuts: [
           {
-            text: "今天",
+            text: "最近一周",
             value() {
-              return new Date();
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              return [start, end];
             }
           },
           {
-            text: "昨天",
+            text: "最近一个月",
             value() {
-              const date = new Date();
-              date.setTime(date.getTime() - 3600 * 1000 * 24);
-              return date;
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              return [start, end];
             }
           },
           {
-            text: "一周前",
+            text: "最近三个月",
             value() {
-              const date = new Date();
-              date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-              return date;
-            }
-          },
-          {
-            text: "一个月前",
-            value() {
-              const date = new Date();
-              date.setTime(date.getTime() - 3600 * 1000 * 24 * 30);
-              return date;
-            }
-          },
-          {
-            text: "两个月前",
-            value() {
-              const date = new Date();
-              date.setTime(date.getTime() - 3600 * 1000 * 24 * 60);
-              return date;
-            }
-          },
-          {
-            text: "三个月前",
-            value() {
-              const date = new Date();
-              date.setTime(date.getTime() - 3600 * 1000 * 24 * 90);
-              return date;
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              return [start, end];
             }
           }
         ]
@@ -199,7 +178,7 @@ export default {
                       }
                     }
                   },
-                  params.row.product_count
+                  params.row.product_count || 0
                 )
               ]
             );
@@ -236,7 +215,7 @@ export default {
                       }
                     }
                   },
-                  params.row.user_count
+                  params.row.user_count || 0
                 )
               ]
             );
@@ -334,7 +313,7 @@ export default {
         },
         {
           title: "排序",
-          key: "sortno",
+          key: "sortnum",
           width: 80,
           sortable: true
         },
@@ -403,6 +382,7 @@ export default {
                   },
                   on: {
                     click: () => {
+                      this.$router.push("/activity/edit/" + currentRow.id);
                       // this.productCountModal(params.row);
                     }
                   }
@@ -421,7 +401,15 @@ export default {
                   on: {
                     "on-ok": () => {
                       currentRow.isDeleting = true;
-                      this.list.splice(params.index, 1);
+                      this.$axios
+                        .delete("/admin/event/" + params.row.id)
+                        .then(res => {
+                          this.$Message.success("删除成功");
+                          this.getActivityLists();
+                        })
+                        .catch(error => {
+                          currentRow.isDeleting = false;
+                        });
                     }
                   }
                 },
@@ -667,49 +655,33 @@ export default {
   },
   methods: {
     getActivityLists() {
-      //   let data = this.$mock.mock({
-      //     "list|1-10": [
-      //       {
-      //         "id|+1": 1,
-      //         "event_type|1": [0, 1],
-      //         subject: "@ctitle(10,20)",
-      //         product_count: "@integer(0, 1000)",
-      //         user_count: "@integer(0, 1000)",
-      //         start_time: "@date()",
-      //         end_time: "@date()",
-      //         award: "@ctitle(6,18)",
-      //         "subject_banner_index|1": [
-      //           "http://mis.tantupix.com/static/uploadfiles/event/59cfc071dd7e2.jpg",
-      //           "http://mis.tantupix.com/static/uploadfiles/event/59cfc07fa8913.jpg",
-      //           "http://mis.tantupix.com/static/uploadfiles/event/59cfc0876bcc3.jpg",
-      //           "http://mis.tantupix.com/static/uploadfiles/event/59cfc407d1a91.jpg"
-      //         ],
-      //         "subject_banner_detail|1": [
-      //           "http://mis.tantupix.com/static/uploadfiles/event/59cfc758d89e2.jpg",
-      //           "http://mis.tantupix.com/static/uploadfiles/event/59cfc74a1a584.jpg",
-      //           "http://mis.tantupix.com/static/uploadfiles/event/59cfc7402c541.jpg",
-      //           "http://mis.tantupix.com/static/uploadfiles/event/59cfc407d1c30.jpg"
-      //         ],
-      //         "subject_banner_list|1": [
-      //           "http://mis.tantupix.com/static/uploadfiles/event/5922a992837ad.jpg",
-      //           "http://mis.tantupix.com/static/uploadfiles/event/5922b8f7ab973.jpg",
-      //           "http://mis.tantupix.com/static/uploadfiles/event/5922c452459cb.jpg",
-      //           "http://mis.tantupix.com/static/uploadfiles/event/59cfc407d1e32.jpg"
-      //         ],
-      //         "sortno|1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-      //         "link|1": [
-      //           "",
-      //           "",
-      //           "",
-      //           "http://www.gzzyphoto.com/",
-      //           "http://www.tantupix.com/event/event/id/13",
-      //           "http://www.tantupix.com/event/event/id/9"
-      //         ]
-      //       }
-      //     ]
-      //   });
+      let datePickerValue = this.datePickerValue;
+      let start_time = datePickerValue[0];
+      let end_time = datePickerValue[1];
+      if (start_time == "" || start_time == undefined) {
+        this.searchForm.start_time = [];
+      } else {
+        this.searchForm.start_time = [start_time];
+      }
+      if (end_time == "" || end_time == undefined) {
+        this.searchForm.end_time = [];
+      } else {
+        this.searchForm.end_time = [end_time];
+      }
+
+      if (this.searchForm.type == "") this.searchForm.type = null;
+      if (this.searchForm.status == "") this.searchForm.status = null;
+      if (this.searchForm.subject == "") this.searchForm.subject = null;
+      if (this.searchForm.award == "") this.searchForm.award = null;
+
       this.$axios.get("/admin/event", { params: this.searchForm }).then(res => {
         this.list = res.data.list;
+        this.count = res.data.count;
+        if (res.data.count > 0) {
+          this.isShowPage = true;
+        } else {
+          this.isShowPage = false;
+        }
       });
     },
     // 翻页

@@ -1,145 +1,147 @@
 <template>
-    <div>
-        <img-view v-if="showImg" @click="showImg = false;" :imgSrc="imgSrc"></img-view>
-        <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="70" inline>
-            <Form-item label="图片ID" prop="id">
-                <Input v-model="searchForm.id" placeholder="图片ID" @keyup.enter.native="getProductLists"></Input>
-            </Form-item>
-            <Form-item label="图片名称" prop="name">
-                <Input v-model="searchForm.name" placeholder="图片名称" @keyup.enter.native="getProductLists"></Input>
-            </Form-item>
-            <Form-item label="分类" prop="category_product_9_category_id">
-                <Select v-model="searchForm.category_product_9_category_id" filterable clearable @on-change="getProductLists" style="width: 141px;">
-                    <Option v-for="item in categoryOptions" :key="item.id" :value="item.id">{{ item.name }}</Option>
-                </Select>
-            </Form-item>
-            <Form-item label="简介" prop="desc">
-                <Input v-model="searchForm.desc" placeholder="简介" @keyup.enter.native="getProductLists"></Input>
-            </Form-item>
-            <!-- 用户上传图片后：未填写分类、颜色、标签等基本信息时处于待处理状态；填写之后则进入待审核状态；免费图片和版权保护图片不需要审核，直接进入已上架状态;上架之后对用户可见，否则不可见 -->
-            <Form-item label="状态" prop="status">
-                <Select v-model="searchForm.status" clearable @on-change="getProductLists" style="width: 141px;">
-                    <Option :value="1" :key="1">待处理</Option>
-                    <Option :value="2" :key="2">待审核</Option>
-                    <Option :value="3" :key="3">不通过</Option>
-                    <Option :value="4" :key="4">已上架</Option>
-                    <Option :value="5" :key="5">已下架</Option>
-                </Select>
-            </Form-item>
-            <Form-item label="类型" prop="type">
-                <Select v-model="searchForm.type" clearable @on-change="getProductLists" style="width: 141px;">
-                    <Option :value="1" :key="1">版权</Option>
-                    <Option :value="2" :key="2">售卖</Option>
-                    <Option :value="3" :key="3">免费</Option>
-                </Select>
-            </Form-item>
-            <Form-item label="用户ID" prop="a_9_user_id">
-                <Input v-model="searchForm.a_9_user_id" placeholder="用户ID" @keyup.enter.native="getProductLists"></Input>
-            </Form-item>
-            <Form-item label="活动ID" prop="event_product_9_event_id">
-                <Input v-model="searchForm.event_product_9_event_id" placeholder="活动ID" @keyup.enter.native="getProductLists"></Input>
-            </Form-item>
-            <Form-item label="上传时间" prop="a_9_create_time">
-                <DatePicker type="daterange" v-model="searchForm.a_9_create_time" :options="datePickerOptions" placeholder="请选择上传时间周期" style="width: 180px" @on-change="searchForm.a_9_create_time=$event;getProductLists()"></DatePicker>
-            </Form-item>
-            <Button type="primary" @click="getProductLists">
-                <Icon type="search" size="14"></Icon>&nbsp;查询
-            </Button>
-            <Button type="info" @click="$refs['searchForm'].resetFields()">
-                <Icon type="reply" size="14"></Icon>&nbsp;重置
-            </Button>
-        </Form>
+  <div>
+    <img-view v-if="showImg" @click="showImg = false;" :imgSrc="imgSrc"></img-view>
+    <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="70" inline>
+      <Form-item label="图片ID" prop="id">
+        <Input v-model="searchForm.id" placeholder="图片ID" @keyup.enter.native="getProductLists"></Input>
+      </Form-item>
+      <Form-item label="图片名称" prop="name">
+        <Input v-model="searchForm.name" placeholder="图片名称" @keyup.enter.native="getProductLists"></Input>
+      </Form-item>
+      <Form-item label="分类" prop="category_product_9_category_id">
+        <Select v-model="searchForm.category_product_9_category_id" filterable clearable @on-change="getProductLists" style="width: 141px;">
+          <Option v-for="item in categoryOptions" :key="item.id" :value="item.id">{{ item.name }}</Option>
+        </Select>
+      </Form-item>
+      <Form-item label="简介" prop="desc">
+        <Input v-model="searchForm.desc" placeholder="简介" @keyup.enter.native="getProductLists"></Input>
+      </Form-item>
+      <!-- 用户上传图片后：未填写分类、颜色、标签等基本信息时处于待处理状态；填写之后则进入待审核状态；免费图片和版权保护图片不需要审核，直接进入已上架状态;上架之后对用户可见，否则不可见 -->
+      <Form-item label="状态" prop="status">
+        <Select v-model="searchForm.status" clearable @on-change="getProductLists" style="width: 141px;">
+          <Option :value="1" :key="1">待处理</Option>
+          <Option :value="2" :key="2">待审核</Option>
+          <Option :value="3" :key="3">不通过</Option>
+          <Option :value="4" :key="4">已上架</Option>
+          <Option :value="5" :key="5">已下架</Option>
+        </Select>
+      </Form-item>
+      <Form-item label="类型" prop="type">
+        <Select v-model="searchForm.type" clearable @on-change="getProductLists" style="width: 141px;">
+          <Option :value="1" :key="1">版权</Option>
+          <Option :value="2" :key="2">售卖</Option>
+          <Option :value="3" :key="3">免费</Option>
+        </Select>
+      </Form-item>
+      <Form-item label="用户ID" prop="a_9_user_id">
+        <Input v-model="searchForm.a_9_user_id" placeholder="用户ID" @keyup.enter.native="getProductLists"></Input>
+      </Form-item>
+      <Form-item label="活动ID" prop="event_product_9_event_id">
+        <Input v-model="searchForm.event_product_9_event_id" placeholder="活动ID" @keyup.enter.native="getProductLists"></Input>
+      </Form-item>
+      <Form-item label="上传时间" prop="a_9_create_time">
+        <DatePicker type="daterange" v-model="searchForm.a_9_create_time" :options="datePickerOptions" placeholder="请选择上传时间周期" style="width: 180px" @on-change="searchForm.a_9_create_time=$event;getProductLists()"></DatePicker>
+      </Form-item>
+      <Button type="primary" @click="getProductLists">
+        <Icon type="search" size="14"></Icon>&nbsp;查询
+      </Button>
+      <Button type="info" @click="$refs['searchForm'].resetFields()">
+        <Icon type="reply" size="14"></Icon>&nbsp;重置
+      </Button>
+    </Form>
 
-        <Form>
-            <Button type="error" v-show="count > 0" @click="deleteProduct">
-                <Icon type="trash-a" size="14"></Icon>&nbsp;批量删除当前页
-            </Button>
-            <Button type="primary" v-if="searchForm.status == 5" @click="changeStatus(4)">
-                <Icon type="android-upload" size="14"></Icon>&nbsp;批量上架当前页
-            </Button>
-            <Button type="warning" v-if="searchForm.status == 4" @click="changeStatus(5)">
-                <Icon type="android-download" size="14"></Icon>&nbsp;批量下架当前页
-            </Button>
-        </Form>
+    <Form>
+      <Button type="error" v-show="count > 0" @click="deleteProduct">
+        <Icon type="trash-a" size="14"></Icon>&nbsp;批量删除当前页
+      </Button>
+      <Button type="primary" v-if="searchForm.status == 5" @click="changeStatus(4)">
+        <Icon type="android-upload" size="14"></Icon>&nbsp;批量上架当前页
+      </Button>
+      <Button type="warning" v-if="searchForm.status == 4" @click="changeStatus(5)">
+        <Icon type="android-download" size="14"></Icon>&nbsp;批量下架当前页
+      </Button>
+    </Form>
 
-        <Table :loading="table_loading" :columns="list_columns" :data="list" @on-selection-change="onSelectionChange"></Table>
-        
-        <Form style="margin-top: 10px;">
-            <Button type="error" v-show="count > 0" @click="deleteProduct">
-                <Icon type="trash-a" size="14"></Icon>&nbsp;批量删除当前页
-            </Button>
-            <Button type="primary" v-if="searchForm.status == 5" @click="changeStatus(4)">
-                <Icon type="android-upload" size="14"></Icon>&nbsp;批量上架当前页
-            </Button>
-            <Button type="warning" v-if="searchForm.status == 4" @click="changeStatus(5)">
-                <Icon type="android-download" size="14"></Icon>&nbsp;批量下架当前页
-            </Button>
-        </Form>
+    <Table :loading="table_loading" :columns="list_columns" :data="list" @on-selection-change="onSelectionChange"></Table>
 
-        <Page v-if="isShowPage" :total="count" show-total show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
+    <Form style="margin-top: 10px;">
+      <Button type="error" v-show="count > 0" @click="deleteProduct">
+        <Icon type="trash-a" size="14"></Icon>&nbsp;批量删除当前页
+      </Button>
+      <Button type="primary" v-if="searchForm.status == 5" @click="changeStatus(4)">
+        <Icon type="android-upload" size="14"></Icon>&nbsp;批量上架当前页
+      </Button>
+      <Button type="warning" v-if="searchForm.status == 4" @click="changeStatus(5)">
+        <Icon type="android-download" size="14"></Icon>&nbsp;批量下架当前页
+      </Button>
+    </Form>
 
-        <!-- S 编辑 -->
-        <Modal v-model="updateProductModalVisible" title="编辑图片信息" width="920">
-            <div slot="footer">
-                <Button size="large" @click="updateProductModalVisible = false">关闭</Button>
-                <Button type="primary" size="large" @click="updateProduct">保存</Button>
-            </div>
-            <Form :model="updateProductForm" :label-width="80">
-                <Form-item label="图片名称" prop="name">
-                    <Input v-model="updateProductForm.name" placeholder="请输入图片名称" @keyup.enter.native="updateProduct"></Input>
-                </Form-item>
-                <Form-item label="图片简介" prop="desc">
-                    <Input v-model="updateProductForm.desc" placeholder="请输入图片简介" @keyup.enter.native="updateProduct"></Input>
-                </Form-item>
-                <Form-item label="图片分类" prop="category_ids">
-                    <CheckboxGroup v-model="updateProductForm.category_ids">
-                        <Checkbox v-for="item in categoryOptions" :key="item.id" :label="item.id">{{ item.name }}</Checkbox>
-                    </CheckboxGroup>
-                </Form-item>
-                <Form-item label="图片标签" prop="tag_names">
-                    <Input v-model="updateProductForm.tag_names" @keyup.enter.native="updateProduct"></Input>
-                    <small>多个标签之间用英文逗号分隔</small>
-                </Form-item>
-                <Form-item label="图片颜色" prop="color_ids">
-                    <CheckboxGroup v-model="updateProductForm.color_ids">
-                        <Checkbox v-for="item in colorOptions" :key="item.id" :label="item.id"><span class="color-box" :style="setColorStyle(item.color_value)"></span></Checkbox>
-                    </CheckboxGroup>
-                </Form-item>
-                <Form-item label="图片状态" prop="status">
-                    <RadioGroup v-model="updateProductForm.status">
-                        <Radio :label="1" disabled>待处理</Radio>
-                        <Radio :label="2" disabled>待审核</Radio>
-                        <Radio :label="3" disabled>不通过</Radio>
-                        <Radio :label="4">已上架</Radio>
-                        <Radio :label="5">已下架</Radio>
-                    </RadioGroup>
-                </Form-item>
-                <Form-item label="不通过原因" prop="desc" v-if="updateProductForm.status == 3">
-                    <Input v-model="updateProductForm.desc" placeholder="请输入不通过的原因" @keyup.enter.native="getProductLists"></Input>
-                </Form-item>
-                <Form-item label="图片类型">
-                    <RadioGroup v-model="updateProductForm.type">
-                        <Radio :label="1" disabled>版权保护</Radio>
-                        <Radio :label="2" disabled>售卖</Radio>
-                        <Radio :label="3" disabled>免费</Radio>
-                    </RadioGroup>
-                </Form-item>
-                <Form-item label="图片方向" prop="rotate">
-                    <RadioGroup v-model="updateProductForm.rotate">
-                        <Radio :label="1">横向</Radio>
-                        <Radio :label="2">竖向</Radio>
-                        <Radio :label="3">正方</Radio>
-                    </RadioGroup>
-                </Form-item>
-                <Form-item label="图片分辨率">
-                    <Input v-model="updateProductForm.width" placeholder="宽度" style="width: 60px;"></Input>
-                    &nbsp;X&nbsp;
-                    <Input v-model="updateProductForm.height" placeholder="高度" style="width: 60px;"></Input>
-                </Form-item>
-            </Form>
-        </Modal>
-        <!-- E 编辑 -->
-    </div>
+    <Page v-if="isShowPage" :total="count" show-total show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
+
+    <!-- S 编辑 -->
+    <Modal v-model="updateProductModalVisible" title="编辑图片信息" width="920">
+      <div slot="footer">
+        <Button size="large" @click="updateProductModalVisible = false">关闭</Button>
+        <Button type="primary" size="large" @click="updateProduct">保存</Button>
+      </div>
+      <Form :model="updateProductForm" :label-width="80">
+        <Form-item label="图片名称" prop="name">
+          <Input v-model="updateProductForm.name" placeholder="请输入图片名称" @keyup.enter.native="updateProduct"></Input>
+        </Form-item>
+        <Form-item label="图片简介" prop="desc">
+          <Input v-model="updateProductForm.desc" placeholder="请输入图片简介" @keyup.enter.native="updateProduct"></Input>
+        </Form-item>
+        <Form-item label="图片分类" prop="category_ids">
+          <CheckboxGroup v-model="updateProductForm.category_ids">
+            <Checkbox v-for="item in categoryOptions" :key="item.id" :label="item.id">{{ item.name }}</Checkbox>
+          </CheckboxGroup>
+        </Form-item>
+        <Form-item label="图片标签" prop="tag_names">
+          <Input v-model="updateProductForm.tag_names" @keyup.enter.native="updateProduct"></Input>
+          <small>多个标签之间用英文逗号分隔</small>
+        </Form-item>
+        <Form-item label="图片颜色" prop="color_ids">
+          <CheckboxGroup v-model="updateProductForm.color_ids">
+            <Checkbox v-for="item in colorOptions" :key="item.id" :label="item.id">
+              <span class="color-box" :style="setColorStyle(item.color_value)"></span>
+            </Checkbox>
+          </CheckboxGroup>
+        </Form-item>
+        <Form-item label="图片状态" prop="status">
+          <RadioGroup v-model="updateProductForm.status">
+            <Radio :label="1" disabled>待处理</Radio>
+            <Radio :label="2" disabled>待审核</Radio>
+            <Radio :label="3" disabled>不通过</Radio>
+            <Radio :label="4">已上架</Radio>
+            <Radio :label="5">已下架</Radio>
+          </RadioGroup>
+        </Form-item>
+        <Form-item label="不通过原因" prop="desc" v-if="updateProductForm.status == 3">
+          <Input v-model="updateProductForm.desc" placeholder="请输入不通过的原因" @keyup.enter.native="getProductLists"></Input>
+        </Form-item>
+        <Form-item label="图片类型">
+          <RadioGroup v-model="updateProductForm.type">
+            <Radio :label="1" disabled>版权保护</Radio>
+            <Radio :label="2" disabled>售卖</Radio>
+            <Radio :label="3" disabled>免费</Radio>
+          </RadioGroup>
+        </Form-item>
+        <Form-item label="图片方向" prop="rotate">
+          <RadioGroup v-model="updateProductForm.rotate">
+            <Radio :label="1">横向</Radio>
+            <Radio :label="2">竖向</Radio>
+            <Radio :label="3">正方</Radio>
+          </RadioGroup>
+        </Form-item>
+        <Form-item label="图片分辨率">
+          <Input v-model="updateProductForm.width" placeholder="宽度" style="width: 60px;"></Input>
+          &nbsp;X&nbsp;
+          <Input v-model="updateProductForm.height" placeholder="高度" style="width: 60px;"></Input>
+        </Form-item>
+      </Form>
+    </Modal>
+    <!-- E 编辑 -->
+  </div>
 </template>
 
 <script>

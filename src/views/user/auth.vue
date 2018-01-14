@@ -148,7 +148,6 @@ export default {
   methods: {
     // 获取消息列表
     getUserAuthLists() {
-      // if (page) this.searchForm.page = 1;
       if (this.searchForm.a_9_id == "") this.searchForm.a_9_id = null;
       this.$axios
         .get("/admin/third_party", { params: this.searchForm })

@@ -1,75 +1,61 @@
 <template>
-    <div class="upload-wrap">
-        <Row :gutter="16">
-            <Col span="16">
-                <Steps class="upload_steps" :current="step_current">
-                    <Step title="选择用户" content=""></Step>
-                    <Step title="选择专辑" content=""></Step>
-                    <Step title="选择图片并上传" content="上传图片期间，请勿关闭窗口！"></Step>
-                </Steps>
-                <Form class="upload-form" ref="formValidate" :model="formValidate" :label-width="80">
-                    <FormItem label="查询用户" prop="user_id">
-                        <Select v-model="formValidate.search_type" @on-change="$refs['formValidate'].resetFields();" placeholder="请选择查询条件" style="width: 100px;">
-                            <Option value="nickname">用户昵称</Option>
-                            <Option value="account">用户名</Option>
-                            <Option value="mobile_9_num">手机号码</Option>
-                        </Select>
-                        <Select v-model="formValidate.user_id" filterable clearable remote :remote-method="getUserLists" :loading="select_loading" @on-change="getFolderLists" placeholder="输入用户信息" style="width: 180px;">
-                            <Option v-if="formValidate.search_type=='nickname'" v-for="item in user_lists" :key="item.id" :value="item.id">{{ item.nickname }}</Option>
-                            <Option v-if="formValidate.search_type=='account'" v-for="item in user_lists" :key="item.id" :value="item.id">{{ item.account }}</Option>
-                            <Option v-if="formValidate.search_type=='mobile_9_num'" v-for="item in user_lists" :key="item.id" :value="item.id">{{ item.mobile.num }}</Option>
-                        </Select>
-                    </FormItem>
-                    <FormItem label="选择专辑" prop="folder_id" v-show="formValidate.user_id !== ''">
-                        <RadioGroup v-model="formValidate.folder_id" @on-change="getUploadToken">
-                            <Radio v-for="item in folder_lists" :key="item.id" :label="item.id">{{ item.name }}</Radio>
-                        </RadioGroup>
-                    </FormItem>
-                    <FormItem label="图片类型" prop="type" v-show="formValidate.user_id !== ''">
-                        <RadioGroup v-model="formValidate.type" @on-change="getUploadToken">
-                            <Radio :label="3">免费</Radio>
-                            <Radio :label="1">版权</Radio>
-                            <Radio :label="2">售卖</Radio>
-                        </RadioGroup>
-                    </FormItem>
-                    <FormItem label="图片状态" prop="status" v-show="false">
-                        <RadioGroup v-model="formValidate.status" @on-change="getUploadToken">
-                            <Radio :label="1">待处理</Radio>
-                            <Radio :label="2">待审核</Radio>
-                            <Radio :label="3">不通过</Radio>
-                            <Radio :label="4">已上架</Radio>
-                            <Radio :label="5">已下架</Radio>
-                        </RadioGroup>
-                    </FormItem>
-                    <FormItem label="选择图片" v-show="formValidate.user_id !== '' && formValidate.folder_id !== ''">
-                        <Upload
-                            ref="upload"
-                            multiple
-                            type="drag"
-                            :data="{token: upload_token}"
-                            :show-upload-list="true"
-                            :default-file-list="defaultList"
-                            :on-success="handleSuccess"
-                            :on-error="handleError"
-                            :format="['jpg','jpeg','png']"
-                            :max-size="max_size"
-                            :on-format-error="handleFormatError"
-                            :on-exceeded-size="handleMaxSize"
-                            :before-upload="handleBeforeUpload"
-                            action="http://upload.qiniu.com/">
-                            <div style="padding: 20px 0">
-                                <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
-                                <p>点击或将图片拖拽到这里上传</p>
-                            </div>
-                        </Upload>
-                    </FormItem>
-                </Form>
-            </Col>
-            <Col span="8">
-                <h3>用户近期上传的图片</h3>
-            </Col>
-        </Row>
-    </div>
+  <div class="upload-wrap">
+    <Row :gutter="16">
+      <Col span="16">
+      <Steps class="upload_steps" :current="step_current">
+        <Step title="选择用户" content=""></Step>
+        <Step title="选择专辑" content=""></Step>
+        <Step title="选择图片并上传" content="上传图片期间，请勿关闭窗口！"></Step>
+      </Steps>
+      <Form class="upload-form" ref="formValidate" :model="formValidate" :label-width="80">
+        <FormItem label="查询用户" prop="user_id">
+          <Select v-model="formValidate.search_type" @on-change="$refs['formValidate'].resetFields();" placeholder="请选择查询条件" style="width: 100px;">
+            <Option value="nickname">用户昵称</Option>
+            <Option value="account">用户名</Option>
+            <Option value="mobile_9_num">手机号码</Option>
+          </Select>
+          <Select v-model="formValidate.user_id" filterable clearable remote :remote-method="getUserLists" :loading="select_loading" @on-change="getFolderLists" placeholder="输入用户信息" style="width: 180px;">
+            <Option v-if="formValidate.search_type=='nickname'" v-for="item in user_lists" :key="item.id" :value="item.id">{{ item.nickname }}</Option>
+            <Option v-if="formValidate.search_type=='account'" v-for="item in user_lists" :key="item.id" :value="item.id">{{ item.account }}</Option>
+            <Option v-if="formValidate.search_type=='mobile_9_num'" v-for="item in user_lists" :key="item.id" :value="item.id">{{ item.mobile.num }}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="选择专辑" prop="folder_id" v-show="formValidate.user_id !== ''">
+          <RadioGroup v-model="formValidate.folder_id" @on-change="getUploadToken">
+            <Radio v-for="item in folder_lists" :key="item.id" :label="item.id">{{ item.name }}</Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="图片类型" prop="type" v-show="formValidate.user_id !== ''">
+          <RadioGroup v-model="formValidate.type" @on-change="getUploadToken">
+            <Radio :label="3">免费</Radio>
+            <Radio :label="1">版权</Radio>
+            <Radio :label="2">售卖</Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="图片状态" prop="status" v-show="false">
+          <RadioGroup v-model="formValidate.status" @on-change="getUploadToken">
+            <Radio :label="1">待处理</Radio>
+            <Radio :label="2">待审核</Radio>
+            <Radio :label="3">不通过</Radio>
+            <Radio :label="4">已上架</Radio>
+            <Radio :label="5">已下架</Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="选择图片" v-show="formValidate.user_id !== '' && formValidate.folder_id !== ''">
+          <Upload ref="upload" multiple type="drag" :data="{token: upload_token}" :show-upload-list="true" :default-file-list="defaultList" :on-success="handleSuccess" :on-error="handleError" :format="['jpg','jpeg','png']" :max-size="max_size" :on-format-error="handleFormatError" :on-exceeded-size="handleMaxSize" :before-upload="handleBeforeUpload" action="http://upload.qiniu.com/">
+            <div style="padding: 20px 0">
+              <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+              <p>点击或将图片拖拽到这里上传</p>
+            </div>
+          </Upload>
+        </FormItem>
+      </Form>
+      </Col>
+      <Col span="8">
+      <h3>用户近期上传的图片</h3>
+      </Col>
+    </Row>
+  </div>
 </template>
 <script>
 export default {
