@@ -68,7 +68,7 @@ export const appRouter = [
     name: 'component',
     title: '组件',
     component: Main,
-    available: true,
+    available: false,
     children: [
       {
         path: 'text-editer',
@@ -195,7 +195,8 @@ export const appRouter = [
     available: true,
     children: [
       { path: 'add', title: '新建活动', name: 'activity_add', icon: 'plus', available: true, component: resolve => { require(['./views/activity/add.vue'], resolve); } },
-      { path: 'edit/:event_id', title: '编辑活动', name: 'activity_edit', icon: 'plus', available: false, component: resolve => { require(['./views/activity/edit.vue'], resolve); } },
+      { path: 'edit/:event_id', title: '编辑活动', name: 'activity_edit', icon: 'ios-compose', available: false, component: resolve => { require(['./views/activity/edit.vue'], resolve); } },
+      { path: 'publicity/:event_id', title: '编辑活动公示', name: 'activity_publicity', icon: 'ios-compose', available: false, component: resolve => { require(['./views/activity/publicity.vue'], resolve); } },
       { path: 'list', title: '活动列表', name: 'activity_list', icon: 'ios-keypad', available: true, component: resolve => { require(['./views/activity/list.vue'], resolve); } },
       { path: 'link', title: '活动推广', name: 'extend_link', icon: 'paper-airplane', available: true, component: resolve => { require(['./views/activity/link.vue'], resolve); } },
       { path: 'analysis', title: '推广统计', name: 'extend_analysis', icon: 'ios-analytics', available: true, component: resolve => { require(['./views/activity/analysis.vue'], resolve); } }
@@ -233,7 +234,21 @@ export const appRouter = [
     component: Main,
     available: true,
     children: [
-      { path: 'list', title: '消息管理', name: 'message_list', icon: 'android-textsms', available: true, component: resolve => { require(['./views/message/list.vue'], resolve); } }
+      { path: 'list', title: '站内信管理', name: 'message_list', icon: 'ios-email', available: true, component: resolve => { require(['./views/message/list.vue'], resolve); } },
+      { path: 'notice/list', title: '系统公告列表', name: 'notice_list', icon: 'ios-list', available: true, component: resolve => { require(['./views/message/notice_list.vue'], resolve); } },
+      { path: 'notice/add', title: '新增系统公告', name: 'notice_add', icon: 'plus', available: true, component: resolve => { require(['./views/message/notice_add.vue'], resolve); } },
+      { path: 'notice/edit/:notice_id', title: '编辑系统公告', name: 'notice_edit', icon: 'ios-compose', available: false, component: resolve => { require(['./views/message/notice_edit.vue'], resolve); } }
+    ]
+  },
+  {
+    path: '/feedback',
+    icon: 'android-mail',
+    name: 'feedback',
+    title: '反馈管理',
+    component: Main,
+    available: true,
+    children: [
+      { path: 'list', title: '反馈管理', name: 'feedback_list', icon: 'android-mail', available: true, component: resolve => { require(['./views/feedback/list.vue'], resolve); } }
     ]
   },
   {

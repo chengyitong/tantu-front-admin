@@ -42,8 +42,8 @@ export default {
   data() {
     return {
       loginForm: {
-        username: "admin",
-        password: "bingo1208"
+        username: "",
+        password: ""
       },
       rules: {
         username: [{ required: true, message: "账号不能为空", trigger: "blur" }],

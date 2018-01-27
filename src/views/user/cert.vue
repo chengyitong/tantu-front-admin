@@ -29,7 +29,7 @@
       </Button>
     </Form>
 
-    <Table :columns="list_columns" :data="list"></Table>
+    <Table :loading="table_loading" :columns="list_columns" :data="list"></Table>
     <Page v-if="count > 0" :total="count" show-total :page-size-opts="[10,20,30,40]" show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
 
     <!-- 添加用户弹框 -->
@@ -152,6 +152,7 @@ export default {
         ],
         password: [{ required: true, message: "请输入登录密码", trigger: "blur" }]
       },
+      table_loading: false,
       list: [],
       list_columns: [
         {
@@ -456,11 +457,13 @@ export default {
   methods: {
     // 获取用户认证列表
     getUserCertLists() {
+      this.table_loading = true;
       this.$axios
         .get("/admin/user_cert", { params: this.searchForm })
         .then(res => {
           this.list = res.data.list;
           this.count = res.data.count;
+          this.table_loading = false;
         });
     },
     // 翻页

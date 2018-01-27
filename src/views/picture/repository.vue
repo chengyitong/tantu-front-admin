@@ -8,14 +8,6 @@
       <Form-item label="图片名称" prop="name">
         <Input v-model="searchForm.name" placeholder="图片名称" @keyup.enter.native="getProductLists"></Input>
       </Form-item>
-      <Form-item label="分类" prop="category_product_9_category_id">
-        <Select v-model="searchForm.category_product_9_category_id" filterable clearable @on-change="getProductLists" style="width: 141px;">
-          <Option v-for="item in categoryOptions" :key="item.id" :value="item.id">{{ item.name }}</Option>
-        </Select>
-      </Form-item>
-      <Form-item label="简介" prop="desc">
-        <Input v-model="searchForm.desc" placeholder="简介" @keyup.enter.native="getProductLists"></Input>
-      </Form-item>
       <!-- 用户上传图片后：未填写分类、颜色、标签等基本信息时处于待处理状态；填写之后则进入待审核状态；免费图片和版权保护图片不需要审核，直接进入已上架状态;上架之后对用户可见，否则不可见 -->
       <Form-item label="状态" prop="status">
         <Select v-model="searchForm.status" clearable @on-change="getProductLists" style="width: 141px;">
@@ -26,6 +18,20 @@
           <Option :value="5" :key="5">已下架</Option>
         </Select>
       </Form-item>
+      <Form-item label="是否推荐" prop="a_9_is_recommend">
+        <Select v-model="searchForm.a_9_is_recommend" clearable @on-change="getProductLists" style="width: 141px;">
+          <Option :value="0" :key="0">不推荐</Option>
+          <Option :value="1" :key="1">推荐</Option>
+        </Select>
+      </Form-item>
+      <Form-item label="分类" prop="category_product_9_category_id">
+        <Select v-model="searchForm.category_product_9_category_id" filterable clearable @on-change="getProductLists" style="width: 141px;">
+          <Option v-for="item in categoryOptions" :key="item.id" :value="item.id">{{ item.name }}</Option>
+        </Select>
+      </Form-item>
+      <!-- <Form-item label="简介" prop="desc">
+        <Input v-model="searchForm.desc" placeholder="简介" @keyup.enter.native="getProductLists"></Input>
+      </Form-item> -->
       <Form-item label="类型" prop="type">
         <Select v-model="searchForm.type" clearable @on-change="getProductLists" style="width: 141px;">
           <Option :value="1" :key="1">版权</Option>
@@ -50,31 +56,31 @@
       </Button>
     </Form>
 
-    <Form>
-      <Button type="error" v-show="count > 0" @click="deleteProduct">
-        <Icon type="trash-a" size="14"></Icon>&nbsp;批量删除当前页
+    <ButtonGroup style="margin-bottom: 10px;">
+      <Button v-show="count > 0" @click="deleteProduct">批量删除</Button>
+      <Button v-show="searchForm.status == 4 && searchForm.a_9_is_recommend == 0" @click="productRecommends">批量推荐</Button>
+      <Button v-show="searchForm.status == 4 && searchForm.a_9_is_recommend == 1" @click="productCancelRecommends">取消推荐</Button>
+      <Button v-if="searchForm.status == 5" @click="changeStatus(4)">
+        <Icon type="android-upload" size="14"></Icon>&nbsp;批量上架
       </Button>
-      <Button type="primary" v-if="searchForm.status == 5" @click="changeStatus(4)">
-        <Icon type="android-upload" size="14"></Icon>&nbsp;批量上架当前页
+      <Button v-if="searchForm.status == 4" @click="changeStatus(5)">
+        <Icon type="android-download" size="14"></Icon>&nbsp;批量下架
       </Button>
-      <Button type="warning" v-if="searchForm.status == 4" @click="changeStatus(5)">
-        <Icon type="android-download" size="14"></Icon>&nbsp;批量下架当前页
-      </Button>
-    </Form>
+    </ButtonGroup>
 
     <Table :loading="table_loading" :columns="list_columns" :data="list" @on-selection-change="onSelectionChange"></Table>
 
-    <Form style="margin-top: 10px;">
-      <Button type="error" v-show="count > 0" @click="deleteProduct">
-        <Icon type="trash-a" size="14"></Icon>&nbsp;批量删除当前页
+    <ButtonGroup style="margin-top: 10px;">
+      <Button v-show="count > 0" @click="deleteProduct">批量删除</Button>
+      <Button v-show="searchForm.status == 4 && searchForm.a_9_is_recommend == 0" @click="productRecommends">批量推荐</Button>
+      <Button v-show="searchForm.status == 4 && searchForm.a_9_is_recommend == 1" @click="productCancelRecommends">取消推荐</Button>
+      <Button v-if="searchForm.status == 5" @click="changeStatus(4)">
+        <Icon type="android-upload" size="14"></Icon>&nbsp;批量上架
       </Button>
-      <Button type="primary" v-if="searchForm.status == 5" @click="changeStatus(4)">
-        <Icon type="android-upload" size="14"></Icon>&nbsp;批量上架当前页
+      <Button v-if="searchForm.status == 4" @click="changeStatus(5)">
+        <Icon type="android-download" size="14"></Icon>&nbsp;批量下架
       </Button>
-      <Button type="warning" v-if="searchForm.status == 4" @click="changeStatus(5)">
-        <Icon type="android-download" size="14"></Icon>&nbsp;批量下架当前页
-      </Button>
-    </Form>
+    </ButtonGroup>
 
     <Page v-if="isShowPage" :total="count" show-total show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
 
@@ -157,11 +163,12 @@ export default {
         name: null,
         category_product_9_category_id: null,
         desc: null,
-        status: null,
+        status: 4,
         a_9_user_id: null,
         event_product_9_event_id: null,
         type: null,
-        a_9_create_time: []
+        a_9_create_time: [],
+        a_9_is_recommend: 0 // 是否推荐，0不推荐，1推荐
       },
       datePickerOptions: {
         shortcuts: [
@@ -213,9 +220,8 @@ export default {
           align: "center",
           fixed: "left",
           render: (h, params) => {
-            let folder_id = params.row.folder_id;
-            let folder_str =
-              folder_id == 0 ? "【默认专辑】" : "【" + params.row.folder.name + "】";
+            let is_recommend = params.row.is_recommend;
+            let is_recommend_str = is_recommend == 0 ? "【否】" : "【是】";
             return h(
               "span",
               {
@@ -238,10 +244,7 @@ export default {
                   [
                     h("img", {
                       domProps: {
-                        src:
-                          "http://oym9dd6mv.bkt.clouddn.com/" +
-                          params.row.imgkey +
-                          "-slist",
+                        src: params.row.thumbkey + "-h160?_=",
                         alt: params.row.name,
                         title: params.row.name
                       },
@@ -254,11 +257,7 @@ export default {
                       },
                       on: {
                         click: () => {
-                          this.clickImg(
-                            "http://oym9dd6mv.bkt.clouddn.com/" +
-                              params.row.imgkey +
-                              "-topimg"
-                          );
+                          this.clickImg(params.row.thumbkey + "-topimg?_=");
                         }
                       }
                     }),
@@ -270,10 +269,7 @@ export default {
                       [
                         h("img", {
                           domProps: {
-                            src:
-                              "http://oym9dd6mv.bkt.clouddn.com/" +
-                              params.row.imgkey +
-                              "-nlist",
+                            src: params.row.thumbkey + "-nlist?_=",
                             alt: params.row.name,
                             title: params.row.name
                           },
@@ -286,11 +282,7 @@ export default {
                           },
                           on: {
                             click: () => {
-                              this.clickImg(
-                                "http://oym9dd6mv.bkt.clouddn.com/" +
-                                  params.row.imgkey +
-                                  "-topimg"
-                              );
+                              this.clickImg(params.row.thumbkey + "-topimg?_=");
                             }
                           }
                         })
@@ -306,7 +298,7 @@ export default {
                       margin: "0 auto 3px auto"
                     }
                   },
-                  "相册" + folder_str
+                  "是否推荐" + is_recommend_str
                 ),
                 h(
                   "a",
@@ -332,7 +324,10 @@ export default {
           width: 200,
           sortable: true,
           render: (h, params) => {
-            return h("span", params.row.name == null ? "" : params.row.name);
+            return h("span", [
+              h("p", params.row.name == null ? "" : params.row.name),
+              h("p", "图片ID：" + params.row.id)
+            ]);
           }
         },
         {
@@ -438,7 +433,7 @@ export default {
         {
           title: "图片类型",
           key: "type",
-          width: 150,
+          width: 120,
           align: "center",
           sortable: true,
           render: (h, params) => {
@@ -475,7 +470,7 @@ export default {
         {
           title: "图片方向",
           key: "rotate",
-          width: 150,
+          width: 120,
           align: "center",
           sortable: true,
           render: (h, params) => {
@@ -483,6 +478,10 @@ export default {
             let _str = "";
             let _color = "";
             switch (rotate) {
+              case 0:
+                _str = "横向";
+                _color = "yellow";
+                break;
               case 1:
                 _str = "横向";
                 _color = "yellow";
@@ -589,7 +588,7 @@ export default {
           key: "events",
           width: 110,
           render: (h, params) => {
-            if (params.row.events == "") {
+            if (params.row.events.length == 0) {
               return h("span", "未参加活动");
             }
             return h(
@@ -619,8 +618,8 @@ export default {
                     slot: "content"
                   },
                   [
-                    h("p", "活动ID：" + params.row.events.id),
-                    h("p", "活动名称：" + params.row.events.name)
+                    h("p", "活动ID：" + params.row.events[0].id),
+                    h("p", "活动名称：" + params.row.events[0].subject)
                   ]
                 )
               ]
@@ -736,34 +735,19 @@ export default {
     },
     // 获取图片列表
     getProductLists() {
-      //   this.$Spin.show({
-      //     render: h => {
-      //       return h("div", [
-      //         h("Icon", {
-      //           class: "demo-spin-icon-load",
-      //           props: {
-      //             type: "load-c",
-      //             size: 18
-      //           }
-      //         }),
-      //         h("div", "Loading")
-      //       ]);
-      //     }
-      //   });
       this.table_loading = true;
-      this.$axios
-        .get("/admin/product", { params: this.searchForm })
-        .then(res => {
-          this.table_loading = false;
-          this.$Spin.hide();
-          this.list = res.data.list;
-          this.count = res.data.count;
-          if (res.data.count > 0) {
-            this.isShowPage = true;
-          } else {
-            this.isShowPage = false;
-          }
-        });
+      let params = this.$util.deleteEmptyObj(this.searchForm);
+      this.$axios.get("/admin/product", { params }).then(res => {
+        this.table_loading = false;
+        this.$Spin.hide();
+        this.list = res.data.list;
+        this.count = res.data.count;
+        if (res.data.count > 0) {
+          this.isShowPage = true;
+        } else {
+          this.isShowPage = false;
+        }
+      });
     },
     // 翻页
     handlePageChange(cur_page) {
@@ -859,6 +843,34 @@ export default {
         .then(res => {
           this.getProductLists();
           this.$Message.success("删除成功");
+        });
+    },
+    // 批量推荐
+    productRecommends() {
+      if (this.product_ids.length == 0) {
+        this.$Message.warning("请选择需要推荐的图片");
+        return false;
+      }
+      this.$axios
+        .get("/admin/product/recommends", { params: { ids: this.product_ids } })
+        .then(res => {
+          this.getProductLists();
+          this.$Message.success("推荐成功");
+        });
+    },
+    // 批量取消推荐
+    productCancelRecommends() {
+      if (this.product_ids.length == 0) {
+        this.$Message.warning("请选择需要取消推荐的图片");
+        return false;
+      }
+      this.$axios
+        .get("/admin/product/cancel_recommends", {
+          params: { ids: this.product_ids }
+        })
+        .then(res => {
+          this.getProductLists();
+          this.$Message.success("取消推荐成功");
         });
     },
     // 批量上下架

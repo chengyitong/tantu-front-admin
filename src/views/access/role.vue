@@ -1,10 +1,8 @@
 <template>
   <div>
-    <Form>
-      <Button type="success" @click="addRoleModalVisible = true">
-        <Icon type="plus" size="14"></Icon>&nbsp;新增
-      </Button>
-    </Form>
+    <Button type="success" @click="addRoleModalVisible = true" style="margin-bottom: 10px;">
+      <Icon type="plus" size="14"></Icon>&nbsp;新增
+    </Button>
 
     <Table :columns="list_columns" :data="list"></Table>
     <Page v-if="isShowPage" :total="count" show-total :page-size-opts="[10,20,30,40]" show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
@@ -16,11 +14,12 @@
         <Button type="primary" size="large" :loading="addRoleFormLoading" @click="addRole('addRoleForm')">确定</Button>
       </div>
       <Form ref="addRoleForm" :model="addRoleForm" :rules="addRoleFormRules" label-position="right" :label-width="80">
-        <Form-item label="角色名称" prop="name">
-          <Input v-model="addRoleForm.name" placeholder="请输入角色名称"></Input>
+        <Form-item label="角色名称" prop="title">
+          <Input v-model="addRoleForm.title" placeholder="请输入角色名称"></Input>
         </Form-item>
-        <Form-item label="角色权限" prop="menu_ids">
-          <Tree :data="baseData" show-checkbox></Tree>
+        <Form-item label="角色权限" prop="rules">
+          一级菜单
+          <!-- <Tree :data="baseData" show-checkbox></Tree> -->
         </Form-item>
       </Form>
     </Modal>
@@ -31,11 +30,18 @@
         <Button type="primary" size="large" :loading="updateRoleFormLoading" @click="updateRole('updateRoleForm')">确定</Button>
       </div>
       <Form ref="updateRoleForm" :model="updateRoleForm" :rules="addRoleFormRules" label-position="right" :label-width="80">
-        <Form-item label="角色名称" prop="name">
-          <Input v-model="updateRoleForm.name" placeholder="请输入角色名称"></Input>
+        <Form-item label="角色名称" prop="title">
+          <Input v-model="updateRoleForm.title" placeholder="请输入角色名称"></Input>
         </Form-item>
-        <Form-item label="角色权限" prop="menu_ids">
-          <Tree :data="baseData" show-checkbox></Tree>
+        <Form-item label="角色权限" prop="rules">
+          <Input v-model="updateRoleForm.rules" placeholder="请输入角色权限，多个权限用英文逗号分隔"></Input>
+          <!-- <Tree :data="baseData" show-checkbox></Tree> -->
+        </Form-item>
+        <Form-item label="状态" prop="status">
+          <RadioGroup v-model="updateRoleForm.status">
+            <Radio :label="0">禁用</Radio>
+            <Radio :label="1">正常</Radio>
+          </RadioGroup>
         </Form-item>
       </Form>
     </Modal>
@@ -49,12 +55,12 @@ export default {
       addRoleFormLoading: false,
       addRoleModalVisible: false,
       addRoleForm: {
-        name: null,
-        menu_ids: null
+        title: null,
+        rules: "0" // 用户组拥有的规则id，多个规则","隔开，
       },
       addRoleFormRules: {
-        name: [{ required: true, message: "请输入角色名称", trigger: "change" }],
-        menu_ids: [{ required: true, message: "请输入选择角色权限", trigger: "blur" }]
+        title: [{ required: true, message: "请输入角色名称", trigger: "blur" }],
+        rules: [{ required: true, message: "请输入选择角色权限", trigger: "blur" }]
       },
       list: [],
       list_columns: [
@@ -65,14 +71,34 @@ export default {
         },
         {
           title: "角色名称",
-          key: "name",
+          key: "title",
           width: 180,
-          sortable: true
+          render: (h, params) => {
+            return h("span", params.row.title + "（ID：" + params.row.id + "）");
+          }
         },
         {
           title: "角色权限",
-          key: "menu_ids",
+          key: "rules",
           sortable: true
+        },
+        {
+          title: "状态",
+          key: "status",
+          render: (h, params) => {
+            let status_arr = ["禁用", "正常"];
+            let type_arr = ["error", "success"];
+            return h(
+              "Button",
+              {
+                props: {
+                  type: type_arr[params.row.status],
+                  size: "small"
+                }
+              },
+              status_arr[params.row.status]
+            );
+          }
         },
         {
           title: "操作",
@@ -171,8 +197,9 @@ export default {
       isShowPage: false,
       updateRoleForm: {
         id: null,
-        name: null,
-        menu_ids: null
+        title: null,
+        rules: null,
+        status: null
       },
       updateRoleModalVisible: false,
       updateRoleFormLoading: false
@@ -180,43 +207,24 @@ export default {
   },
   mounted: function() {
     this.$nextTick(function() {
-      this.getRoleLists();
+      this.getAdminGroup();
     });
   },
   methods: {
-    getRoleLists() {
-      this.list = [
-        {
-          id: 1,
-          name: "超级管理员",
-          menu_ids: [1, 2, 3]
-        },
-        {
-          id: 2,
-          name: "普通管理员",
-          menu_ids: [2, 3]
-        },
-        {
-          id: 3,
-          name: "运维",
-          menu_ids: [1, 2]
-        },
-        {
-          id: 4,
-          name: "客服",
-          menu_ids: [2]
-        }
-      ];
+    getAdminGroup() {
+      this.$axios.get("/admin/AdminGroup").then(res => {
+        this.list = res.data.list;
+      });
     },
     // 翻页
     handlePageChange(cur_page) {
       this.searchForm.page = cur_page;
-      this.getRoleLists();
+      this.getAdminGroup();
     },
     // 改变每页大小
     handlePageSizeChange(page_size) {
       this.searchForm.page_size = page_size;
-      this.getRoleLists();
+      this.getAdminGroup();
     },
     // 取消新增
     addRoleCancel(name) {
@@ -224,13 +232,27 @@ export default {
       this.$refs[name].resetFields();
     },
     // 新增角色
-    addRole(addRoleForm) {},
+    addRole(name) {
+      this.$refs[name].validate(valid => {
+        if (valid) {
+          this.addRoleFormLoading = true;
+          this.$axios.post("/admin/AdminGroup", this.addRoleForm).then(res => {
+            this.addRoleFormLoading = false;
+            this.$Message.success("添加成功");
+            this.getAdminGroup();
+            this.addRoleModalVisible = false;
+            this.$refs[name].resetFields();
+          });
+        }
+      });
+    },
     // 点击“编辑”按钮
     updateRoleModal(row) {
       let options = {
         id: row.id,
-        name: row.name,
-        menu_ids: row.menu_ids
+        title: row.title,
+        rules: row.rules,
+        status: row.status
       };
       this.updateRoleForm = options;
       this.updateRoleModalVisible = true;
@@ -246,11 +268,13 @@ export default {
         if (valid) {
           this.updateRoleFormLoading = true;
           this.$axios
-            .put("/admin/plinks/", this.updateRoleForm)
+            .put(
+              "/admin/AdminGroup/" + this.updateRoleForm.id,
+              this.updateRoleForm
+            )
             .then(res => {
-              console.log(res);
               if (res.code == 0) {
-                this.getRoleLists();
+                this.getAdminGroup();
                 this.$Message.success("更新成功！");
                 this.updateRoleFormLoading = false;
                 this.updateRoleModalVisible = false;
@@ -259,8 +283,6 @@ export default {
             .catch(error => {
               this.updateRoleFormLoading = false;
             });
-        } else {
-          this.updateRoleFormLoading = false;
         }
       });
     }

@@ -34,7 +34,7 @@
               <Icon type="locked" :size="20"></Icon>
             </Tooltip>
           </div>
-          <div v-if="true" @click="showMessage" class="message-con">
+          <div v-if="false" @click="showMessage" class="message-con">
             <Tooltip :content="messageCount > 0 ? '有' + messageCount + '条未读消息' : '无未读消息'" placement="bottom">
               <Badge :count="messageCount" dot>
                 <Icon type="ios-bell" :size="22"></Icon>

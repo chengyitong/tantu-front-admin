@@ -8,24 +8,24 @@
         <Step title="选择图片并上传" content="上传图片期间，请勿关闭窗口！"></Step>
       </Steps>
       <Form class="upload-form" ref="formValidate" :model="formValidate" :label-width="80">
-        <FormItem label="查询用户" prop="user_id">
+        <FormItem label="查询用户" prop="a_9_user_id">
           <Select v-model="formValidate.search_type" @on-change="$refs['formValidate'].resetFields();" placeholder="请选择查询条件" style="width: 100px;">
-            <Option value="nickname">用户昵称</Option>
-            <Option value="account">用户名</Option>
+            <Option value="a_9_nickname">用户昵称</Option>
+            <Option value="a_9_account">用户名</Option>
             <Option value="mobile_9_num">手机号码</Option>
           </Select>
-          <Select v-model="formValidate.user_id" filterable clearable remote :remote-method="getUserLists" :loading="select_loading" @on-change="getFolderLists" placeholder="输入用户信息" style="width: 180px;">
-            <Option v-if="formValidate.search_type=='nickname'" v-for="item in user_lists" :key="item.id" :value="item.id">{{ item.nickname }}</Option>
-            <Option v-if="formValidate.search_type=='account'" v-for="item in user_lists" :key="item.id" :value="item.id">{{ item.account }}</Option>
+          <Select v-model="formValidate.a_9_user_id" filterable clearable remote :remote-method="getUserLists" :loading="select_loading" @on-change="getFolderLists" placeholder="输入用户信息" style="width: 180px;">
+            <Option v-if="formValidate.search_type=='a_9_nickname'" v-for="item in user_lists" :key="item.id" :value="item.id">{{ item.nickname }}</Option>
+            <Option v-if="formValidate.search_type=='a_9_account'" v-for="item in user_lists" :key="item.id" :value="item.id">{{ item.account }}</Option>
             <Option v-if="formValidate.search_type=='mobile_9_num'" v-for="item in user_lists" :key="item.id" :value="item.id">{{ item.mobile.num }}</Option>
           </Select>
         </FormItem>
-        <FormItem label="选择专辑" prop="folder_id" v-show="formValidate.user_id !== ''">
+        <FormItem label="选择专辑" prop="folder_id" v-show="formValidate.a_9_user_id !== ''">
           <RadioGroup v-model="formValidate.folder_id" @on-change="getUploadToken">
             <Radio v-for="item in folder_lists" :key="item.id" :label="item.id">{{ item.name }}</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="图片类型" prop="type" v-show="formValidate.user_id !== ''">
+        <FormItem label="图片类型" prop="type" v-show="formValidate.a_9_user_id !== '' && formValidate.folder_id !== ''">
           <RadioGroup v-model="formValidate.type" @on-change="getUploadToken">
             <Radio :label="3">免费</Radio>
             <Radio :label="1">版权</Radio>
@@ -41,7 +41,7 @@
             <Radio :label="5">已下架</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="选择图片" v-show="formValidate.user_id !== '' && formValidate.folder_id !== ''">
+        <FormItem label="选择图片" v-show="formValidate.a_9_user_id !== '' && formValidate.folder_id !== ''">
           <Upload ref="upload" multiple type="drag" :data="{token: upload_token}" :show-upload-list="true" :default-file-list="defaultList" :on-success="handleSuccess" :on-error="handleError" :format="['jpg','jpeg','png']" :max-size="max_size" :on-format-error="handleFormatError" :on-exceeded-size="handleMaxSize" :before-upload="handleBeforeUpload" action="http://upload.qiniu.com/">
             <div style="padding: 20px 0">
               <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
@@ -70,8 +70,8 @@ export default {
       user_lists: [],
       folder_lists: [],
       formValidate: {
-        search_type: "nickname",
-        user_id: "",
+        search_type: "a_9_nickname",
+        a_9_user_id: "",
         folder_id: "",
         type: 3,
         status: 1
@@ -100,14 +100,14 @@ export default {
         this.select_loading = true;
         let search_type = this.formValidate.search_type;
         let params = {};
-        if (search_type == "nickname") {
+        if (search_type == "a_9_nickname") {
           params = {
-            nickname: query
+            a_9_nickname: query
           };
         }
-        if (search_type == "account") {
+        if (search_type == "a_9_account") {
           params = {
-            account: query
+            a_9_account: query
           };
         }
         if (search_type == "mobile_9_num") {
@@ -125,13 +125,16 @@ export default {
     },
     // 根据用户ID获取用户专辑列表
     getFolderLists() {
-      let user_id = this.formValidate.user_id;
+      let user_id = this.formValidate.a_9_user_id;
       this.folder_lists = [];
       if (!user_id) return false;
       this.$axios.get("/admin/folder", { params: { user_id } }).then(res => {
         this.folder_lists = res.data.list;
-        this.folder_lists.splice(0, 0, { id: 0, name: "默认专辑" });
-        this.formValidate.folder_id = 0;
+        this.folder_lists.forEach(item => {
+          if (item.is_default == 1) {
+            this.formValidate.folder_id = item.id;
+          }
+        });
         this.getUploadToken();
       });
     },

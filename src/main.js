@@ -76,6 +76,83 @@ router.afterEach(() => {
   iView.LoadingBar.finish();
   window.scrollTo(0, 0);
 });
+
+// axios 配置
+const ajaxUrl = env === 'development' ? '/api' : env === 'production' ? '' : '/mock';
+// 创建axios实例
+const service = axios.create({
+  baseURL: ajaxUrl, // api的base_url，使用代理模式时需要注释掉该行
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    'X-CSRF-TOKEN': Cookies.get('__token__')
+  },
+  timeout: 30000 // 请求超时时间
+});
+// request 拦截器
+service.interceptors.request.use((config) => {
+  iView.LoadingBar.start();
+  config.withCredentials = true; // 设置发送post请求自动set cookie
+  // POST 传参序列化
+  if (config.method === 'post') {
+    config.data = qs.stringify(config.data);
+  }
+  // PUT 传参序列化
+  if (config.method === 'put') {
+    config.data = qs.stringify(config.data);
+  }
+  return config;
+}, (error) => {
+  iView.Message.error(error);
+  return Promise.reject(error);
+});
+// response 拦截器
+service.interceptors.response.use((res) => {
+  iView.LoadingBar.finish();
+  if (res.data.code !== 0) {
+    // 用户未登录
+    if (res.data.code === 1) {
+      Cookies.remove('tt_a_un');
+      Cookies.remove('_p');
+      Cookies.remove('hasGreet');
+      Cookies.remove('access');
+      Cookies.remove('locking');
+      Cookies.remove('tt_a_login_time');
+      store.commit('clearOpenedSubmenu');
+      // 回复默认样式
+      let themeLink = document.querySelector('link[name="theme"]');
+      themeLink.setAttribute('href', '');
+      // 清空打开的页面等数据，但是保存主题数据
+      let theme = '';
+      if (localStorage.theme) {
+        theme = localStorage.theme;
+      }
+      localStorage.clear();
+      if (theme) {
+        localStorage.theme = theme;
+      }
+      router.push({
+        name: 'login'
+      });
+    } else {
+      iView.Message.error(res.data.msg);
+      return Promise.reject(res);
+    }
+  }
+  return res.data;
+}, (error) => {
+  let status = error.response.status;
+  if (status == 401) {
+    router.push({ path: '/401' });
+  } else if (status == 404) {
+    router.push({ path: '/404' });
+  } else {
+    iView.Message.error(error.message);
+  }
+
+  return Promise.reject(error.message);
+});
+Vue.prototype.$axios = service;
+
 // 状态管理
 const store = new Vuex.Store({
   state: {
@@ -218,74 +295,8 @@ const store = new Vuex.Store({
     }
   },
   actions: {
-
   }
 });
-
-// axios 配置
-const ajaxUrl = env === 'development' ? '/api' : env === 'production' ? '' : '/mock';
-// 创建axios实例
-const service = axios.create({
-  baseURL: ajaxUrl, // api的base_url，使用代理模式时需要注释掉该行
-  headers: {
-    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-    '__token__': Cookies.get('__token__')
-  },
-  timeout: 30000 // 请求超时时间
-});
-// request 拦截器
-service.interceptors.request.use((config) => {
-  iView.LoadingBar.start();
-  config.withCredentials = true; // 设置发送post请求自动set cookie
-  // POST 传参序列化
-  if (config.method === 'post') {
-    config.data = qs.stringify(config.data);
-  }
-  return config;
-}, (error) => {
-  iView.Message.error(error);
-  return Promise.reject(error);
-});
-// response 拦截器
-service.interceptors.response.use((res) => {
-  iView.LoadingBar.finish();
-  if (res.data.code !== 0) {
-    // 用户未登录
-    if (res.data.code === 1) {
-      Cookies.remove('tt_a_un');
-      Cookies.remove('_p');
-      Cookies.remove('hasGreet');
-      Cookies.remove('access');
-      Cookies.remove('locking');
-      Cookies.remove('tt_a_login_time');
-      store.commit('clearOpenedSubmenu');
-      // 回复默认样式
-      let themeLink = document.querySelector('link[name="theme"]');
-      themeLink.setAttribute('href', '');
-      // 清空打开的页面等数据，但是保存主题数据
-      let theme = '';
-      if (localStorage.theme) {
-        theme = localStorage.theme;
-      }
-      localStorage.clear();
-      if (theme) {
-        localStorage.theme = theme;
-      }
-      router.push({
-        name: 'login'
-      });
-    } else {
-      iView.Message.error(res.data.msg);
-      return Promise.reject(res);
-    }
-  }
-  return res.data;
-}, (error) => {
-  iView.Message.error(error.message);
-  return Promise.reject(error.message);
-});
-
-Vue.prototype.$axios = service;
 
 new Vue({
   el: '#app',
@@ -310,6 +321,6 @@ new Vue({
     this.$store.commit('setTagsList', tagsList);
     this.$axios.get('/safe/token').then(res => {
       Cookies.set('__token__', res.data);
-    })
+    });
   }
 });

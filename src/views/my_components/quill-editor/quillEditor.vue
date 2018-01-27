@@ -1,29 +1,30 @@
 <template>
   <div>
-    <div class="quill-editor-example">
+    <div class="quill-editor-example" id="quill_editor">
       <!-- quill-editor -->
-      <quill-editor ref="myTextEditor" v-model="content" :options="editorOption" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" @ready="onEditorReady($event)">
-      </quill-editor>
-      <div class="quill-code">
-        <code class="hljs" v-html="contentCode"></code>
-      </div>
+      <!-- <quill-editor ref="myQuillEditor" :content="content" @change="onEditorChange($event)" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" @ready="onEditorReady($event)"></quill-editor> -->
+      <quill-editor ref="myQuillEditor" :content="content" :options="editorOption" @change="onEditorChange($event)" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" @ready="onEditorReady($event)"></quill-editor>
+      <Upload ref="upload" :action="'http://' + upload_domain" :data="upload_data" :before-upload="beforeUpload" :on-success="uploadSuccess" style="display: none;">
+        <Button type="ghost" icon="ios-cloud-upload-outline" id="imgInput">Upload files</Button>
+      </Upload>
     </div>
   </div>
 </template>
 
 <script>
-import hljs from "highlight.js";
-import "quill/dist/quill.core.css";
+// import hljs from "highlight.js";
+// import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
-import "quill/dist/quill.bubble.css";
-import { quillRedefine } from "vue-quill-editor-upload";
-import { quillEditor } from "vue-quill-editor";
+// import "quill/dist/quill.bubble.css";
+// import { quillRedefine } from "vue-quill-editor-upload";
+import { Quill, quillEditor } from "vue-quill-editor";
+import md5 from "md5";
 export default {
   data() {
     return {
-      name: "01-example",
-      content: `<h2 class="ql-align-center"><span class="ql-font-serif">Text content loading..</span></h2>`,
       editorOption: {
+        theme: "snow",
+        boundary: document.body,
         modules: {
           toolbar: [
             ["bold", "italic", "underline", "strike"],
@@ -35,105 +36,158 @@ export default {
             [{ direction: "rtl" }],
             [{ size: ["small", false, "large", "huge"] }],
             [{ header: [1, 2, 3, 4, 5, 6, false] }],
-            [{ font: [] }],
             [{ color: [] }, { background: [] }],
+            [{ font: [] }],
             [{ align: [] }],
             ["clean"],
-            ["link", "image", "video"]
-          ],
-          syntax: {
-            highlight: text => hljs.highlightAuto(text).value
-          }
-        }
-      }
+            // ["link", "image", "video"]
+            ["link", "image"]
+          ]
+        },
+        placeholder: "请在这里输入 ...",
+        readOnly: false
+      },
+      upload_domain: "",
+      upload_data: {
+        token: "",
+        key: ""
+      } // 图片上传七牛时的参数
     };
   },
   components: {
-    quillEditor,
-    quillRedefine
+    quillEditor
   },
-  methods: {
-    onEditorBlur(editor) {
-      console.log("editor blur!", editor);
-    },
-    onEditorFocus(editor) {
-      console.log("editor focus!", editor);
-    },
-    onEditorReady(editor) {
-      console.log("editor ready!", editor);
-    }
-  },
+  props: ["content"],
   computed: {
     editor() {
-      return this.$refs.myTextEditor.quill;
-    },
-    contentCode() {
-      return hljs.highlightAuto(this.content).value;
+      return this.$refs.myQuillEditor.quill;
     }
   },
-  mounted() {
-    console.log("this is my editor", this.editor);
-    setTimeout(() => {
-      this.content = `<h1 class="ql-align-center">
-                          <span class="ql-font-serif" style="background-color: rgb(240, 102, 102); color: rgb(255, 255, 255);"> I am Example 1! </span>
-                        </h1>
-                        <p><br></p>
-                        <p><span class="ql-font-serif">W Can a man still be brave if he's afraid? That is the only time a man can be brave. </span></p>
-                        <p><br></p>
-                        <p><strong class="ql-font-serif ql-size-large">Courage and folly is </strong><strong class="ql-font-serif ql-size-large" style="color: rgb(230, 0, 0);">always</strong><strong class="ql-font-serif ql-size-large"> just a fine line.</strong></p>
-                        <p><br></p>
-                        <p><u class="ql-font-serif">There is only one God, and his name is Death. And there is only one thing we say to Death: "Not today."</u></p>
-                        <p><br></p>
-                        <p><em class="ql-font-serif">Fear cuts deeper than swords.</em></p>
-                        <p><br></p>
-                        <pre class="ql-syntax" spellcheck="false">const a = 10;<br>const editorOption = { highlight: text => hljs.highlightAuto(text).value };</pre>
-                        <p><br></p>
-                        <p><span class="ql-font-serif">Every flight begins with a fall.</span></p>
-                        <p><br></p>
-                        <p><a href="https://surmon.me/" target="_blank" class="ql-font-serif ql-size-small" style="color: rgb(230, 0, 0);"><u>A ruler who hides behind paid executioners soon forgets what death is. </u></a></p>
-                        <p><br></p>
-                        <iframe class="ql-video ql-align-center" frameborder="0" allowfullscreen="true" src="https://www.youtube.com/embed/QHH3iSeDBLo?showinfo=0" height="238" width="560"></iframe>
-                        <p><br></p>
-                        <p><span class="ql-font-serif">Hear my words, and bear witness to my vow. Night gathers, and now my watch begins. It shall not end until my death. I shall take no wife, hold no lands, father no children. I shall wear no crowns and win no glory. I shall live and die at my post. I am the sword in the darkness. I am the watcher on the walls. I am the fire that burns against the cold, the light that brings the dawn, the horn that wakes the sleepers, the shield that guards the realms of men. I pledge my life and honor to the Night’s Watch, for this night and all the nights to come.</span></p>
-                        <p><br></p>
-                        <p><span class="ql-font-serif">We are born to suffer, to suffer can make us strong.</span></p>
-                        <p><br></p>
-                        <p><span class="ql-font-serif">The things we love destroy us every time.</span></p>
-                        `;
-    }, 1300);
-  },
-  created() {
-    this.editorOption = quillRedefine({
-      // 图片上传的设置
-      uploadConfig: {
-        action: "//qiniu.upload.com", // 必填参数 图片上传地址
-        // 必选参数  res是一个函数，函数接收的response为上传成功时服务器返回的数据
-        // 你必须把返回的数据中所包含的图片地址 return 回去
-        res: respnse => {
-          return respnse.info;
-        },
-        name: "img" // 图片上传参数名
-      }
+  mounted: function() {
+    this.$nextTick(function() {
+      // 为图片ICON绑定事件  getModule 为编辑器的内部属性
+      this.$refs.myQuillEditor.quill
+        .getModule("toolbar")
+        .addHandler("image", this.imgHandler);
     });
-    console.log(this.editorOption);
+  },
+  methods: {
+    // 获取上传七牛token
+    getFreeUploadToken(type, file) {
+      return this.$axios
+        .post("/admin/upload/token/free", { type })
+        .then(res => {
+          this.upload_domain = res.data.upload_domain;
+          let key = res.data.keyPrefix;
+          if (file != undefined) {
+            let ext = this.$util.getFileExtension(file.name);
+            key = key + md5(file.name).substring(26, 32) + "." + ext;
+          }
+
+          this.upload_data = {
+            token: res.data.token,
+            key
+          };
+          this.$Spin.show({
+            render: h => {
+              return h("div", [
+                h("Icon", {
+                  class: "demo-spin-icon-load",
+                  props: {
+                    type: "load-c",
+                    size: 18
+                  }
+                }),
+                h("div", "正在上传")
+              ]);
+            }
+          });
+        });
+    },
+    // 点击图片ICON触发事件
+    imgHandler(state) {
+      this.addRange = this.$refs.myQuillEditor.quill.getSelection();
+      if (state) {
+        let fileInput = document.getElementById("imgInput");
+        fileInput.click(); // 加一个触发事件
+      }
+    },
+    beforeUpload(file) {
+      return this.getFreeUploadToken("editor", file);
+    },
+    // 图片上传成功回调 插入到编辑器中
+    uploadSuccess(response, file, fileList) {
+      this.$axios
+        .post(response.hReturnUrl, { upload_ret: JSON.stringify(response) })
+        .then(res => {
+          let vm = this;
+          let full_url = res.data.full_url;
+          if (full_url != null && full_url.length > 0) {
+            // 将文件上传后的URL地址插入到编辑器文本中
+            let value = full_url;
+            vm.addRange = vm.$refs.myQuillEditor.quill.getSelection();
+            value = value.indexOf("http") !== -1 ? value : "http:" + value;
+            vm.$refs.myQuillEditor.quill.insertEmbed(
+              vm.addRange !== null ? vm.addRange.index : 0,
+              "image",
+              value,
+              Quill.sources.USER
+            ); // 调用编辑器的 insertEmbed 方法，插入URL
+          } else {
+            this.$Message.warning("插入失败");
+          }
+          this.$Spin.hide();
+          this.$refs["upload"].clearFiles(); // 插入成功后清除input的内容
+        });
+    },
+    onEditorBlur(editor) {
+      // console.log("editor blur!", editor);
+      this.$emit("onEditorBlur", editor.container.firstChild.innerHTML);
+    },
+    onEditorFocus(editor) {
+      // console.log("editor focus!", editor);
+      this.$emit("onEditorBlur", editor.container.firstChild.innerHTML);
+    },
+    onEditorChange(editor) {
+      // console.log(editor.html);
+      this.$emit("onEditorChange", editor.html);
+    },
+    onEditorReady(editor) {
+      // document.querySelector(".ql-preview").innerHTML =
+      //   '<i class="ivu-icon ivu-icon-ios-eye" style="font-size: 20px; vertical-align: top !important;"></i>';
+      // console.log("editor ready!", editor);
+      this.$emit("onEditorBlur", editor.container.firstChild.innerHTML);
+    }
   }
 };
 </script>
 
-<style lang="less" scoped>
-.quill-code {
-  border: none;
-  height: auto;
-  > code {
-    width: 100%;
-    margin: 0;
-    padding: 1rem;
-    border: 1px solid #ccc;
-    border-top: none;
-    border-radius: 0;
-    height: 10rem;
-    overflow-y: auto;
-    resize: vertical;
+<style lang="less">
+.ql-toolbar.ql-snow {
+  padding: 4px !important;
+}
+.ql-container {
+  font-size: 14px;
+}
+.ql-editor {
+  min-height: 400px;
+  font-size: 14px;
+}
+.ql-snow .ql-picker-label {
+  line-height: 24px;
+  vertical-align: top;
+}
+.ql-full-screen {
+  border: 1px solid #ddd;
+}
+.ql-indent-loop(@n, @i:1) when (@i <= @n) {
+  .ql-indent-loop(@n, (@i+1));
+  .ql-indent-@{i}:not(.ql-direction-rtl) {
+    padding-left: 0 !important;
+    text-indent: @i * 2em;
   }
+}
+.ql-editor {
+  .ql-indent-loop(9, 1);
 }
 </style>

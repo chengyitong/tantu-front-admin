@@ -1,86 +1,92 @@
 <template>
-    <div>
-        <img-view v-if="showImg" @click="showImg = false;" :imgSrc="imgSrc"></img-view>
-        <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="50" inline>
-            <Form-item label="类型">
-                <Select v-model="searchForm.type" @on-change="getBannerLists" style="width: 180px">
-                    <Option :value="1" :key="1">首页Banner</Option>
-                    <Option :value="2" :key="2">个人中心默认Banner</Option>
-                </Select>
-            </Form-item>
-            <Button type="primary" @click="getBannerLists">
-                <Icon type="search" size="14"></Icon>&nbsp;查询
-            </Button>
-            <Button type="success" @click="addBannerModalVisible = true">
-                <Icon type="plus" size="14"></Icon>&nbsp;添加Banner
-            </Button>
-        </Form>
+  <div>
+    <img-view v-if="showImg" @click="showImg = false;" :imgSrc="imgSrc"></img-view>
+    <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="50" inline>
+      <Form-item label="类型">
+        <Select v-model="searchForm.type" @on-change="getBannerLists" style="width: 180px">
+          <Option :value="1" :key="1">首页Banner</Option>
+          <Option :value="2" :key="2">个人中心默认Banner</Option>
+        </Select>
+      </Form-item>
+      <Button type="primary" @click="getBannerLists">
+        <Icon type="search" size="14"></Icon>&nbsp;查询
+      </Button>
+      <Button type="success" @click="addBannerDialog">
+        <Icon type="plus" size="14"></Icon>&nbsp;添加Banner
+      </Button>
+    </Form>
 
-        <Table :columns="list_columns" :data="list"></Table>
+    <Table :columns="list_columns" :data="list"></Table>
 
-        <Page v-if="isShowPage" :total="count" show-total show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
+    <Page v-if="isShowPage" :total="count" show-total show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
 
+    <!-- 添加Banner弹框 -->
+    <Modal v-model="addBannerModalVisible" title="添加Banner" width="800">
+      <div slot="footer">
+        <Button type="text" size="large" @click="addBannerCancel('addBannerForm')">取消</Button>
+        <Button type="primary" size="large" :loading="addBannerFormLoading" @click="addBanner('addBannerForm')">确定</Button>
+      </div>
+      <Form ref="addBannerForm" :model="addBannerForm" :rules="addBannerFormRules" label-position="right" :label-width="100">
+        <Form-item label="类型" prop="type">
+          <Select v-model="addBannerForm.type" style="width: 180px">
+            <Option :value="1" :key="1">首页Banner</Option>
+            <Option :value="2" :key="2">个人中心默认Banner</Option>
+          </Select>
+        </Form-item>
+        <Form-item label="Banner图" prop="img_url">
+          <Input v-model="addBannerForm.img_url" disabled placeholder="请上传Banner图片" size="large" @keyup.enter.native="addBanner('addBannerForm')"></Input>
+          <Upload ref="add_banner_upload" action="//upload.qiniu.com/" :data="upload_data" :show-upload-list="false" :on-success="addBannerHandleSuccess" :format="['jpg','jpeg','png']">
+            <Button type="primary" icon="ios-cloud-upload-outline">上传Banner图片</Button>
+          </Upload>
+        </Form-item>
+        <Form-item label="跳转链接" prop="jump_url">
+          <Input v-model="addBannerForm.jump_url" placeholder="请输入点击图片后的跳转链接" size="large" @keyup.enter.native="addBanner('addBannerForm')"></Input>
+        </Form-item>
+        <Form-item label="图片作者ID" prop="user_id">
+          <Input v-model="addBannerForm.user_id" placeholder="请输入图片作者ID" size="large" @keyup.enter.native="addBanner('addBannerForm')"></Input>
+        </Form-item>
+        <Form-item label="备注" prop="remark">
+          <Input v-model="addBannerForm.remark" placeholder="请输入备注" size="large" @keyup.enter.native="addBanner('addBannerForm')"></Input>
+        </Form-item>
+      </Form>
+    </Modal>
 
-        <!-- 添加Banner弹框 -->
-        <Modal v-model="addBannerModalVisible" title="添加Banner" width="800">
-            <div slot="footer">
-                <Button type="text" size="large" @click="addBannerCancel('addBannerForm')">取消</Button>
-                <Button type="primary" size="large" :loading="addBannerFormLoading" @click="addBanner('addBannerForm')">确定</Button>
-            </div>
-            <Form ref="addBannerForm" :model="addBannerForm" :rules="addBannerFormRules" label-position="right" :label-width="100">
-                <Form-item label="类型" prop="type">
-                    <Select v-model="addBannerForm.type" style="width: 180px">
-                        <Option :value="1" :key="1">首页Banner</Option>
-                        <Option :value="2" :key="2">个人中心默认Banner</Option>
-                    </Select>
-                </Form-item>
-                <Form-item label="Banner图" prop="img_url">
-                    <Input v-model="addBannerForm.img_url" placeholder="请输入Banner图片的链接" size="large" @keyup.enter.native="addBanner('addBannerForm')"></Input>
-                </Form-item>
-                <Form-item label="跳转链接" prop="jump_url">
-                    <Input v-model="addBannerForm.jump_url" placeholder="请输入点击图片后的跳转链接" size="large" @keyup.enter.native="addBanner('addBannerForm')"></Input>
-                </Form-item>
-                <Form-item label="图片作者ID" prop="user_id">
-                    <Input v-model="addBannerForm.user_id" placeholder="请输入图片作者ID" size="large" @keyup.enter.native="addBanner('addBannerForm')"></Input>
-                </Form-item>
-                <Form-item label="备注" prop="remark">
-                    <Input v-model="addBannerForm.remark" placeholder="请输入备注" size="large" @keyup.enter.native="addBanner('addBannerForm')"></Input>
-                </Form-item>
-            </Form>
-        </Modal>
-
-        <!-- 更新banner弹框 -->
-        <Modal v-model="updateBannerModalVisible" title="更新Banner" width="800">
-            <div slot="footer">
-                <Button type="text" size="large" @click="updateBannerCancel('updateBannerForm')">取消</Button>
-                <Button type="primary" size="large" :loading="updateBannerFormLoading" @click="updateBanner('updateBannerForm')">确定</Button>
-            </div>
-            <Form ref="updateBannerForm" :model="updateBannerForm" :rules="addBannerFormRules" label-position="right" :label-width="100">
-                <Form-item label="类型" prop="type">
-                    <Select v-model="updateBannerForm.type" disabled style="width: 180px">
-                        <Option :value="1" :key="1">首页Banner</Option>
-                        <Option :value="2" :key="2">个人中心默认Banner</Option>
-                    </Select>
-                </Form-item>
-                <Form-item label="Banner图" prop="img_url">
-                    <Input v-model="updateBannerForm.img_url" placeholder="请输入Banner图片的链接" size="large" @keyup.enter.native="updateBanner('updateBannerForm')"></Input>
-                </Form-item>
-                <Form-item label="跳转链接" prop="jump_url">
-                    <Input v-model="updateBannerForm.jump_url" placeholder="请输入点击图片后的跳转链接" size="large" @keyup.enter.native="updateBanner('updateBannerForm')"></Input>
-                </Form-item>
-                <Form-item label="图片作者ID" prop="user_id">
-                    <Input v-model="updateBannerForm.user_id" placeholder="请输入图片作者ID" size="large" @keyup.enter.native="updateBanner('updateBannerForm')"></Input>
-                </Form-item>
-                <Form-item label="备注" prop="remark">
-                    <Input v-model="updateBannerForm.remark" placeholder="请输入备注" size="large" @keyup.enter.native="updateBanner('updateBannerForm')"></Input>
-                </Form-item>
-            </Form>
-        </Modal>
-    </div>
+    <!-- 更新banner弹框 -->
+    <Modal v-model="updateBannerModalVisible" title="更新Banner" width="800">
+      <div slot="footer">
+        <Button type="text" size="large" @click="updateBannerCancel('updateBannerForm')">取消</Button>
+        <Button type="primary" size="large" :loading="updateBannerFormLoading" @click="updateBanner('updateBannerForm')">确定</Button>
+      </div>
+      <Form ref="updateBannerForm" :model="updateBannerForm" :rules="addBannerFormRules" label-position="right" :label-width="100">
+        <Form-item label="类型" prop="type">
+          <Select v-model="updateBannerForm.type" disabled style="width: 180px">
+            <Option :value="1" :key="1">首页Banner</Option>
+            <Option :value="2" :key="2">个人中心默认Banner</Option>
+          </Select>
+        </Form-item>
+        <Form-item label="Banner图" prop="img_url">
+          <Input v-model="updateBannerForm.img_url" disabled placeholder="请输入Banner图片的链接" size="large" @keyup.enter.native="updateBanner('updateBannerForm')"></Input>
+          <Upload ref="edit_banner_upload" action="//upload.qiniu.com/" :data="upload_data" :show-upload-list="false" :on-success="addBannerHandleSuccess" :format="['jpg','jpeg','png']">
+            <Button type="primary" icon="ios-cloud-upload-outline">上传Banner图片</Button>
+          </Upload>
+        </Form-item>
+        <Form-item label="跳转链接" prop="jump_url">
+          <Input v-model="updateBannerForm.jump_url" placeholder="请输入点击图片后的跳转链接" size="large" @keyup.enter.native="updateBanner('updateBannerForm')"></Input>
+        </Form-item>
+        <Form-item label="图片作者ID" prop="user_id">
+          <Input v-model="updateBannerForm.user_id" placeholder="请输入图片作者ID" size="large" @keyup.enter.native="updateBanner('updateBannerForm')"></Input>
+        </Form-item>
+        <Form-item label="备注" prop="remark">
+          <Input v-model="updateBannerForm.remark" placeholder="请输入备注" size="large" @keyup.enter.native="updateBanner('updateBannerForm')"></Input>
+        </Form-item>
+      </Form>
+    </Modal>
+  </div>
 </template>
 
 <script>
 import imgView from "../my_components/img-view/img-view";
+import md5 from "md5";
 export default {
   data() {
     return {
@@ -101,7 +107,7 @@ export default {
           render: (h, params) => {
             return h("img", {
               domProps: {
-                src: params.row.img_url + "-slist",
+                src: params.row.img_url + "-slist?_=",
                 alt: params.row.name,
                 title: params.row.name
               },
@@ -240,6 +246,8 @@ export default {
           }
         ]
       },
+      upload_data: {},
+      uploadList: [],
       addBannerFormLoading: false,
       updateBannerModalVisible: false,
       updateBannerForm: {},
@@ -255,6 +263,32 @@ export default {
     });
   },
   methods: {
+    // 获取上传七牛token
+    getFreeUploadToken(type) {
+      this.$axios.post("/admin/upload/token/free", { type }).then(res => {
+        let options = {
+          token: res.data.token,
+          key: res.data.keyPrefix
+        };
+        this.upload_data = options;
+      });
+    },
+    // 上传成功
+    addBannerHandleSuccess(res, file) {
+      let upload_ret = JSON.stringify(res);
+      this.$axios.post(res.hReturnUrl, { upload_ret }).then(resp => {
+        let banner_url = resp.data.full_url;
+        this.addBannerForm.img_url = banner_url;
+        this.updateBannerForm.img_url = banner_url;
+        this.getFreeUploadToken("banner");
+      });
+    },
+    // 点击“添加Banner”按钮
+    addBannerDialog() {
+      this.getFreeUploadToken("banner");
+      this.addBannerForm.img_url = "";
+      this.addBannerModalVisible = true;
+    },
     // 获取banner列表
     getBannerLists() {
       this.$axios

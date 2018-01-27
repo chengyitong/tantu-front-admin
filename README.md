@@ -5,6 +5,8 @@
 npm run dev
 ```
 
+- 登录账号：admin bingo1208
+
 ## 七牛图片压缩规则：
 ```
 slist

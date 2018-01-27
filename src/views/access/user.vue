@@ -2,16 +2,13 @@
   <div>
     <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="40" inline>
       <Form-item label="角色">
-        <Select v-model="searchForm.role" filterable @on-change="getUserLists">
-          <Option :value="-1" :key="-1">不限</Option>
-          <Option :value="0" :key="0">超级管理员</Option>
-          <Option :value="1" :key="1">普通管理员</Option>
-          <Option :value="2" :key="2">客服</Option>
-          <Option :value="3" :key="3">运维</Option>
+        <Select v-model="searchForm.group_id" filterable @on-change="getUserLists">
+          <Option :value="0" :key="0">不限</Option>
+          <Option v-for="(item,index) in group_options" :value="item.id" :key="item.id">{{item.title}}</Option>
         </Select>
       </Form-item>
-      <Form-item label="昵称">
-        <Input v-model="searchForm.nickname" placeholder="请输入用户昵称"></Input>
+      <Form-item label="登录账号">
+        <Input v-model="searchForm.username" placeholder="请输入用户登录账号"></Input>
       </Form-item>
       <Form-item label="姓名">
         <Input v-model="searchForm.name" placeholder="请输入用户真实姓名"></Input>
@@ -41,28 +38,19 @@
         <Button type="primary" size="large" :loading="addUserFormLoading" @click="addUser('addUserForm')">确定</Button>
       </div>
       <Form ref="addUserForm" :model="addUserForm" :rules="addUserFormRules" label-position="right" :label-width="80">
-        <Form-item label="角色" prop="role">
-          <Select v-model="addUserForm.role" filterable clearable size="large" placeholder="请选择用户角色">
-            <Option :value="0" :key="0">超级管理员</Option>
-            <Option :value="1" :key="1">普通管理员</Option>
-            <Option :value="2" :key="2">客服</Option>
-            <Option :value="3" :key="3">运维</Option>
+        <Form-item label="角色" prop="group_id">
+          <Select v-model="addUserForm.group_id" size="large" placeholder="请选择用户角色">
+            <Option v-for="(item,index) in group_options" :value="item.id" :key="item.id">{{item.title}}</Option>
           </Select>
         </Form-item>
         <Form-item label="姓名" prop="name">
           <Input v-model="addUserForm.name" placeholder="请输入用户真实姓名"></Input>
         </Form-item>
-        <Form-item label="昵称" prop="nickname">
-          <Input v-model="addUserForm.nickname" placeholder="请输入用户昵称，用于登录"></Input>
+        <Form-item label="登录账号" prop="username">
+          <Input v-model="addUserForm.username" placeholder="请输入登录账号，可和姓名一样"></Input>
         </Form-item>
         <Form-item label="登录密码" prop="password">
           <Input type="password" v-model="addUserForm.password" placeholder="请输入登录密码"></Input>
-        </Form-item>
-        <Form-item label="状态" prop="status">
-          <RadioGroup v-model="addUserForm.status">
-            <Radio :label="1">正常</Radio>
-            <Radio :label="2">禁用</Radio>
-          </RadioGroup>
         </Form-item>
       </Form>
     </Modal>
@@ -73,19 +61,16 @@
         <Button type="primary" size="large" :loading="updateUserFormLoading" @click="updateUser('updateUserForm')">确定</Button>
       </div>
       <Form ref="updateUserForm" :model="updateUserForm" :rules="addUserFormRules" label-position="right" :label-width="80">
-        <Form-item label="角色" prop="role">
-          <Select v-model="updateUserForm.role" filterable clearable size="large" placeholder="请选择用户角色">
-            <Option :value="0" :key="0">超级管理员</Option>
-            <Option :value="1" :key="1">普通管理员</Option>
-            <Option :value="2" :key="2">客服</Option>
-            <Option :value="3" :key="3">运维</Option>
+        <Form-item label="角色" prop="group_id">
+          <Select v-model="updateUserForm.group_id" filterable clearable size="large" placeholder="请选择用户角色">
+            <Option v-for="(item,index) in group_options" :value="item.id" :key="item.id">{{item.title}}</Option>
           </Select>
         </Form-item>
         <Form-item label="姓名" prop="name">
           <Input v-model="updateUserForm.name" placeholder="请输入用户真实姓名"></Input>
         </Form-item>
-        <Form-item label="昵称" prop="nickname">
-          <Input v-model="updateUserForm.nickname" placeholder="请输入用户昵称，用于登录"></Input>
+        <Form-item label="昵称" prop="username">
+          <Input v-model="updateUserForm.username" placeholder="请输入用户昵称，用于登录"></Input>
         </Form-item>
         <Form-item label="状态" prop="status">
           <RadioGroup v-model="updateUserForm.status">
@@ -104,10 +89,10 @@
       </div>
       <Form ref="resetPasswordForm" :model="resetPasswordForm" :rules="resetPasswordFormRules" label-position="right" :label-width="100">
         <Form-item label="新密码" prop="password">
-          <Input v-model="resetPasswordForm.password" placeholder="请输入新密码"></Input>
+          <Input type="password" v-model="resetPasswordForm.password" placeholder="请输入新密码"></Input>
         </Form-item>
         <Form-item label="确认新密码" prop="confirm_password">
-          <Input v-model="resetPasswordForm.confirm_password" placeholder="请再次确认新密码"></Input>
+          <Input type="password" v-model="resetPasswordForm.confirm_password" placeholder="请再次确认新密码"></Input>
         </Form-item>
       </Form>
     </Modal>
@@ -115,6 +100,7 @@
 </template>
 
 <script>
+import md5 from "md5";
 export default {
   data() {
     const valideRePassword = (rule, value, callback) => {
@@ -128,22 +114,22 @@ export default {
       searchForm: {
         page: 1,
         page_size: 10,
-        nickname: null, // 用户名
-        name: null, // 用户正式姓名
-        status: 0, // 状态：0:不限；1:正常；2:禁用
-        role: -1
+        username: null, // 用户名（登录账号）
+        name: null, // 用户真实姓名
+        group_id: 0
       },
+      group_options: [], // 角色对象
       addUserFormLoading: false,
       addUserModalVisible: false,
       addUserForm: {
-        role: null,
-        nickname: null,
+        group_id: null,
+        username: null,
         name: null,
         status: 1,
         password: null
       },
       addUserFormRules: {
-        role: [
+        group_id: [
           {
             type: "number",
             required: true,
@@ -152,9 +138,7 @@ export default {
           }
         ],
         name: [{ required: true, message: "请输入用户真实姓名", trigger: "blur" }],
-        nickname: [
-          { required: true, message: "请输入用户昵称，用于登录", trigger: "blur" }
-        ],
+        username: [{ required: true, message: "请输入登录账号", trigger: "blur" }],
         password: [{ required: true, message: "请输入登录密码", trigger: "blur" }]
       },
       list: [],
@@ -167,15 +151,18 @@ export default {
         {
           title: "角色",
           key: "roleName",
+          render: (h, params) => {
+            if (params.row.gro.length == 0) return false;
+            return h("span", params.row.gro[0].title);
+          }
+        },
+        {
+          title: "登录帐号",
+          key: "username",
           sortable: true
         },
         {
-          title: "昵称(登录帐号)",
-          key: "nickname",
-          sortable: true
-        },
-        {
-          title: "姓名",
+          title: "真实姓名",
           key: "name",
           sortable: true
         },
@@ -199,7 +186,11 @@ export default {
               },
               status_str
             );
-          },
+          }
+        },
+        {
+          title: "添加时间",
+          key: "create_time",
           sortable: true
         },
         {
@@ -285,17 +276,17 @@ export default {
       ],
       isShowPage: false,
       updateUserForm: {
-        role: null,
-        nickname: null,
+        group_id: null,
+        username: null,
         name: null,
-        status: 1
+        status: 1 // 状态：1:正常；2:禁用
       },
       updateUserModalVisible: false,
       updateUserFormLoading: false,
       resetPasswordForm: {
-        id: null,
-        password: null,
-        confirm_password: null
+        id: "",
+        password: "",
+        confirm_password: ""
       },
       resetPasswordModalVisible: false,
       resetPasswordFormLoading: false,
@@ -313,20 +304,24 @@ export default {
     };
   },
   mounted: function() {
-    this.$nextTick(function() {});
+    this.$nextTick(function() {
+      this.getAdminGroup();
+      this.getUserLists();
+    });
   },
   methods: {
+    // 获取角色列表用于添加管理员
+    getAdminGroup() {
+      this.$axios.get("/admin/AdminGroup").then(res => {
+        this.group_options = res.data.list;
+      });
+    },
     getUserLists() {
-      this.list = [
-        {
-          id: 1,
-          role: 1,
-          roleName: "超级管理员",
-          nickname: "yitong",
-          name: "一通",
-          status: 1
-        }
-      ];
+      this.$axios
+        .get("/admin/AdminUser", { params: this.searchForm })
+        .then(res => {
+          this.list = res.data.list;
+        });
     },
     // 翻页
     handlePageChange(cur_page) {
@@ -344,13 +339,39 @@ export default {
       this.$refs[name].resetFields();
     },
     // 新增用户
-    addUser(addUserForm) {},
+    addUser(name) {
+      this.$refs[name].validate(valid => {
+        if (valid) {
+          this.addUserFormLoading = true;
+          this.addUserForm.password = md5(this.addUserForm.password);
+          this.$axios
+            .post("/admin/AdminUser", this.addUserForm)
+            .then(res => {
+              console.log(res);
+              if (res.code == 0) {
+                this.getUserLists();
+                this.$Message.success("新增成功");
+                this.addUserFormLoading = false;
+                this.addUserFormLoading = false;
+              }
+            })
+            .catch(error => {
+              this.$refs[name].resetFields();
+              this.addUserFormLoading = false;
+            });
+        }
+      });
+    },
     // 点击“编辑”按钮
     updateUserModal(row) {
+      let group_id = "";
+      if (row.gro.length > 0) {
+        group_id = row.gro[0].id;
+      }
       let options = {
         id: row.id,
-        role: row.role,
-        nickname: row.nickname,
+        group_id,
+        username: row.username,
         name: row.name,
         status: row.status
       };
@@ -368,7 +389,10 @@ export default {
         if (valid) {
           this.updateUserFormLoading = true;
           this.$axios
-            .put("/admin/plinks/", this.updateUserForm)
+            .put(
+              "/admin/adminuser/" + this.updateUserForm.id,
+              this.updateUserForm
+            )
             .then(res => {
               console.log(res);
               if (res.code == 0) {
@@ -388,6 +412,7 @@ export default {
     },
     // 点击“修改密码”按钮
     resetPasswordModal(row) {
+      this.resetPasswordForm.id = row.id;
       this.resetPasswordModalVisible = true;
     },
     // 取消修改密码
@@ -400,12 +425,18 @@ export default {
       this.$refs[name].validate(valid => {
         if (valid) {
           this.resetPasswordFormLoading = true;
+          let options = {
+            password: md5(this.resetPasswordForm.password)
+          };
           this.$axios
-            .put("/admin/plinks/", this.resetPasswordForm)
+            .put(
+              "/admin/admin_user/reset_password/" + this.resetPasswordForm.id,
+              options
+            )
             .then(res => {
               if (res.code == 0) {
                 this.getUserLists();
-                this.$Message.success("修改成功！");
+                this.$Message.success("修改成功");
                 this.resetPasswordFormLoading = false;
                 this.resetPasswordModalVisible = false;
               }
@@ -413,8 +444,6 @@ export default {
             .catch(error => {
               this.resetPasswordFormLoading = false;
             });
-        } else {
-          this.resetPasswordFormLoading = false;
         }
       });
     }

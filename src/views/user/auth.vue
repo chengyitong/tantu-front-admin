@@ -16,7 +16,7 @@
       </Button>
     </Form>
 
-    <Table :columns="list_columns" :data="list"></Table>
+    <Table :loading="table_loading" :columns="list_columns" :data="list"></Table>
     <Page v-if="isShowPage" :total="count" show-total :page-size-opts="[10,20,30,40]" show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
   </div>
 </template>
@@ -37,11 +37,6 @@ export default {
       list: [],
       list_columns: [
         {
-          type: "index",
-          width: 50,
-          align: "center"
-        },
-        {
           title: "用户ID",
           key: "user_id",
           width: 100,
@@ -57,28 +52,73 @@ export default {
           width: 160
         },
         {
+          title: "第三方昵称",
+          key: "nickname",
+          width: 160,
+          render: (h, params) => {
+            let nickname = "";
+            if (this.searchForm.type == "qq") {
+              let qq = params.row.qq;
+              if (qq && qq.nickname) {
+                nickname = qq.nickname;
+              }
+            }
+            if (this.searchForm.type == "weixin") {
+              let weixin = params.row.weixin;
+              if (weixin && weixin.nickname) {
+                nickname = weixin.nickname;
+              }
+            }
+            return h("span", nickname);
+          }
+        },
+        {
           title: "用户当前头像",
           key: "avatar",
           width: 120,
           align: "center",
           render: (h, params) => {
-            return h("img", {
-              domProps: {
-                src: params.row.avatar
-              },
-              style: {
-                display: "block",
-                margin: "5px auto 3px",
-                maxWidth: "60px",
-                maxHeight: "60px",
-                cursor: "pointer"
-              },
-              on: {
-                click: () => {
-                  this.clickImg(params.row.avatar);
+            return h(
+              "Poptip",
+              {
+                props: {
+                  content: "用户当前头像",
+                  trigger: "hover",
+                  transfer: true,
+                  placement: "right"
                 }
-              }
-            });
+              },
+              [
+                h("img", {
+                  domProps: {
+                    src: params.row.avatar
+                  },
+                  style: {
+                    marginTop: "5px",
+                    width: "50px",
+                    height: "50px",
+                    cursor: "pointer"
+                  }
+                }),
+                h(
+                  "div",
+                  {
+                    slot: "content"
+                  },
+                  [
+                    h("img", {
+                      domProps: {
+                        src: params.row.avatar
+                      },
+                      style: {
+                        maxWidth: "200px",
+                        maxHeight: "200px"
+                      }
+                    })
+                  ]
+                )
+              ]
+            );
           }
         },
         {
@@ -100,23 +140,48 @@ export default {
                 img_url = weixin.headimgurl;
               }
             }
-            return h("img", {
-              domProps: {
-                src: img_url
-              },
-              style: {
-                display: "block",
-                margin: "5px auto 3px",
-                maxWidth: "60px",
-                maxHeight: "60px",
-                cursor: "pointer"
-              },
-              on: {
-                click: () => {
-                  this.clickImg(img_url);
+            if (img_url == "") return false;
+            return h(
+              "Poptip",
+              {
+                props: {
+                  content: "第三方头像",
+                  trigger: "hover",
+                  transfer: true,
+                  placement: "right"
                 }
-              }
-            });
+              },
+              [
+                h("img", {
+                  domProps: {
+                    src: img_url
+                  },
+                  style: {
+                    marginTop: "5px",
+                    width: "50px",
+                    height: "50px",
+                    cursor: "pointer"
+                  }
+                }),
+                h(
+                  "div",
+                  {
+                    slot: "content"
+                  },
+                  [
+                    h("img", {
+                      domProps: {
+                        src: img_url
+                      },
+                      style: {
+                        maxWidth: "200px",
+                        maxHeight: "200px"
+                      }
+                    })
+                  ]
+                )
+              ]
+            );
           }
         },
         {
@@ -134,7 +199,8 @@ export default {
           sortable: true
         }
       ],
-      isShowPage: false
+      isShowPage: false,
+      table_loading: false
     };
   },
   components: {
@@ -146,20 +212,20 @@ export default {
     });
   },
   methods: {
-    // 获取消息列表
+    // 获取用户认证列表
     getUserAuthLists() {
-      if (this.searchForm.a_9_id == "") this.searchForm.a_9_id = null;
-      this.$axios
-        .get("/admin/third_party", { params: this.searchForm })
-        .then(res => {
-          this.list = res.data.list;
-          this.count = res.data.count;
-          if (res.data.count > 0) {
-            this.isShowPage = true;
-          } else {
-            this.isShowPage = false;
-          }
-        });
+      let params = this.$util.deleteEmptyObj(this.searchForm);
+      this.table_loading = true;
+      this.$axios.get("/admin/third_party", { params }).then(res => {
+        this.list = res.data.list;
+        this.count = res.data.count;
+        if (res.data.count > 0) {
+          this.isShowPage = true;
+        } else {
+          this.isShowPage = false;
+        }
+        this.table_loading = false;
+      });
     },
     // 翻页
     handlePageChange(cur_page) {

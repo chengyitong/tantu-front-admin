@@ -145,7 +145,12 @@ export default {
           key: "subject",
           width: 280,
           fixed: "left",
-          sortable: true
+          render: (h, params) => {
+            return h(
+              "span",
+              "（ID:" + params.row.id + "） " + params.row.subject
+            );
+          }
         },
         {
           title: "投稿数量",
@@ -171,12 +176,12 @@ export default {
                     props: {
                       type: "success",
                       size: "small"
-                    },
-                    on: {
-                      click: () => {
-                        this.productCountModal(params.row);
-                      }
                     }
+                    // on: {
+                    //   click: () => {
+                    //     this.productCountModal(params.row);
+                    //   }
+                    // }
                   },
                   params.row.product_count || 0
                 )
@@ -208,12 +213,12 @@ export default {
                     props: {
                       type: "warning",
                       size: "small"
-                    },
-                    on: {
-                      click: () => {
-                        this.userCountModal(params.row);
-                      }
                     }
+                    // on: {
+                    //   click: () => {
+                    //     this.userCountModal(params.row);
+                    //   }
+                    // }
                   },
                   params.row.user_count || 0
                 )
@@ -245,22 +250,54 @@ export default {
           width: 160,
           align: "center",
           render: (h, params) => {
-            return h("img", {
-              domProps: {
-                src: params.row.subject_banner_index
-              },
-              style: {
-                marginTop: "5px",
-                maxWidth: "140px",
-                maxHeight: "60px",
-                cursor: "pointer"
-              },
-              on: {
-                click: () => {
-                  this.clickImg(params.row.subject_banner_index);
+            return h(
+              "Poptip",
+              {
+                props: {
+                  content: "主页缩略图",
+                  trigger: "hover",
+                  transfer: true,
+                  placement: "left"
                 }
-              }
-            });
+              },
+              [
+                h("img", {
+                  domProps: {
+                    src: params.row.subject_banner_index + "-h160?_="
+                  },
+                  style: {
+                    marginTop: "5px",
+                    width: "100%",
+                    height: "100%",
+                    maxWidth: "200px",
+                    maxHeight: "160px",
+                    cursor: "pointer"
+                  },
+                  on: {
+                    click: () => {
+                      this.clickImg(params.row.subject_banner_index);
+                    }
+                  }
+                }),
+                h(
+                  "div",
+                  {
+                    slot: "content"
+                  },
+                  [
+                    h("img", {
+                      domProps: {
+                        src: params.row.subject_banner_index + "-h160?_="
+                      },
+                      style: {
+                        maxWidth: "500px",
+                        maxHeight: "400px"
+                      }
+                    })
+                  ]
+                )
+              ]
+            );
           }
         },
         {
@@ -269,22 +306,54 @@ export default {
           width: 160,
           align: "center",
           render: (h, params) => {
-            return h("img", {
-              domProps: {
-                src: params.row.subject_banner_detail
-              },
-              style: {
-                marginTop: "5px",
-                maxWidth: "140px",
-                maxHeight: "60px",
-                cursor: "pointer"
-              },
-              on: {
-                click: () => {
-                  this.clickImg(params.row.subject_banner_detail);
+            return h(
+              "Poptip",
+              {
+                props: {
+                  content: "首页Banner图",
+                  trigger: "hover",
+                  transfer: true,
+                  placement: "left"
                 }
-              }
-            });
+              },
+              [
+                h("img", {
+                  domProps: {
+                    src: params.row.subject_banner_detail + "-h160?_="
+                  },
+                  style: {
+                    marginTop: "5px",
+                    width: "100%",
+                    height: "100%",
+                    maxWidth: "200px",
+                    maxHeight: "160px",
+                    cursor: "pointer"
+                  },
+                  on: {
+                    click: () => {
+                      this.clickImg(params.row.subject_banner_detail);
+                    }
+                  }
+                }),
+                h(
+                  "div",
+                  {
+                    slot: "content"
+                  },
+                  [
+                    h("img", {
+                      domProps: {
+                        src: params.row.subject_banner_detail + "-h160?_="
+                      },
+                      style: {
+                        maxWidth: "500px",
+                        maxHeight: "400px"
+                      }
+                    })
+                  ]
+                )
+              ]
+            );
           }
         },
         {
@@ -293,22 +362,54 @@ export default {
           width: 160,
           align: "center",
           render: (h, params) => {
-            return h("img", {
-              domProps: {
-                src: params.row.subject_banner_list
-              },
-              style: {
-                marginTop: "5px",
-                maxWidth: "140px",
-                maxHeight: "60px",
-                cursor: "pointer"
-              },
-              on: {
-                click: () => {
-                  this.clickImg(params.row.subject_banner_list);
+            return h(
+              "Poptip",
+              {
+                props: {
+                  content: "列表缩略图",
+                  trigger: "hover",
+                  transfer: true,
+                  placement: "left"
                 }
-              }
-            });
+              },
+              [
+                h("img", {
+                  domProps: {
+                    src: params.row.subject_banner_list + "-h160?_="
+                  },
+                  style: {
+                    marginTop: "5px",
+                    width: "100%",
+                    height: "100%",
+                    maxWidth: "200px",
+                    maxHeight: "160px",
+                    cursor: "pointer"
+                  },
+                  on: {
+                    click: () => {
+                      this.clickImg(params.row.subject_banner_list);
+                    }
+                  }
+                }),
+                h(
+                  "div",
+                  {
+                    slot: "content"
+                  },
+                  [
+                    h("img", {
+                      domProps: {
+                        src: params.row.subject_banner_list + "-h160?_="
+                      },
+                      style: {
+                        maxWidth: "500px",
+                        maxHeight: "400px"
+                      }
+                    })
+                  ]
+                )
+              ]
+            );
           }
         },
         {
@@ -372,66 +473,234 @@ export default {
           fixed: "right",
           render: (h, params) => {
             let currentRow = params.row;
-            return h("span", [
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "small"
-                  },
-                  on: {
-                    click: () => {
-                      this.$router.push("/activity/edit/" + currentRow.id);
-                      // this.productCountModal(params.row);
+            let status = params.row.status; // 1草稿，2发布，3评奖，4公示，5结束
+            let status_str = ["", "草稿", "进行中", "评奖中", "公示中", "已结束"];
+            if (status == 1 || status == 2) {
+              return h("span", [
+                h("p", status_str[status]),
+                h(
+                  "a",
+                  {
+                    props: {
+                      type: "primary",
+                      size: "small"
+                    },
+                    on: {
+                      click: () => {
+                        this.$router.push("/activity/edit/" + currentRow.id);
+                      }
                     }
-                  }
-                },
-                "编辑"
-              ),
-              h(
-                "Poptip",
-                {
-                  props: {
-                    confirm: true,
-                    title: "您确定要删除这条数据吗?",
-                    transfer: true,
-                    placement: "top-end"
                   },
-                  on: {
-                    "on-ok": () => {
-                      currentRow.isDeleting = true;
-                      this.$axios
-                        .delete("/admin/event/" + params.row.id)
-                        .then(res => {
-                          this.$Message.success("删除成功");
-                          this.getActivityLists();
-                        })
-                        .catch(error => {
-                          currentRow.isDeleting = false;
-                        });
+                  "编辑详情"
+                )
+              ]);
+            } else {
+              return h("span", [
+                h("p", status_str[status]),
+                h(
+                  "a",
+                  {
+                    props: {
+                      type: "primary",
+                      size: "small"
+                    },
+                    on: {
+                      click: () => {
+                        this.$router.push("/activity/edit/" + currentRow.id);
+                      }
                     }
-                  }
-                },
-                [
+                  },
+                  "编辑详情"
+                ),
+                h("p", [
                   h(
-                    "Button",
+                    "a",
                     {
                       props: {
-                        type: "error",
-                        size: "small",
-                        placement: "top",
-                        loading: currentRow.isDeleting
+                        type: "primary",
+                        size: "small"
                       },
-                      style: {
-                        margin: "0 5px"
+                      on: {
+                        click: () => {
+                          this.$router.push(
+                            "/activity/publicity/" + currentRow.id
+                          );
+                        }
                       }
                     },
-                    "删除"
+                    "编辑公示"
                   )
-                ]
-              )
-            ]);
+                ])
+              ]);
+            }
+
+            // if (status == 1) {
+            //   return h("span", [
+            //     h(
+            //       "a",
+            //       {
+            //         props: {
+            //           type: "primary",
+            //           size: "small"
+            //         },
+            //         on: {
+            //           click: () => {
+            //             this.$router.push("/activity/edit/" + currentRow.id);
+            //             // this.productCountModal(params.row);
+            //           }
+            //         }
+            //       },
+            //       "编辑草稿"
+            //     ),
+            //     h(
+            //       "Poptip",
+            //       {
+            //         props: {
+            //           confirm: true,
+            //           title: "您确定要删除这条数据吗?",
+            //           transfer: true,
+            //           placement: "top-end"
+            //         },
+            //         on: {
+            //           "on-ok": () => {
+            //             currentRow.isDeleting = true;
+            //             this.$axios
+            //               .delete("/admin/event/" + params.row.id)
+            //               .then(res => {
+            //                 this.$Message.success("删除成功");
+            //                 this.getActivityLists();
+            //               })
+            //               .catch(error => {
+            //                 currentRow.isDeleting = false;
+            //               });
+            //           }
+            //         }
+            //       },
+            //       [
+            //         h(
+            //           "a",
+            //           {
+            //             props: {
+            //               type: "error",
+            //               size: "small",
+            //               placement: "top",
+            //               loading: currentRow.isDeleting
+            //             },
+            //             style: {
+            //               marginLeft: "10px"
+            //             }
+            //           },
+            //           "删除"
+            //         )
+            //       ]
+            //     )
+            //   ]);
+            // }
+            // if (status == 3) {
+            //   return h("span", [
+            //     h("p", "公示中"),
+            //     h(
+            //       "a",
+            //       {
+            //         props: {
+            //           type: "primary",
+            //           size: "small"
+            //         },
+            //         on: {
+            //           click: () => {
+            //             this.$router.push("/activity/edit/" + currentRow.id);
+            //           }
+            //         }
+            //       },
+            //       "编辑详情"
+            //     ),
+            //     h("p", [
+            //       h(
+            //         "a",
+            //         {
+            //           props: {
+            //             type: "primary",
+            //             size: "small"
+            //           },
+            //           on: {
+            //             click: () => {
+            //               this.$router.push(
+            //                 "/activity/publicity/" + currentRow.id
+            //               );
+            //             }
+            //           }
+            //         },
+            //         "编辑公示"
+            //       )
+            //     ])
+            //   ]);
+            // }
+            // // 1草稿，2发布，3评奖，4公示，5结束
+            // if (status == 2) {
+            //   return h("span", [
+            //     h("p", "进行中"),
+            //     h(
+            //       "a",
+            //       {
+            //         props: {
+            //           type: "primary",
+            //           size: "small"
+            //         },
+            //         on: {
+            //           click: () => {
+            //             this.$router.push("/activity/edit/" + currentRow.id);
+            //             // this.productCountModal(params.row);
+            //           }
+            //         }
+            //       },
+            //       "编辑"
+            //     )
+            //   ]);
+            // }
+            // if (status == 4) {
+            //   // return h("span", "公示中");
+            //   return h("span", [
+            //     h("p", "公示中"),
+            //     h(
+            //       "a",
+            //       {
+            //         props: {
+            //           type: "primary",
+            //           size: "small"
+            //         },
+            //         on: {
+            //           click: () => {
+            //             this.$router.push("/activity/edit/" + currentRow.id);
+            //             // this.productCountModal(params.row);
+            //           }
+            //         }
+            //       },
+            //       "编辑"
+            //     )
+            //   ]);
+            // }
+            // if (status == 5) {
+            //   // return h("span", "已结束");
+            //   return h("span", [
+            //     h("p", "已结束"),
+            //     h(
+            //       "a",
+            //       {
+            //         props: {
+            //           type: "primary",
+            //           size: "small"
+            //         },
+            //         on: {
+            //           click: () => {
+            //             this.$router.push("/activity/edit/" + currentRow.id);
+            //             // this.productCountModal(params.row);
+            //           }
+            //         }
+            //       },
+            //       "编辑"
+            //     )
+            //   ]);
+            // }
           }
         }
       ],

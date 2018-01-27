@@ -24,7 +24,7 @@
       </Button>
     </Form>
 
-    <Table :columns="list_columns" :data="list"></Table>
+    <Table :loading="table_loading" :columns="list_columns" :data="list"></Table>
     <Page v-if="isShowPage" :total="count" show-total :page-size-opts="[10,20,30,40]" show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
 
     <!-- 发送消息弹框 -->
@@ -216,7 +216,8 @@ export default {
           }
         }
       ],
-      isShowPage: false
+      isShowPage: false,
+      table_loading: false
     };
   },
   mounted: function() {
@@ -227,7 +228,9 @@ export default {
   methods: {
     // 获取消息列表
     getMessageLists() {
+      this.table_loading = true;
       this.$axios.get("/admin/msg", { params: this.searchForm }).then(res => {
+        this.table_loading = false;
         this.list = res.data.list;
         this.count = res.data.count;
         if (res.data.count > 0) {
