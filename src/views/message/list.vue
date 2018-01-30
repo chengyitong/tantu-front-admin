@@ -44,7 +44,7 @@
           <Input v-model="sendMessageForm.title" placeholder="请输入消息标题"></Input>
         </Form-item>
         <Form-item label="消息内容" prop="content">
-          <Input v-model="sendMessageForm.content" placeholder="请输入消息内容"></Input>
+          <Input type="textarea" v-model="sendMessageForm.content" placeholder="请输入消息内容" :rows="10"></Input>
         </Form-item>
       </Form>
     </Modal>
