@@ -7,8 +7,8 @@
       <quill-editor v-model="formValidate.content" @onEditorBlur="getQuillContent" :content="formValidate.content"></quill-editor>
     </FormItem>
     <FormItem>
-      <Button type="primary" :loading="submit_loading" @click="handleSubmit('formValidate')">提交更改</Button>
-      <Button type="ghost" @click="handleReset('formValidate')" style="margin-left: 8px">重置</Button>
+      <Button type="primary" :loading="submit_loading" @click="handleSubmit('formValidate',2)">正式发布</Button>
+      <Button type="ghost" :loading="submit_loading" @click="handleSubmit('formValidate',1)">保存为草稿</Button>
     </FormItem>
   </Form>
 </template>
@@ -44,20 +44,38 @@ export default {
   components: {
     "quill-editor": quillEditor
   },
+  computed: {
+    notice_id() {
+      return this.$route.params.notice_id;
+    }
+  },
+  mounted: function() {
+    this.$nextTick(function() {
+      this.getMsgDetail();
+    });
+  },
   methods: {
+    // 获取公告详情
+    getMsgDetail() {
+      this.$axios.get("/admin/msg/" + this.notice_id).then(res => {
+        this.formValidate.title = res.data.title;
+        this.formValidate.content = res.data.content;
+      });
+    },
     // 获取 quill-editor 子组件的输入内容
     getQuillContent(data) {
       this.formValidate.content = data;
     },
-    handleSubmit(name) {
+    handleSubmit(name, status) {
+      this.formValidate.status = status;
       this.$refs[name].validate(valid => {
         if (valid) {
           this.submit_loading = true;
           this.$axios
-            .post("/admin/msg", this.formValidate)
+            .put("/admin/msg/" + this.notice_id, this.formValidate)
             .then(res => {
               this.submit_loading = false;
-              this.$Message.success("公告发布成功");
+              this.$Message.success("更新成功");
               setTimeout(() => {
                 this.$router.push({ path: "/message/notice/list" });
               }, 200);

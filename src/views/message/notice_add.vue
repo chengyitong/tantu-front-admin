@@ -7,7 +7,8 @@
       <quill-editor v-model="formValidate.content" @onEditorBlur="getQuillContent" :content="formValidate.content"></quill-editor>
     </FormItem>
     <FormItem>
-      <Button type="primary" :loading="submit_loading" @click="handleSubmit('formValidate')">正式发布</Button>
+      <Button type="primary" :loading="submit_loading" @click="handleSubmit('formValidate',2)">正式发布</Button>
+      <Button type="ghost" :loading="submit_loading" @click="handleSubmit('formValidate',1)">保存为草稿</Button>
       <Button type="ghost" @click="handleReset('formValidate')" style="margin-left: 8px">重置</Button>
     </FormItem>
   </Form>
@@ -20,7 +21,8 @@ export default {
       formValidate: {
         type: 2, // 1-站内信；2-系统通知
         title: "", // 公告标题
-        content: "" // 公告正文
+        content: "", // 公告正文
+        status: 1 // 状态，1草稿，2已发布 发布后不能进行删除了和不会再次发送
       },
       submit_loading: false,
       ruleValidate: {
@@ -49,7 +51,8 @@ export default {
     getQuillContent(data) {
       this.formValidate.content = data;
     },
-    handleSubmit(name) {
+    handleSubmit(name, status) {
+      this.formValidate.status = status;
       this.$refs[name].validate(valid => {
         if (valid) {
           this.submit_loading = true;

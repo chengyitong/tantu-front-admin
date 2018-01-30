@@ -1,32 +1,26 @@
 <template>
   <div>
-    <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="40" inline>
+    <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="60" inline>
       <Form-item label="角色">
-        <Select v-model="searchForm.group_id" filterable @on-change="getUserLists">
+        <Select v-model="searchForm.access_9_group_id" filterable @on-change="getUserLists">
           <Option :value="0" :key="0">不限</Option>
           <Option v-for="(item,index) in group_options" :value="item.id" :key="item.id">{{item.title}}</Option>
         </Select>
       </Form-item>
       <Form-item label="登录账号">
-        <Input v-model="searchForm.username" placeholder="请输入用户登录账号"></Input>
+        <Input v-model="searchForm.a_9_username" placeholder="请输入用户登录账号"></Input>
       </Form-item>
       <Form-item label="姓名">
-        <Input v-model="searchForm.name" placeholder="请输入用户真实姓名"></Input>
-      </Form-item>
-      <Form-item label="状态">
-        <Select v-model="searchForm.status" filterable @on-change="getUserLists">
-          <Option :value="0" :key="0">不限</Option>
-          <Option :value="1" :key="1">正常</Option>
-          <Option :value="2" :key="2">禁用</Option>
-        </Select>
+        <Input v-model="searchForm.a_9_name" placeholder="请输入用户真实姓名"></Input>
       </Form-item>
       <Button type="primary" @click="getUserLists">
         <Icon type="search" size="14"></Icon>&nbsp;查询
       </Button>
-      <Button type="success" @click="addUserModalVisible = true">
-        <Icon type="plus" size="14"></Icon>&nbsp;新增
-      </Button>
     </Form>
+
+    <Button type="success" @click="addUserModalVisible = true" style="margin-bottom: 10px;">
+      <Icon type="plus" size="14"></Icon>&nbsp;新增
+    </Button>
 
     <Table :columns="list_columns" :data="list"></Table>
     <Page v-if="isShowPage" :total="count" show-total :page-size-opts="[10,20,30,40]" show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
@@ -114,9 +108,9 @@ export default {
       searchForm: {
         page: 1,
         page_size: 10,
-        username: null, // 用户名（登录账号）
-        name: null, // 用户真实姓名
-        group_id: 0
+        a_9_username: null, // 用户名（登录账号）
+        a_9_name: null, // 用户真实姓名
+        access_9_group_id: 0
       },
       group_options: [], // 角色对象
       addUserFormLoading: false,
@@ -172,19 +166,17 @@ export default {
           width: 120,
           align: "center",
           render: (h, params) => {
-            let status = params.row.status;
-            let status_str = status == 1 ? "正常" : "禁用";
-            let status_color = status == 1 ? "green" : "red";
+            let status_arr = ["", "正常", "禁用"];
+            let type_arr = ["", "success", "error"];
             return h(
-              "Tag",
+              "Button",
               {
                 props: {
-                  color: status_color,
-                  type: "dot",
+                  type: type_arr[params.row.status],
                   size: "small"
                 }
               },
-              status_str
+              status_arr[params.row.status]
             );
           }
         },
@@ -248,7 +240,12 @@ export default {
                   on: {
                     "on-ok": () => {
                       currentRow.isDeleting = true;
-                      this.list.splice(params.index, 1);
+                      this.$axios
+                        .delete("/admin/AdminUser/" + params.row.id)
+                        .then(res => {
+                          this.list.splice(params.index, 1);
+                          this.$Message.success("删除成功");
+                        });
                     }
                   }
                 },
@@ -347,12 +344,12 @@ export default {
           this.$axios
             .post("/admin/AdminUser", this.addUserForm)
             .then(res => {
-              console.log(res);
               if (res.code == 0) {
                 this.getUserLists();
                 this.$Message.success("新增成功");
                 this.addUserFormLoading = false;
-                this.addUserFormLoading = false;
+                this.addUserModalVisible = false;
+                this.$refs[name].resetFields();
               }
             })
             .catch(error => {
@@ -394,7 +391,6 @@ export default {
               this.updateUserForm
             )
             .then(res => {
-              console.log(res);
               if (res.code == 0) {
                 this.getUserLists();
                 this.$Message.success("更新成功！");

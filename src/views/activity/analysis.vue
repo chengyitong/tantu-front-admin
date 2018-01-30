@@ -120,8 +120,9 @@ export default {
         subject: ""
       };
       this.event_ids = [];
+      let params = this.$util.deleteEmptyObj(_params);
       this.$axios
-        .get("/admin/event", { params: _params })
+        .get("/admin/event", { params })
         .then(res => {
           let list = res.data.list;
           for (let i = 0; i < list.length; i++) {
@@ -136,8 +137,9 @@ export default {
     },
     // 获取推广链接列表
     getPlinksStatistics() {
+      let params = this.$util.deleteEmptyObj(this.searchForm);
       this.$axios
-        .get("/admin/plinks_statistics", { params: this.searchForm })
+        .get("/admin/plinks_statistics", { params })
         .then(res => {
           this.list = res.data.list;
           if (res.data.count >= this.searchForm.page_size) {

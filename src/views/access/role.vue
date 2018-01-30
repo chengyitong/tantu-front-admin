@@ -39,8 +39,8 @@
         </Form-item>
         <Form-item label="状态" prop="status">
           <RadioGroup v-model="updateRoleForm.status">
-            <Radio :label="0">禁用</Radio>
             <Radio :label="1">正常</Radio>
+            <Radio :label="2">禁用</Radio>
           </RadioGroup>
         </Form-item>
       </Form>
@@ -86,8 +86,8 @@ export default {
           title: "状态",
           key: "status",
           render: (h, params) => {
-            let status_arr = ["禁用", "正常"];
-            let type_arr = ["error", "success"];
+            let status_arr = ["", "正常", "禁用"];
+            let type_arr = ["", "success", "error"];
             return h(
               "Button",
               {
@@ -136,7 +136,12 @@ export default {
                   on: {
                     "on-ok": () => {
                       currentRow.isDeleting = true;
-                      this.list.splice(params.index, 1);
+                      this.$axios
+                        .delete("/admin/AdminGroup/" + params.row.id)
+                        .then(res => {
+                          this.list.splice(params.index, 1);
+                          this.$Message.success("删除成功");
+                        });
                     }
                   }
                 },

@@ -217,7 +217,6 @@ util.deleteEmptyObj = function (obj) {
   } else if (util.isPlainObj(obj)) {
     for (let i in obj) {
       if (obj[i] === '' || obj[i] === undefined) {
-        console.log(i)
         delete obj[i];
       }
     }

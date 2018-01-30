@@ -143,7 +143,7 @@ export default {
         {
           title: "活动名称",
           key: "subject",
-          width: 280,
+          width: 340,
           fixed: "left",
           render: (h, params) => {
             return h(

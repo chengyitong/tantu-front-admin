@@ -56,31 +56,29 @@
       </Button>
     </Form>
 
-    <ButtonGroup style="margin-bottom: 10px;">
-      <Button v-show="count > 0" @click="deleteProduct">批量删除</Button>
-      <Button v-show="searchForm.status == 4 && searchForm.a_9_is_recommend == 0" @click="productRecommends">批量推荐</Button>
-      <Button v-show="searchForm.status == 4 && searchForm.a_9_is_recommend == 1" @click="productCancelRecommends">取消推荐</Button>
+    <div style="margin-bottom: 10px;">
+      <Button v-show="searchForm.status == 4" @click="productRecommends">批量推荐</Button>
+      <Button v-show="searchForm.status == 4" @click="productCancelRecommends">取消推荐</Button>
       <Button v-if="searchForm.status == 5" @click="changeStatus(4)">
         <Icon type="android-upload" size="14"></Icon>&nbsp;批量上架
       </Button>
-      <Button v-if="searchForm.status == 4" @click="changeStatus(5)">
+      <Button v-if="searchForm.status == 4" @click="changeStatus(5)" class="fn-right">
         <Icon type="android-download" size="14"></Icon>&nbsp;批量下架
       </Button>
-    </ButtonGroup>
+    </div>
 
     <Table :loading="table_loading" :columns="list_columns" :data="list" @on-selection-change="onSelectionChange"></Table>
 
-    <ButtonGroup style="margin-top: 10px;">
-      <Button v-show="count > 0" @click="deleteProduct">批量删除</Button>
-      <Button v-show="searchForm.status == 4 && searchForm.a_9_is_recommend == 0" @click="productRecommends">批量推荐</Button>
-      <Button v-show="searchForm.status == 4 && searchForm.a_9_is_recommend == 1" @click="productCancelRecommends">取消推荐</Button>
+    <div style="margin-top: 10px;">
+      <Button v-show="searchForm.status == 4" @click="productRecommends">批量推荐</Button>
+      <Button v-show="searchForm.status == 4" @click="productCancelRecommends">取消推荐</Button>
       <Button v-if="searchForm.status == 5" @click="changeStatus(4)">
         <Icon type="android-upload" size="14"></Icon>&nbsp;批量上架
       </Button>
-      <Button v-if="searchForm.status == 4" @click="changeStatus(5)">
+      <Button v-if="searchForm.status == 4" @click="changeStatus(5)" class="fn-right">
         <Icon type="android-download" size="14"></Icon>&nbsp;批量下架
       </Button>
-    </ButtonGroup>
+    </div>
 
     <Page v-if="isShowPage" :total="count" show-total show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
 
@@ -125,13 +123,6 @@
         <Form-item label="不通过原因" prop="desc" v-if="updateProductForm.status == 3">
           <Input v-model="updateProductForm.desc" placeholder="请输入不通过的原因" @keyup.enter.native="getProductLists"></Input>
         </Form-item>
-        <Form-item label="图片类型">
-          <RadioGroup v-model="updateProductForm.type">
-            <Radio :label="1" disabled>版权保护</Radio>
-            <Radio :label="2" disabled>售卖</Radio>
-            <Radio :label="3" disabled>免费</Radio>
-          </RadioGroup>
-        </Form-item>
         <Form-item label="图片方向" prop="rotate">
           <RadioGroup v-model="updateProductForm.rotate">
             <Radio :label="1">横向</Radio>
@@ -168,7 +159,7 @@ export default {
         event_product_9_event_id: null,
         type: null,
         a_9_create_time: [],
-        a_9_is_recommend: 0 // 是否推荐，0不推荐，1推荐
+        a_9_is_recommend: null // 是否推荐，0不推荐，1推荐
       },
       datePickerOptions: {
         shortcuts: [
@@ -304,7 +295,7 @@ export default {
                   "a",
                   {
                     domProps: {
-                      href: "/api/admin/product/download/" + params.row.id,
+                      href: "/admin/product/download/" + params.row.id,
                       target: "_blank"
                     },
                     style: {
@@ -629,70 +620,26 @@ export default {
         {
           title: "操作",
           key: "action",
-          width: 130,
+          width: 60,
           align: "center",
           fixed: "right",
           render: (h, params) => {
             let currentRow = params.row;
-            return h("span", [
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "small"
-                  },
-                  on: {
-                    click: () => {
-                      this.updateProductModal(params.row);
-                    }
-                  }
+            return h(
+              "Button",
+              {
+                props: {
+                  type: "primary",
+                  size: "small"
                 },
-                "编辑"
-              ),
-              h(
-                "Poptip",
-                {
-                  props: {
-                    confirm: true,
-                    title: "您确定要删除这条数据吗?",
-                    transfer: true,
-                    placement: "top-end"
-                  },
-                  on: {
-                    "on-ok": () => {
-                      currentRow.isDeleting = true;
-                      this.$axios
-                        .delete("/admin/product/" + params.row.id)
-                        .then(res => {
-                          this.list.splice(params.index, 1);
-                          this.$Message.success("删除成功！");
-                        })
-                        .catch(error => {
-                          currentRow.isDeleting = false;
-                        });
-                    }
+                on: {
+                  click: () => {
+                    this.updateProductModal(params.row);
                   }
-                },
-                [
-                  h(
-                    "Button",
-                    {
-                      props: {
-                        type: "error",
-                        size: "small",
-                        placement: "top",
-                        loading: currentRow.isDeleting
-                      },
-                      style: {
-                        margin: "0 5px"
-                      }
-                    },
-                    "删除"
-                  )
-                ]
-              )
-            ]);
+                }
+              },
+              "编辑"
+            );
           }
         }
       ],
@@ -831,19 +778,6 @@ export default {
       for (let i = 0, len = selection.length; i < len; i++) {
         this.product_ids.push(selection[i].id);
       }
-    },
-    // 批量删除
-    deleteProduct() {
-      if (this.product_ids.length == 0) {
-        this.$Message.warning("请选择需要删除的图片");
-        return false;
-      }
-      this.$axios
-        .get("/admin/product/deletes", { params: { ids: this.product_ids } })
-        .then(res => {
-          this.getProductLists();
-          this.$Message.success("删除成功");
-        });
     },
     // 批量推荐
     productRecommends() {

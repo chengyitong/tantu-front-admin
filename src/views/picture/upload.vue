@@ -29,7 +29,6 @@
           <RadioGroup v-model="formValidate.type" @on-change="getUploadToken">
             <Radio :label="3">免费</Radio>
             <Radio :label="1">版权</Radio>
-            <Radio :label="2">售卖</Radio>
           </RadioGroup>
         </FormItem>
         <FormItem label="图片状态" prop="status" v-show="false">
@@ -42,7 +41,7 @@
           </RadioGroup>
         </FormItem>
         <FormItem label="选择图片" v-show="formValidate.a_9_user_id !== '' && formValidate.folder_id !== ''">
-          <Upload ref="upload" multiple type="drag" :data="{token: upload_token}" :show-upload-list="true" :default-file-list="defaultList" :on-success="handleSuccess" :on-error="handleError" :format="['jpg','jpeg','png']" :max-size="max_size" :on-format-error="handleFormatError" :on-exceeded-size="handleMaxSize" :before-upload="handleBeforeUpload" action="http://upload.qiniu.com/">
+          <Upload ref="upload" multiple type="drag" :data="upload_data" :action="'http://'+upload_domain" :show-upload-list="true" :default-file-list="defaultList" :on-success="handleSuccess" :on-error="handleError" :format="['jpg','jpeg','png']" :max-size="max_size" :on-format-error="handleFormatError" :on-exceeded-size="handleMaxSize" :before-upload="handleBeforeUpload">
             <div style="padding: 20px 0">
               <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
               <p>点击或将图片拖拽到这里上传</p>
@@ -53,11 +52,20 @@
       </Col>
       <Col span="8">
       <h3>用户近期上传的图片</h3>
+      <div class="img-list">
+        <template v-if="user_product_list.length == 0">
+          <p>该用户暂无图片</p>
+        </template>
+        <template v-if="user_product_list.length !== 0">
+          <span v-for="item in user_product_list" class="img-box" :style="'background: url(' + item.thumbkey + '-min400x300?_=) center no-repeat;background-size: contain;'"></span>
+        </template>
+      </div>
       </Col>
     </Row>
   </div>
 </template>
 <script>
+import md5 from "md5";
 export default {
   data() {
     return {
@@ -75,12 +83,15 @@ export default {
         folder_id: "",
         type: 3,
         status: 1
-      }
+      },
+      user_product_list: [],
+      upload_data: {}, // 七牛请求数据
+      upload_domain: "" // 七牛请求路径
     };
   },
   computed: {
     step_current() {
-      if (this.formValidate.user_id) {
+      if (this.formValidate.a_9_user_id) {
         return 2;
       }
       if (this.formValidate.folder_id) {
@@ -135,22 +146,48 @@ export default {
             this.formValidate.folder_id = item.id;
           }
         });
-        this.getUploadToken();
       });
+      this.getProductLists();
+    },
+    // 根据用户ID获取图片列表
+    getProductLists() {
+      let user_id = this.formValidate.a_9_user_id;
+      this.$axios
+        .get("/admin/product", {
+          params: {
+            a_9_user_id: user_id,
+            page: 1,
+            page_size: 12
+          }
+        })
+        .then(res => {
+          this.user_product_list = res.data.list;
+        });
     },
     // 获取七牛token
-    getUploadToken() {
-      let params = {
-        user_id: this.formValidate.user_id,
-        folder_id: this.formValidate.folder_id,
-        type: this.formValidate.type,
-        status: this.formValidate.status
-      };
-      this.$axios.get("/admin/upload/token/product", { params }).then(res => {
-        this.upload_token = res.data.token;
-        this.upload_keyPrefix = res.data.keyPrefix;
-        this.$refs.upload.data.token = this.upload_token;
-      });
+    getUploadToken(file) {
+      return this.$axios
+        .get("/admin/upload/token/product", {
+          params: {
+            user_id: this.formValidate.a_9_user_id,
+            folder_id: this.formValidate.folder_id,
+            type: this.formValidate.type,
+            status: this.formValidate.status
+          }
+        })
+        .then(res => {
+          this.upload_domain = res.data.upload_domain;
+          let key = res.data.keyPrefix;
+          if (file != undefined) {
+            let ext = this.$util.getFileExtension(file.name);
+            key = key + md5(file.name).substring(26, 32) + "." + ext;
+          }
+
+          this.upload_data = {
+            token: res.data.token,
+            key
+          };
+        });
     },
     // 删除预览图
     handleRemove(file) {
@@ -158,21 +195,39 @@ export default {
       const fileList = this.$refs.upload.fileList;
       this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
     },
+    // 上传之前的操作
+    handleBeforeUpload(file) {
+      return this.getUploadToken(file);
+    },
     // 上传成功
-    handleSuccess(res, file, fileList) {
-      if (res.code !== 0) {
-        this.$Notice.warning({
-          title: "上传错误",
-          desc: "文件 " + file.name + " 上传失败，原因： " + res.msg,
-          duration: 0
+    handleSuccess(response, file, fileList) {
+      this.$axios
+        .post(response.hReturnUrl, { upload_ret: JSON.stringify(response) })
+        .then(res => {
+          if (res.code == 0) {
+            this.getProductLists();
+            this.$Notice.success({
+              title: "上传成功",
+              desc: "文件 " + file.name + " 上传成功",
+              duration: 0
+            });
+          } else {
+            this.$Notice.warning({
+              title: "上传错误",
+              desc: "文件 " + file.name + " 上传失败，原因： " + response.msg,
+              duration: 0
+            });
+          }
+          this.$Spin.hide();
+          this.$refs["upload"].clearFiles(); // 插入成功后清除input的内容
+        })
+        .catch(error => {
+          this.$Notice.warning({
+            title: "上传错误",
+            desc: "文件 " + file.name + " 上传失败，原因： " + error.data.msg,
+            duration: 0
+          });
         });
-      } else {
-        this.$Notice.success({
-          title: "上传成功",
-          desc: "文件 " + file.name + " 上传成功。",
-          duration: 15
-        });
-      }
     },
     // 上传失败
     handleError(error, file) {
@@ -198,19 +253,6 @@ export default {
           " M。",
         duration: 0
       });
-    },
-    // 上传之前的操作
-    handleBeforeUpload(file) {
-      let file_name = file.name;
-      let date = new Date();
-      let s = date.getSeconds();
-      let m = date.getMilliseconds();
-      let key =
-        this.upload_keyPrefix +
-        s +
-        m +
-        file_name.substring(file_name.lastIndexOf("."), file_name.length);
-      this.$refs.upload.data.key = key;
     }
   }
 };
@@ -227,5 +269,16 @@ export default {
 }
 .ivu-form-item {
   margin-bottom: 24px !important;
+}
+.img-list {
+  padding: 10px;
+  .img-box {
+    margin: 5px;
+    display: inline-block;
+    border: 1px solid #ddd;
+    width: 200px;
+    height: 200px;
+    background-size: contain;
+  }
 }
 </style>

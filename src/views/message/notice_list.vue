@@ -7,8 +7,17 @@
       <Form-item label="发布时间" prop="create_time">
         <DatePicker type="daterange" v-model="searchForm.create_time" :options="datePickerOptions" placeholder="请选择发布时间周期" style="width: 180px" @on-change="searchForm.create_time=$event"></DatePicker>
       </Form-item>
+      <Form-item label="公告状态" prop="status">
+        <Select v-model="searchForm.status" placeholder="默认全部" @on-change="getMessageLists" style="width: 141px;">
+          <Option :value="1" :key="1">草稿</Option>
+          <Option :value="2" :key="2">已发布</Option>
+        </Select>
+      </Form-item>
       <Button type="primary" @click="getMessageLists">
         <Icon type="search" size="14"></Icon>&nbsp;查询
+      </Button>
+      <Button type="info" @click="$refs['searchForm'].resetFields()">
+        <Icon type="reply" size="14"></Icon>&nbsp;重置
       </Button>
     </Form>
 
@@ -24,10 +33,11 @@ export default {
       searchForm: {
         page: 1,
         page_size: 10,
-        id: null, // 可选，精确获取某个id
+        is_auto: 0, // 可选，默认0，0只显示手动发送，1只显示自动发送
+        type: 0, //1为站内信,0为系统通知
+        to_user_ids: null, // 可选，精确获取某个id
         title: null, // 通知标题，过滤类型 like
-        status: 2, // 状态，1草稿，2已发布 发布后不能进行删除了和不会再次发送。
-        is_auto: null, // 可选，默认0，0只显示手动发送，1只显示自动发送
+        status: null, // 状态，1草稿，2已发布 发布后不能进行删除了和不会再次发送。
         create_time: [] // 发布时间段
       },
       datePickerOptions: {
@@ -71,66 +81,24 @@ export default {
         {
           title: "公告标题",
           key: "title",
-          width: 180,
           sortable: true
-        },
-        {
-          title: "公告正文",
-          key: "content",
-          render: (h, params) => {
-            return h(
-              "Poptip",
-              {
-                props: {
-                  content: "查看详情",
-                  trigger: "hover",
-                  transfer: true,
-                  placement: "right"
-                }
-              },
-              [
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "primary",
-                      size: "small"
-                    }
-                  },
-                  "详情"
-                ),
-                h(
-                  "div",
-                  {
-                    slot: "content"
-                  },
-                  [
-                    h(
-                      "div",
-                      {
-                        domProps: {
-                          src: params.row.avatar
-                        },
-                        style: {
-                          width: "500px",
-                          height: "300px",
-                          wordBreak: "break-all",
-                          wordWrap: "break-word"
-                        }
-                      },
-                      params.row.content
-                    )
-                  ]
-                )
-              ]
-            );
-          }
         },
         {
           title: "发送时间",
           key: "update_time",
-          width: 180,
           sortable: true
+        },
+        {
+          title: "状态",
+          key: "status",
+          width: 100,
+          sortable: true,
+          align: "center",
+          render: (h, params) => {
+            let status = params.row.status;
+            let status_str = ["", "草稿", "已发布"];
+            return h("span", status_str[status]);
+          }
         },
         {
           title: "操作",
@@ -140,6 +108,9 @@ export default {
           align: "center",
           render: (h, params) => {
             let currentRow = params.row;
+            // if (params.row.status == 2) {
+            //   return h("span", "--");
+            // }
             return h("span", [
               h(
                 "a",

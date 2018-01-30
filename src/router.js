@@ -198,8 +198,8 @@ export const appRouter = [
       { path: 'edit/:event_id', title: '编辑活动', name: 'activity_edit', icon: 'ios-compose', available: false, component: resolve => { require(['./views/activity/edit.vue'], resolve); } },
       { path: 'publicity/:event_id', title: '编辑活动公示', name: 'activity_publicity', icon: 'ios-compose', available: false, component: resolve => { require(['./views/activity/publicity.vue'], resolve); } },
       { path: 'list', title: '活动列表', name: 'activity_list', icon: 'ios-keypad', available: true, component: resolve => { require(['./views/activity/list.vue'], resolve); } },
-      { path: 'link', title: '活动推广', name: 'extend_link', icon: 'paper-airplane', available: true, component: resolve => { require(['./views/activity/link.vue'], resolve); } },
-      { path: 'analysis', title: '推广统计', name: 'extend_analysis', icon: 'ios-analytics', available: true, component: resolve => { require(['./views/activity/analysis.vue'], resolve); } }
+      { path: 'link', title: '活动推广', name: 'extend_link', icon: 'paper-airplane', available: false, component: resolve => { require(['./views/activity/link.vue'], resolve); } },
+      { path: 'analysis', title: '推广统计', name: 'extend_analysis', icon: 'ios-analytics', available: false, component: resolve => { require(['./views/activity/analysis.vue'], resolve); } }
     ]
   },
   {
@@ -259,7 +259,7 @@ export const appRouter = [
     component: Main,
     available: true,
     children: [
-      { path: 'menu', title: '菜单管理', name: 'access_menu', icon: 'android-menu', available: true, component: resolve => { require(['./views/access/menu.vue'], resolve); } },
+      { path: 'menu', title: '菜单管理', name: 'access_menu', icon: 'android-menu', available: false, component: resolve => { require(['./views/access/menu.vue'], resolve); } },
       { path: 'role', title: '角色管理', name: 'access_role', icon: 'settings', available: true, component: resolve => { require(['./views/access/role.vue'], resolve); } },
       { path: 'user', title: '用户管理', name: 'access_user', icon: 'person-add', available: true, component: resolve => { require(['./views/access/user.vue'], resolve); } }
     ]

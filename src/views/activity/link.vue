@@ -97,272 +97,325 @@
 
 <script>
 export default {
-    data() {
-        return {
-            searchForm: {
-                page: 1,
-                page_size: 10,
-                event_type: 0, // 活动类型，0:赛事；1:任务；2:第三方推广
-                name: '', // 名称
-                status: 1, // 状态：1:正常；2:禁用
-                event_id: '' // 活动id
-            },
-            event_ids: [], // 活动列表
-            isShowPage: false,
-            list: [], // 推广链接列表
-            list_columns: [
+  data() {
+    return {
+      searchForm: {
+        page: 1,
+        page_size: 10,
+        event_type: 0, // 活动类型，0:赛事；1:任务；2:第三方推广
+        name: "", // 名称
+        status: 1, // 状态：1:正常；2:禁用
+        event_id: "" // 活动id
+      },
+      event_ids: [], // 活动列表
+      isShowPage: false,
+      list: [], // 推广链接列表
+      list_columns: [
+        {
+          type: "index",
+          width: 50,
+          align: "center"
+        },
+        {
+          title: "活动名称",
+          key: "event_id",
+          sortable: true,
+          render: (h, params) => {
+            let subject = params.row.event.subject;
+            return h("span", subject);
+          }
+        },
+        {
+          title: "链接名称",
+          key: "name",
+          sortable: true
+        },
+        {
+          title: "推广链接",
+          key: "out_link",
+          render: (h, params) => {
+            let out_link = window.location.host + params.row.out_link;
+            return h("span", [
+              h(
+                "a",
                 {
-                    type: 'index',
-                    width: 50,
-                    align: 'center'
+                  domProps: {
+                    href: out_link,
+                    target: "_blank"
+                  }
                 },
+                out_link
+              )
+            ]);
+          }
+        },
+        {
+          title: "备注",
+          key: "mark"
+        },
+        {
+          title: "状态",
+          key: "status",
+          width: 120,
+          align: "center",
+          render: (h, params) => {
+            let status = params.row.status;
+            let status_str = status == 1 ? "正常" : "禁用";
+            let status_color = status == 1 ? "green" : "red";
+            return h(
+              "Tag",
+              {
+                props: {
+                  color: status_color,
+                  type: "dot",
+                  size: "small"
+                }
+              },
+              status_str
+            );
+          },
+          sortable: true
+        },
+        {
+          title: "创建时间",
+          key: "created_at",
+          align: "center",
+          sortable: true
+        },
+        {
+          title: "操作",
+          key: "action",
+          width: 130,
+          align: "center",
+          render: (h, params) => {
+            let currentRow = params.row;
+            return h("span", [
+              h(
+                "Button",
                 {
-                    title: '活动名称',
-                    key: 'event_id',
-                    sortable: true,
-                    render: (h, params) => {
-                        let subject = params.row.event.subject;
-                        return h('span', subject);
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      this.updatePlinksModal(params.row);
                     }
-                }, {
-                    title: '链接名称',
-                    key: 'name',
-                    sortable: true
-                }, {
-                    title: '推广链接',
-                    key: 'out_link',
-                    render: (h, params) => {
-                        let out_link = window.location.host + params.row.out_link;
-                        return h('span',[
-                            h('a', {
-                                domProps: {
-                                    href: out_link,
-                                    target: '_blank'
-                                }
-                            }, out_link)
-                        ]);
-                        
-                    },
-                }, {
-                    title: '备注',
-                    key: 'mark'
-                }, {
-                    title: '状态',
-                    key: 'status',
-                    width: 120,
-                    align: 'center',
-                    render: (h, params) => {
-                        let status = params.row.status;
-                        let status_str = status == 1 ? '正常' : '禁用';
-                        let status_color = status == 1 ? 'green' : 'red';
-                        return h('Tag', {
-                            props: {
-                                color: status_color,
-                                type: 'dot',
-                                size: 'small'
-                            }
-                        }, status_str);
-                    },
-                    sortable: true
-                }, {
-                    title: '创建时间',
-                    key: 'created_at',
-                    align: 'center',
-                    sortable: true
-                }, {
-                    title: '操作',
-                    key: 'action',
-                    width: 130,
-                    align: 'center',
-                    render: (h, params) => {
-                        let currentRow = params.row;
-                        return h('span', [
-                            h('Button', {
-                                props: {
-                                    type: 'primary',
-                                    size: 'small'
-                                },
-                                on: {
-                                    click: () => {
-                                        this.updatePlinksModal(params.row);
-                                    }
-                                }
-                            }, '编辑'),
-                            h('Poptip',{
-                                props: {
-                                    confirm: true,
-                                    title: '您确定要删除这条数据吗?',
-                                    transfer: true,
-                                    placement: 'top-end'
-                                },
-                                on: {
-                                    'on-ok': () => {
-                                        currentRow.isDeleting = true;
-                                        this.delPlinks(params);
-                                    }
-                                }
-                            },[
-                                h('Button', {
-                                    props: {
-                                        type: 'error',
-                                        size: 'small',
-                                        placement: 'top',
-                                        loading: currentRow.isDeleting
-                                    },
-                                    style: {
-                                        margin: '0 5px'
-                                    }
-                                }, '删除')
-                            ])
-                        ]);
+                  }
+                },
+                "编辑"
+              ),
+              h(
+                "Poptip",
+                {
+                  props: {
+                    confirm: true,
+                    title: "您确定要删除这条数据吗?",
+                    transfer: true,
+                    placement: "top-end"
+                  },
+                  on: {
+                    "on-ok": () => {
+                      currentRow.isDeleting = true;
+                      this.delPlinks(params);
                     }
-                }],
-            count: 0, // 数据总条数
-            addPlinksModalVisible: false,
-            addPlinksForm: {
-                name: '', // 名称
-                jump_link: '', // 跳转的页面
-                mark: '', // 备注
-                event_type: 0, // 活动类型，0:赛事；1:任务；2:第三方推广
-                event_id: '' // 活动id。目前为活动id
-            },
-            addPlinksFormRules: {
-                event_id: [
-                    { type: 'number', required: true, message: '请选择需要推广的活动', trigger: 'change' }
-                ],
-                name: [
-                    { required: true, message: '请输入推广链接名称', trigger: 'blur' }
-                ],
-                jump_link: [
-                    { type: 'url', required: true, message: '请输入推广链接', trigger: 'blur' }
+                  }
+                },
+                [
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "error",
+                        size: "small",
+                        placement: "top",
+                        loading: currentRow.isDeleting
+                      },
+                      style: {
+                        margin: "0 5px"
+                      }
+                    },
+                    "删除"
+                  )
                 ]
-            },
-            addPlinksFormLoading: false,
-            updatePlinksModalVisible: false,
-            updatePlinksForm: {},
-            updatePlinksFormLoading: false
+              )
+            ]);
+          }
         }
-    },
-    mounted: function() {
-        this.$nextTick(function() {
-            this.getEventList(0);
-            this.getPlinks();
+      ],
+      count: 0, // 数据总条数
+      addPlinksModalVisible: false,
+      addPlinksForm: {
+        name: "", // 名称
+        jump_link: "", // 跳转的页面
+        mark: "", // 备注
+        event_type: 0, // 活动类型，0:赛事；1:任务；2:第三方推广
+        event_id: "" // 活动id。目前为活动id
+      },
+      addPlinksFormRules: {
+        event_id: [
+          {
+            type: "number",
+            required: true,
+            message: "请选择需要推广的活动",
+            trigger: "change"
+          }
+        ],
+        name: [{ required: true, message: "请输入推广链接名称", trigger: "blur" }],
+        jump_link: [
+          { type: "url", required: true, message: "请输入推广链接", trigger: "blur" }
+        ]
+      },
+      addPlinksFormLoading: false,
+      updatePlinksModalVisible: false,
+      updatePlinksForm: {},
+      updatePlinksFormLoading: false
+    };
+  },
+  mounted: function() {
+    this.$nextTick(function() {
+      this.getEventList(0);
+      this.getPlinks();
+    });
+  },
+  methods: {
+    // 获取活动列表:type-0:用于查询；1:新增
+    getEventList(type) {
+      let _event_type =
+        type == 0 ? this.searchForm.event_type : this.addPlinksForm.event_type;
+      let _params = {
+        page: 1,
+        page_size: 1000,
+        event_type: _event_type,
+        subject: ""
+      };
+      this.event_ids = [];
+      type == 0
+        ? (this.searchForm.event_id = "")
+        : (this.addPlinksForm.event_id = "");
+
+      let params = this.$util.deleteEmptyObj(_params);
+      this.$axios
+        .get("/admin/event", { params })
+        .then(res => {
+          let list = res.data.list;
+          if (list.length != 0) {
+            for (let i = 0; i < list.length; i++) {
+              const options = {};
+              options.label = list[i].subject;
+              options.value = list[i].id;
+              this.event_ids.push(options);
+            }
+          }
         })
+        .catch(error => {});
     },
-    methods: {
-        // 获取活动列表:type-0:用于查询；1:新增
-        getEventList(type) {
-            let _event_type = type == 0 ? this.searchForm.event_type : this.addPlinksForm.event_type;
-            let _params = {
-                page: 1,
-                page_size: 1000,
-                event_type: _event_type,
-                subject: ''
-            }
-            this.event_ids = [];
-            type == 0 ? this.searchForm.event_id = '' : this.addPlinksForm.event_id = '';
-            this.$axios.get('/admin/event', { params: _params }).then(res => {
-                let list = res.data.list;
-                if (list.length != 0) {
-                    for (let i = 0; i < list.length; i++) {
-                        const options = {};
-                        options.label = list[i].subject;
-                        options.value = list[i].id;
-                        this.event_ids.push(options);
-                    }
-                }
-            }).catch(error=>{})
-        },
-        // 获取推广链接列表
-        getPlinks() {
-            this.$axios.get('/admin/plinks', { params: this.searchForm }).then(res => {
-                this.list = res.data.list;
-                if (res.data.count >= this.searchForm.page_size) {
-                    this.count = res.data.count;
-                    this.isShowPage = true;
-                } else {
-                    this.isShowPage = false;
-                }
-            }).catch(error=>{})
-        },
-        // 翻页
-        handlePageChange(cur_page) {
-            this.searchForm.page = cur_page;
-            this.getPlinks();
-        },
-        // 改变每页大小
-        handlePageSizeChange(page_size) {
-            this.searchForm.page_size = page_size;
-            this.getPlinks();
-        },
-        // 点击确定添加按钮
-        addPlinks(name) {
-            this.$refs[name].validate((valid) => {
-                if (valid) {
-                    this.addPlinksFormLoading = true;
-                    let options = {
-                            name: this.addPlinksForm.name, // 名称
-                            jump_link: this.addPlinksForm.jump_link, // 跳转的页面
-                            mark: this.addPlinksForm.mark, // 备注
-                            event_id: this.addPlinksForm.event_id // 活动id。目前为活动id
-                        };
-                    this.$axios.post('/admin/plinks', options).then(res => {
-                        if (res.code == 0) {
-                            this.getPlinks();
-                            this.$Message.success('添加成功！');
-                            this.addPlinksCancel(name);
-                            this.addPlinksFormLoading = false;
-                        }
-                    }).catch(error=>{})
-                } else {
-                    this.addPlinksFormLoading = false;
-                }
+    // 获取推广链接列表
+    getPlinks() {
+      let params = this.$util.deleteEmptyObj(this.searchForm);
+      this.$axios
+        .get("/admin/plinks", { params })
+        .then(res => {
+          this.list = res.data.list;
+          if (res.data.count >= this.searchForm.page_size) {
+            this.count = res.data.count;
+            this.isShowPage = true;
+          } else {
+            this.isShowPage = false;
+          }
+        })
+        .catch(error => {});
+    },
+    // 翻页
+    handlePageChange(cur_page) {
+      this.searchForm.page = cur_page;
+      this.getPlinks();
+    },
+    // 改变每页大小
+    handlePageSizeChange(page_size) {
+      this.searchForm.page_size = page_size;
+      this.getPlinks();
+    },
+    // 点击确定添加按钮
+    addPlinks(name) {
+      this.$refs[name].validate(valid => {
+        if (valid) {
+          this.addPlinksFormLoading = true;
+          let options = {
+            name: this.addPlinksForm.name, // 名称
+            jump_link: this.addPlinksForm.jump_link, // 跳转的页面
+            mark: this.addPlinksForm.mark, // 备注
+            event_id: this.addPlinksForm.event_id // 活动id。目前为活动id
+          };
+          this.$axios
+            .post("/admin/plinks", options)
+            .then(res => {
+              if (res.code == 0) {
+                this.getPlinks();
+                this.$Message.success("添加成功！");
+                this.addPlinksCancel(name);
+                this.addPlinksFormLoading = false;
+              }
             })
-        },
-        // 取消添加
-        addPlinksCancel(name) {
-            this.addPlinksModalVisible = false;
-            this.$refs[name].resetFields();
-        },
-        // 点击“编辑”按钮
-        updatePlinksModal(row) {
-            let options = {
-                id: row.id,
-                name: row.name, // 名称
-                jump_link: row.jump_link, // 跳转的页面
-                mark: row.mark, // 备注
-                event_id: row.event_id, // 活动id。目前为活动id
-                status: row.status
-            }
-            this.updatePlinksForm = options;
-            this.updatePlinksModalVisible = true;
-        },
-        // 保存编辑结果
-        updatePlinks(name) {
-            this.$refs[name].validate((valid) => {
-                if (valid) {
-                    this.updatePlinksFormLoading = true;
-                    this.$axios.put('/admin/plinks/' + this.updatePlinksForm.id, this.updatePlinksForm).then(res => {
-                        if (res.code == 0) {
-                            this.getPlinks();
-                            this.$Message.success('更新成功！');
-                            this.updatePlinksFormLoading = false;
-                            this.updatePlinksModalVisible = false;
-                        }
-                    }).catch(error => {
-                        this.updatePlinksFormLoading = false;
-                    })
-                } else {
-                    this.updatePlinksFormLoading = false;
-                }
-            })
-        },
-        // 删除推广链接
-        delPlinks(params) {
-            this.$axios.delete('/admin/plinks/' + params.row.id).then(res => {
-                this.list.splice(params.index, 1);
-            }).catch(error=>{})
+            .catch(error => {});
+        } else {
+          this.addPlinksFormLoading = false;
         }
+      });
+    },
+    // 取消添加
+    addPlinksCancel(name) {
+      this.addPlinksModalVisible = false;
+      this.$refs[name].resetFields();
+    },
+    // 点击“编辑”按钮
+    updatePlinksModal(row) {
+      let options = {
+        id: row.id,
+        name: row.name, // 名称
+        jump_link: row.jump_link, // 跳转的页面
+        mark: row.mark, // 备注
+        event_id: row.event_id, // 活动id。目前为活动id
+        status: row.status
+      };
+      this.updatePlinksForm = options;
+      this.updatePlinksModalVisible = true;
+    },
+    // 保存编辑结果
+    updatePlinks(name) {
+      this.$refs[name].validate(valid => {
+        if (valid) {
+          this.updatePlinksFormLoading = true;
+          this.$axios
+            .put(
+              "/admin/plinks/" + this.updatePlinksForm.id,
+              this.updatePlinksForm
+            )
+            .then(res => {
+              if (res.code == 0) {
+                this.getPlinks();
+                this.$Message.success("更新成功！");
+                this.updatePlinksFormLoading = false;
+                this.updatePlinksModalVisible = false;
+              }
+            })
+            .catch(error => {
+              this.updatePlinksFormLoading = false;
+            });
+        } else {
+          this.updatePlinksFormLoading = false;
+        }
+      });
+    },
+    // 删除推广链接
+    delPlinks(params) {
+      this.$axios
+        .delete("/admin/plinks/" + params.row.id)
+        .then(res => {
+          this.list.splice(params.index, 1);
+        })
+        .catch(error => {});
     }
-}
+  }
+};
 </script>

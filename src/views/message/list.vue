@@ -1,8 +1,8 @@
 <template>
   <div>
     <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="80" inline>
-      <Form-item label="目标用户ID" prop="id">
-        <Input v-model="searchForm.id" placeholder="输入目标用户ID" style="width: 100px;"></Input>
+      <Form-item label="目标用户ID" prop="to_user_ids">
+        <Input v-model="searchForm.to_user_ids" placeholder="输入目标用户ID" style="width: 100px;"></Input>
       </Form-item>
       <Form-item label="消息内容" prop="title">
         <Input v-model="searchForm.title" placeholder="输入消息标题"></Input>
@@ -19,6 +19,9 @@
       <Button type="primary" @click="getMessageLists">
         <Icon type="search" size="14"></Icon>&nbsp;查询
       </Button>
+      <Button type="info" @click="$refs['searchForm'].resetFields()">
+        <Icon type="reply" size="14"></Icon>&nbsp;重置
+      </Button>
       <Button type="success" @click="sendMessageModalVisible = true">
         <Icon type="plus" size="14"></Icon>&nbsp;发送消息
       </Button>
@@ -34,13 +37,7 @@
         <Button type="primary" size="large" :loading="sendMessageFormLoading" @click="sendMessage('sendMessageForm')">确定</Button>
       </div>
       <Form ref="sendMessageForm" :model="sendMessageForm" :rules="sendMessageFormRules" label-position="right" :label-width="100">
-        <Form-item label="消息类型" prop="status">
-          <RadioGroup v-model="sendMessageForm.type">
-            <Radio :label="1">站内信</Radio>
-            <Radio :label="2">系统通知</Radio>
-          </RadioGroup>
-        </Form-item>
-        <Form-item v-if="sendMessageForm.type == 1" label="目标用户ID" prop="to_user_ids">
+        <Form-item label="目标用户ID" prop="to_user_ids">
           <Input v-model="sendMessageForm.to_user_ids" placeholder="用英文逗号隔开，指定的用户，都必须存在"></Input>
         </Form-item>
         <Form-item label="消息标题" prop="title">
@@ -69,10 +66,11 @@ export default {
       searchForm: {
         page: 1,
         page_size: 10,
-        id: null, // 可选，精确获取某个id
+        is_auto: 0, // 可选，默认0，0只显示手动发送，1只显示自动发送
+        type: 1, //1为站内信,0为系统通知
+        to_user_ids: null, // 可选，精确获取某个id
         title: null, // 通知标题，过滤类型 like
         status: 2, // 状态，1草稿，2已发布 发布后不能进行删除了和不会再次发送。
-        is_auto: 0, // 可选，默认0，0只显示手动发送，1只显示自动发送
         create_time: [] // 发布时间段
       },
       datePickerOptions: {
@@ -112,9 +110,13 @@ export default {
         type: 1, // 1-站内信；2-系统通知
         title: null, // 消息标题
         content: null, // 消息内容，支持富文本
-        to_user_ids: null // 发给那些用户的id，用英文逗号隔开。若需发送系统消息，这个参数不能传。指定的用户，都必须存在，指定后为站内信发送。
+        to_user_ids: null, // 发给那些用户的id，用英文逗号隔开。若需发送系统消息，这个参数不能传。指定的用户，都必须存在，指定后为站内信发送。
+        status: 2 // 状态，1草稿，2已发布发布后不能进行删除了。
       },
       sendMessageFormRules: {
+        to_user_ids: [
+          { required: true, message: "请输入目标用户ID", trigger: "blur" }
+        ],
         title: [{ required: true, message: "请输入消息标题", trigger: "blur" }],
         content: [{ required: true, message: "请输入消息内容", trigger: "blur" }]
       },
@@ -124,16 +126,6 @@ export default {
           type: "index",
           width: 50,
           align: "center"
-        },
-        {
-          title: "消息类型",
-          key: "to_user_ids",
-          width: 160,
-          sortable: true,
-          render: (h, params) => {
-            if (params.row.to_user_ids == null) return h("span", "系统通知");
-            return h("span", "站内信");
-          }
         },
         {
           title: "目标用户ID",
@@ -161,59 +153,6 @@ export default {
           key: "update_time",
           width: 180,
           sortable: true
-        },
-        {
-          title: "操作",
-          key: "action",
-          fixed: "right",
-          width: 100,
-          align: "center",
-          render: (h, params) => {
-            let currentRow = params.row;
-            return h("span", [
-              h(
-                "Poptip",
-                {
-                  props: {
-                    confirm: true,
-                    title: "您确定要删除这条数据吗?",
-                    transfer: true,
-                    placement: "top-end"
-                  },
-                  on: {
-                    "on-ok": () => {
-                      currentRow.isDeleting = true;
-                      this.$axios
-                        .delete("/admin/msg/" + params.row.id)
-                        .then(res => {
-                          this.list.splice(params.index, 1);
-                        })
-                        .catch(error => {
-                          currentRow.isDeleting = false;
-                        });
-                    }
-                  }
-                },
-                [
-                  h(
-                    "Button",
-                    {
-                      props: {
-                        type: "error",
-                        size: "small",
-                        placement: "top",
-                        loading: currentRow.isDeleting
-                      },
-                      style: {
-                        margin: "0 5px"
-                      }
-                    },
-                    "删除"
-                  )
-                ]
-              )
-            ]);
-          }
         }
       ],
       isShowPage: false,

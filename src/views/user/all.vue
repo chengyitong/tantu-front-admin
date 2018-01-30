@@ -51,10 +51,14 @@
       </Button>
     </Form>
     <div style="margin-bottom: 10px;">
-      <Button v-show="searchForm.a_9_is_recommend == 0" @click="userRecommends">批量推荐</Button>
-      <Button v-show="searchForm.a_9_is_recommend == 1" @click="userCancelRecommends">取消推荐</Button>
+      <Button @click="userRecommends">批量推荐</Button>
+      <Button @click="userCancelRecommends">取消推荐</Button>
     </div>
     <Table ref="selection" :loading="table_loading" @on-selection-change="handleSelectionChange" :columns="list_columns" :data="list"></Table>
+    <div style="margin-top: 10px;">
+      <Button @click="userRecommends">批量推荐</Button>
+      <Button @click="userCancelRecommends">取消推荐</Button>
+    </div>
     <Page v-if="count > 0" :total="count" show-total :page-size-opts="[10,20,30,40]" show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
 
     <!-- 添加用户弹框 -->
@@ -144,7 +148,7 @@ export default {
         a_9_id: null, // 用户ID
         a_9_account: null, // 用户名
         a_9_nickname: null, // 用户昵称
-        a_9_is_recommend: 0, // 是否推荐 0-否；1-是
+        a_9_is_recommend: null, // 是否推荐 0-否；1-是
         a_9_status: 1, // 账号状态：1:正常；2:普通禁用；3:永久封号
         a_9_create_time: [], //注册时间段，数组
         mobile_9_num: null, //手机号码
@@ -217,8 +221,11 @@ export default {
           fixed: "left",
           align: "center",
           render: (h, params) => {
+            let is_recommend = params.row.is_recommend;
+            let is_recommend_str = is_recommend == 0 ? "【否】" : "【是】";
             return h("span", [
               h("p", params.row.nickname),
+              h("p", "是否推荐" + is_recommend_str),
               h("p", "ID:" + params.row.id)
             ]);
           }
@@ -656,7 +663,7 @@ export default {
         {
           title: "账号状态",
           key: "status",
-          width: 110,
+          width: 100,
           sortable: true,
           align: "center",
           fixed: "right",
@@ -719,65 +726,29 @@ export default {
           title: "操作",
           key: "action",
           fixed: "right",
-          width: 160,
+          width: 100,
           align: "center",
           render: (h, params) => {
             let currentRow = params.row;
-            return h("span", [
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "small"
-                  },
-                  style: {
-                    marginLeft: "5px"
-                  },
-                  on: {
-                    click: () => {
-                      // this.show(params.index)
-                      this.resetPasswordModal(params.row);
-                    }
-                  }
+            return h(
+              "Button",
+              {
+                props: {
+                  type: "primary",
+                  size: "small"
                 },
-                "重置密码"
-              )
-              // h(
-              //   "Poptip",
-              //   {
-              //     props: {
-              //       confirm: true,
-              //       title: "您确定要删除这条数据吗?",
-              //       transfer: true,
-              //       placement: "top-end"
-              //     },
-              //     on: {
-              //       "on-ok": () => {
-              //         currentRow.isDeleting = true;
-              //         this.list.splice(params.index, 1);
-              //       }
-              //     }
-              //   },
-              //   [
-              //     h(
-              //       "Button",
-              //       {
-              //         props: {
-              //           type: "error",
-              //           size: "small",
-              //           placement: "top",
-              //           loading: currentRow.isDeleting
-              //         },
-              //         style: {
-              //           margin: "0 5px"
-              //         }
-              //       },
-              //       "删除"
-              //     )
-              //   ]
-              // )
-            ]);
+                style: {
+                  marginLeft: "5px"
+                },
+                on: {
+                  click: () => {
+                    // this.show(params.index)
+                    this.resetPasswordModal(params.row);
+                  }
+                }
+              },
+              "重置密码"
+            );
           }
         }
       ],
