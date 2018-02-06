@@ -31,20 +31,20 @@
     </FormItem>
     <Form-item label="首页活动缩略图" prop="subject_banner_index">
       <Input v-model="formValidate.subject_banner_index" disabled placeholder="请上传用于展示在首页活动列表的缩略图" size="large" @keyup.enter.native="addBanner('addBannerForm')"></Input>
-      <Upload ref="subject_banner_index_upload" :action="'http://' + upload_domain" :data="upload_data" :show-upload-list="false" :before-upload="beforeUpload" :on-success="uploadSuccess" :format="['jpg','jpeg','png']">
+      <Upload ref="subject_banner_index_upload" :action="upload_domain" :data="upload_data" :show-upload-list="false" :before-upload="beforeUpload" :on-success="uploadSuccess" :format="['jpg','jpeg','png']">
         <Button type="primary" icon="ios-cloud-upload-outline" id="subject_banner_index">上传首页活动缩略图</Button> 建议尺寸：354 * 176
       </Upload>
     </Form-item>
-    <Form-item label="活动列表缩略图" prop="subject_banner_detail">
-      <Input v-model="formValidate.subject_banner_detail" disabled placeholder="请上传活动列表缩略图" size="large" @keyup.enter.native="addBanner('addBannerForm')"></Input>
-      <Upload ref="subject_banner_detail_upload" :action="'http://' + upload_domain" :data="upload_data" :before-upload="beforeUpload" :on-success="uploadSuccess" :format="['jpg','jpeg','png']">
-        <Button type="primary" icon="ios-cloud-upload-outline" id="subject_banner_detail">上传活动列表缩略图</Button> 建议尺寸：566 * 260
+    <Form-item label="活动列表缩略图" prop="subject_banner_list">
+      <Input v-model="formValidate.subject_banner_list" disabled placeholder="请上传活动列表缩略图" size="large" @keyup.enter.native="addBanner('addBannerForm')"></Input>
+      <Upload ref="subject_banner_list_upload" :action="upload_domain" :data="upload_data" :before-upload="beforeUpload" :on-success="uploadSuccess" :format="['jpg','jpeg','png']">
+        <Button type="primary" icon="ios-cloud-upload-outline" id="subject_banner_list">上传活动列表缩略图</Button> 建议尺寸：566 * 260
       </Upload>
     </Form-item>
-    <Form-item label="活动详情页缩略图" prop="subject_banner_list">
-      <Input v-model="formValidate.subject_banner_list" disabled placeholder="请上传活动详情页缩略图" size="large" @keyup.enter.native="addBanner('addBannerForm')"></Input>
-      <Upload ref="subject_banner_list_upload" :action="'http://' + upload_domain" :data="upload_data" :before-upload="beforeUpload" :on-success="uploadSuccess" :format="['jpg','jpeg','png']">
-        <Button type="primary" icon="ios-cloud-upload-outline" id="subject_banner_list">上传活动详情页缩略图</Button> 建议尺寸：1920 * 520
+    <Form-item label="活动详情页缩略图" prop="subject_banner_detail">
+      <Input v-model="formValidate.subject_banner_detail" disabled placeholder="请上传活动详情页缩略图" size="large" @keyup.enter.native="addBanner('addBannerForm')"></Input>
+      <Upload ref="subject_banner_detail_upload" :action="upload_domain" :data="upload_data" :before-upload="beforeUpload" :on-success="uploadSuccess" :format="['jpg','jpeg','png']">
+        <Button type="primary" icon="ios-cloud-upload-outline" id="subject_banner_detail">上传活动详情页缩略图</Button> 建议尺寸：1920 * 520
       </Upload>
     </Form-item>
     <FormItem label="活动外链" prop="link">
@@ -63,114 +63,114 @@
   </Form>
 </template>
 <script>
-import quillEditor from "../my_components/quill-editor/quillEditor";
-import md5 from "md5";
+import quillEditor from '../my_components/quill-editor/quillEditor';
+import md5 from 'md5';
 export default {
   data() {
     return {
       formValidate: {
         event_type: 0, // 活动类型：0-赛事；1-任务
         is_crousel: 1, // 是否在首页显示轮播，0不轮播，1轮播
-        subject: "", // 活动标题
-        award: "", // 奖品
-        start_time: "", // 开始时间
-        end_time: "", // 结束时间
-        subject_banner_index: "", // 首页活动缩略图
-        subject_banner_detail: "", // 活动详情页缩略图
-        subject_banner_list: "", // 活动列表缩略图
-        link: "", // 首页外链url
-        status: "", // 活动状态：1草稿，2发布，3评奖，4公示，5结束
-        description: "" // 活动介绍
+        subject: '', // 活动标题
+        award: '', // 奖品
+        start_time: '', // 开始时间
+        end_time: '', // 结束时间
+        subject_banner_index: '', // 首页活动缩略图
+        subject_banner_detail: '', // 活动详情页缩略图
+        subject_banner_list: '', // 活动列表缩略图
+        link: '', // 首页外链url
+        status: '', // 活动状态：1草稿，2发布，3评奖，4公示，5结束
+        description: '' // 活动介绍
       },
       ruleValidate: {
         event_type: [
           {
             required: true,
-            type: "number",
-            message: "请选择活动类型",
-            trigger: "change"
+            type: 'number',
+            message: '请选择活动类型',
+            trigger: 'change'
           }
         ],
         is_crousel: [
           {
             required: true,
-            type: "number",
-            message: "请选择是否在首页展示",
-            trigger: "change"
+            type: 'number',
+            message: '请选择是否在首页展示',
+            trigger: 'change'
           }
         ],
         subject: [
           {
             required: true,
-            message: "请填写活动标题",
-            trigger: "blur"
+            message: '请填写活动标题',
+            trigger: 'blur'
           }
         ],
         award: [
           {
             required: true,
-            message: "请填写活动奖品",
-            trigger: "blur"
+            message: '请填写活动奖品',
+            trigger: 'blur'
           }
         ],
         start_time: [
           {
             required: true,
-            type: "date",
-            message: "请选择活动开始日期",
-            trigger: "change"
+            type: 'date',
+            message: '请选择活动开始日期',
+            trigger: 'change'
           }
         ],
         end_time: [
           {
             required: true,
-            type: "date",
-            message: "请选择活动结束日期",
-            trigger: "change"
+            type: 'date',
+            message: '请选择活动结束日期',
+            trigger: 'change'
           }
         ],
         subject_banner_index: [
           {
             required: true,
-            type: "url",
-            message: "请上传首页活动缩略图",
-            trigger: "blur"
+            type: 'url',
+            message: '请上传首页活动缩略图',
+            trigger: 'blur'
           }
         ],
         subject_banner_detail: [
           {
             required: true,
-            type: "url",
-            message: "请上传活动详情页缩略图",
-            trigger: "blur"
+            type: 'url',
+            message: '请上传活动详情页缩略图',
+            trigger: 'blur'
           }
         ],
         subject_banner_list: [
           {
             required: true,
-            type: "url",
-            message: "请上传活动列表缩略图",
-            trigger: "blur"
+            type: 'url',
+            message: '请上传活动列表缩略图',
+            trigger: 'blur'
           }
         ],
         description: [
           {
             required: true,
-            message: "请填写活动详情",
-            trigger: "blur"
+            message: '请填写活动详情',
+            trigger: 'blur'
           }
         ]
       },
       upload_data: {
-        token: "",
-        key: ""
+        token: '',
+        key: ''
       },
-      upload_domain: "",
-      cur_upload: "" // 当前上传的目标
+      upload_domain: '',
+      cur_upload: '' // 当前上传的目标
     };
   },
   components: {
-    "quill-editor": quillEditor
+    'quill-editor': quillEditor
   },
   mounted: function() {
     this.$nextTick(function() {
@@ -180,73 +180,67 @@ export default {
   methods: {
     // 获取活动详情
     getEventDetail() {
-      this.$axios
-        .get("/admin/event/details/" + this.$route.params.event_id)
-        .then(res => {
-          let options = {
-            event_type: res.data.event_type, // 活动类型：0-赛事；1-任务
-            is_crousel: res.data.is_crousel, // 是否在首页显示轮播，0不轮播，1轮播
-            subject: res.data.subject, // 活动标题
-            award: res.data.award, // 奖品
-            start_time: res.data.start_time, // 开始时间
-            end_time: res.data.end_time, // 结束时间
-            subject_banner_index: res.data.subject_banner_index, // 首页活动缩略图
-            subject_banner_detail: res.data.subject_banner_detail, // 活动详情页缩略图
-            subject_banner_list: res.data.subject_banner_list, // 活动列表缩略图
-            link: res.data.link, // 首页外链url
-            status: res.data.status, // 活动状态：1草稿，2发布，3评奖，4公示，5结束
-            description: res.data.description // 活动介绍
-          };
-          this.formValidate = options;
-        });
+      this.$axios.get('/admin/event/details/' + this.$route.params.event_id).then(res => {
+        let options = {
+          event_type: res.data.event_type, // 活动类型：0-赛事；1-任务
+          is_crousel: res.data.is_crousel, // 是否在首页显示轮播，0不轮播，1轮播
+          subject: res.data.subject, // 活动标题
+          award: res.data.award, // 奖品
+          start_time: res.data.start_time, // 开始时间
+          end_time: res.data.end_time, // 结束时间
+          subject_banner_index: res.data.subject_banner_index, // 首页活动缩略图
+          subject_banner_detail: res.data.subject_banner_detail, // 活动详情页缩略图
+          subject_banner_list: res.data.subject_banner_list, // 活动列表缩略图
+          link: res.data.link, // 首页外链url
+          status: res.data.status, // 活动状态：1草稿，2发布，3评奖，4公示，5结束
+          description: res.data.description // 活动介绍
+        };
+        this.formValidate = options;
+      });
     },
     // 获取上传七牛token
     getFreeUploadToken(type, file) {
-      return this.$axios
-        .post("/admin/upload/token/free", { type })
-        .then(res => {
-          this.upload_domain = res.data.upload_domain;
-          let key = res.data.keyPrefix;
-          if (file != undefined) {
-            let ext = this.$util.getFileExtension(file.name);
-            key = key + md5(file.name).substring(26, 32) + "." + ext;
+      return this.$axios.post('/admin/upload/token/free', { type }).then(res => {
+        this.upload_domain = window.location.protocol + '//' + res.data.upload_domain;
+        let key = res.data.keyPrefix;
+        if (file != undefined) {
+          let ext = this.$util.getFileExtension(file.name);
+          key = key + md5(file.name).substring(26, 32) + '.' + ext;
+        }
+        this.upload_data = {
+          token: res.data.token,
+          key
+        };
+        this.$Spin.show({
+          render: h => {
+            return h('div', [
+              h('Icon', {
+                class: 'demo-spin-icon-load',
+                props: {
+                  type: 'load-c',
+                  size: 18
+                }
+              }),
+              h('div', '正在上传')
+            ]);
           }
-          this.upload_data = {
-            token: res.data.token,
-            key
-          };
-          this.$Spin.show({
-            render: h => {
-              return h("div", [
-                h("Icon", {
-                  class: "demo-spin-icon-load",
-                  props: {
-                    type: "load-c",
-                    size: 18
-                  }
-                }),
-                h("div", "正在上传")
-              ]);
-            }
-          });
         });
+      });
     },
     beforeUpload(file) {
       let node_child = event.currentTarget.parentNode.children;
       this.cur_upload = node_child[1].id;
-      return this.getFreeUploadToken("event_thumb", file);
+      return this.getFreeUploadToken('event_thumb', file);
     },
     // 图片上传成功回调
     uploadSuccess(response, file, fileList) {
-      this.$axios
-        .post(response.hReturnUrl, { upload_ret: JSON.stringify(response) })
-        .then(res => {
-          this.$Spin.hide();
-          let cur_upload = this.cur_upload;
-          this.$refs[cur_upload + "_upload"].clearFiles(); // 插入成功后清除input的内容
-          let banner_url = res.data.full_url;
-          this.formValidate[cur_upload] = banner_url;
-        });
+      this.$axios.post(response.hReturnUrl, { upload_ret: JSON.stringify(response) }).then(res => {
+        this.$Spin.hide();
+        let cur_upload = this.cur_upload;
+        this.$refs[cur_upload + '_upload'].clearFiles(); // 插入成功后清除input的内容
+        let banner_url = res.data.full_url;
+        this.formValidate[cur_upload] = banner_url;
+      });
     },
     // 获取 quill-editor 子组件的输入内容
     getQuillContent(data) {
@@ -263,21 +257,19 @@ export default {
           options.status = status;
           options.start_time = this.$util.crtTimeFtt(options.start_time);
           options.end_time = this.$util.crtTimeFtt(options.end_time);
-          this.$axios
-            .put("/admin/event/" + this.$route.params.event_id, options)
-            .then(res => {
-              if (status == 1) {
-                this.$Message.success("草稿保存成功，可在活动列表中查看！");
-              } else if (status == 2) {
-                this.$Message.success("活动发布成功，可在活动列表中查看！");
-                this.$refs[name].resetFields();
-              }
-              setTimeout(() => {
-                this.$router.push({ path: "/activity/list" });
-              }, 200);
-            });
+          this.$axios.put('/admin/event/' + this.$route.params.event_id, options).then(res => {
+            if (status == 1) {
+              this.$Message.success('草稿保存成功，可在活动列表中查看！');
+            } else if (status == 2) {
+              this.$Message.success('活动发布成功，可在活动列表中查看！');
+              this.$refs[name].resetFields();
+            }
+            setTimeout(() => {
+              this.$router.push({ path: '/activity/list' });
+            }, 200);
+          });
         } else {
-          this.$Message.error("还有必填项未填写");
+          this.$Message.error('还有必填项未填写');
         }
       });
     }

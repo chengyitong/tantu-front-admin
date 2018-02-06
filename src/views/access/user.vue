@@ -2,8 +2,7 @@
   <div>
     <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="60" inline>
       <Form-item label="角色">
-        <Select v-model="searchForm.access_9_group_id" filterable @on-change="getUserLists">
-          <Option :value="0" :key="0">不限</Option>
+        <Select v-model="searchForm.access_9_group_id" clearable filterable @on-change="getUserLists" placeholder="默认不限">
           <Option v-for="(item,index) in group_options" :value="item.id" :key="item.id">{{item.title}}</Option>
         </Select>
       </Form-item>
@@ -63,8 +62,8 @@
         <Form-item label="姓名" prop="name">
           <Input v-model="updateUserForm.name" placeholder="请输入用户真实姓名"></Input>
         </Form-item>
-        <Form-item label="昵称" prop="username">
-          <Input v-model="updateUserForm.username" placeholder="请输入用户昵称，用于登录"></Input>
+        <Form-item label="登录账号" prop="username">
+          <Input v-model="updateUserForm.username" placeholder="请输入登录账号，可和姓名一样"></Input>
         </Form-item>
         <Form-item label="状态" prop="status">
           <RadioGroup v-model="updateUserForm.status">
@@ -94,12 +93,12 @@
 </template>
 
 <script>
-import md5 from "md5";
+import md5 from 'md5';
 export default {
   data() {
     const valideRePassword = (rule, value, callback) => {
       if (value !== this.resetPasswordForm.password) {
-        callback(new Error("两次输入密码不一致"));
+        callback(new Error('两次输入密码不一致'));
       } else {
         callback();
       }
@@ -110,7 +109,7 @@ export default {
         page_size: 10,
         a_9_username: null, // 用户名（登录账号）
         a_9_name: null, // 用户真实姓名
-        access_9_group_id: 0
+        access_9_group_id: null
       },
       group_options: [], // 角色对象
       addUserFormLoading: false,
@@ -125,55 +124,55 @@ export default {
       addUserFormRules: {
         group_id: [
           {
-            type: "number",
+            type: 'number',
             required: true,
-            message: "请选择用户角色",
-            trigger: "change"
+            message: '请选择用户角色',
+            trigger: 'change'
           }
         ],
-        name: [{ required: true, message: "请输入用户真实姓名", trigger: "blur" }],
-        username: [{ required: true, message: "请输入登录账号", trigger: "blur" }],
-        password: [{ required: true, message: "请输入登录密码", trigger: "blur" }]
+        name: [{ required: true, message: '请输入用户真实姓名', trigger: 'blur' }],
+        username: [{ required: true, message: '请输入登录账号', trigger: 'blur' }],
+        password: [{ required: true, message: '请输入登录密码', trigger: 'blur' }]
       },
       list: [],
       list_columns: [
         {
-          type: "index",
+          type: 'index',
           width: 50,
-          align: "center"
+          align: 'center'
         },
         {
-          title: "角色",
-          key: "roleName",
+          title: '角色',
+          key: 'roleName',
           render: (h, params) => {
             if (params.row.gro.length == 0) return false;
-            return h("span", params.row.gro[0].title);
+            return h('span', params.row.gro[0].title);
           }
         },
         {
-          title: "登录帐号",
-          key: "username",
+          title: '登录帐号',
+          key: 'username',
           sortable: true
         },
         {
-          title: "真实姓名",
-          key: "name",
+          title: '真实姓名',
+          key: 'name',
           sortable: true
         },
         {
-          title: "状态",
-          key: "status",
+          title: '状态',
+          key: 'status',
           width: 120,
-          align: "center",
+          align: 'center',
           render: (h, params) => {
-            let status_arr = ["", "正常", "禁用"];
-            let type_arr = ["", "success", "error"];
+            let status_arr = ['', '正常', '禁用'];
+            let type_arr = ['', 'success', 'error'];
             return h(
-              "Button",
+              'Button',
               {
                 props: {
                   type: type_arr[params.row.status],
-                  size: "small"
+                  size: 'small'
                 }
               },
               status_arr[params.row.status]
@@ -181,24 +180,24 @@ export default {
           }
         },
         {
-          title: "添加时间",
-          key: "create_time",
+          title: '添加时间',
+          key: 'create_time',
           sortable: true
         },
         {
-          title: "操作",
-          key: "action",
+          title: '操作',
+          key: 'action',
           width: 200,
-          align: "center",
+          align: 'center',
           render: (h, params) => {
             let currentRow = params.row;
-            return h("span", [
+            return h('span', [
               h(
-                "Button",
+                'Button',
                 {
                   props: {
-                    type: "primary",
-                    size: "small"
+                    type: 'primary',
+                    size: 'small'
                   },
                   on: {
                     click: () => {
@@ -207,17 +206,17 @@ export default {
                     }
                   }
                 },
-                "编辑"
+                '编辑'
               ),
               h(
-                "Button",
+                'Button',
                 {
                   props: {
-                    type: "info",
-                    size: "small"
+                    type: 'info',
+                    size: 'small'
                   },
                   style: {
-                    marginLeft: "5px"
+                    marginLeft: '5px'
                   },
                   on: {
                     click: () => {
@@ -226,44 +225,42 @@ export default {
                     }
                   }
                 },
-                "修改密码"
+                '修改密码'
               ),
               h(
-                "Poptip",
+                'Poptip',
                 {
                   props: {
                     confirm: true,
-                    title: "您确定要删除这条数据吗?",
+                    title: '您确定要删除这条数据吗?',
                     transfer: true,
-                    placement: "top-end"
+                    placement: 'top-end'
                   },
                   on: {
-                    "on-ok": () => {
+                    'on-ok': () => {
                       currentRow.isDeleting = true;
-                      this.$axios
-                        .delete("/admin/AdminUser/" + params.row.id)
-                        .then(res => {
-                          this.list.splice(params.index, 1);
-                          this.$Message.success("删除成功");
-                        });
+                      this.$axios.delete('/admin/AdminUser/' + params.row.id).then(res => {
+                        this.list.splice(params.index, 1);
+                        this.$Message.success('删除成功');
+                      });
                     }
                   }
                 },
                 [
                   h(
-                    "Button",
+                    'Button',
                     {
                       props: {
-                        type: "error",
-                        size: "small",
-                        placement: "top",
+                        type: 'error',
+                        size: 'small',
+                        placement: 'top',
                         loading: currentRow.isDeleting
                       },
                       style: {
-                        margin: "0 5px"
+                        margin: '0 5px'
                       }
                     },
-                    "删除"
+                    '删除'
                   )
                 ]
               )
@@ -281,22 +278,15 @@ export default {
       updateUserModalVisible: false,
       updateUserFormLoading: false,
       resetPasswordForm: {
-        id: "",
-        password: "",
-        confirm_password: ""
+        id: '',
+        password: '',
+        confirm_password: ''
       },
       resetPasswordModalVisible: false,
       resetPasswordFormLoading: false,
       resetPasswordFormRules: {
-        password: [
-          { required: true, message: "请输入新密码", trigger: "blur" },
-          { min: 6, message: "请至少输入6个字符", trigger: "blur" },
-          { max: 32, message: "最多输入32个字符", trigger: "blur" }
-        ],
-        confirm_password: [
-          { required: true, message: "请再次输入新密码", trigger: "blur" },
-          { validator: valideRePassword, trigger: "blur" }
-        ]
+        password: [{ required: true, message: '请输入新密码', trigger: 'blur' }, { min: 6, message: '请至少输入6个字符', trigger: 'blur' }, { max: 32, message: '最多输入32个字符', trigger: 'blur' }],
+        confirm_password: [{ required: true, message: '请再次输入新密码', trigger: 'blur' }, { validator: valideRePassword, trigger: 'blur' }]
       }
     };
   },
@@ -309,16 +299,15 @@ export default {
   methods: {
     // 获取角色列表用于添加管理员
     getAdminGroup() {
-      this.$axios.get("/admin/AdminGroup").then(res => {
+      this.$axios.get('/admin/AdminGroup').then(res => {
         this.group_options = res.data.list;
       });
     },
     getUserLists() {
-      this.$axios
-        .get("/admin/AdminUser", { params: this.searchForm })
-        .then(res => {
-          this.list = res.data.list;
-        });
+      let params = this.$util.deleteEmptyObj(this.searchForm);
+      this.$axios.get('/admin/AdminUser', { params }).then(res => {
+        this.list = res.data.list;
+      });
     },
     // 翻页
     handlePageChange(cur_page) {
@@ -342,11 +331,11 @@ export default {
           this.addUserFormLoading = true;
           this.addUserForm.password = md5(this.addUserForm.password);
           this.$axios
-            .post("/admin/AdminUser", this.addUserForm)
+            .post('/admin/AdminUser', this.addUserForm)
             .then(res => {
               if (res.code == 0) {
                 this.getUserLists();
-                this.$Message.success("新增成功");
+                this.$Message.success('新增成功');
                 this.addUserFormLoading = false;
                 this.addUserModalVisible = false;
                 this.$refs[name].resetFields();
@@ -361,7 +350,7 @@ export default {
     },
     // 点击“编辑”按钮
     updateUserModal(row) {
-      let group_id = "";
+      let group_id = '';
       if (row.gro.length > 0) {
         group_id = row.gro[0].id;
       }
@@ -386,14 +375,11 @@ export default {
         if (valid) {
           this.updateUserFormLoading = true;
           this.$axios
-            .put(
-              "/admin/adminuser/" + this.updateUserForm.id,
-              this.updateUserForm
-            )
+            .put('/admin/adminuser/' + this.updateUserForm.id, this.updateUserForm)
             .then(res => {
               if (res.code == 0) {
                 this.getUserLists();
-                this.$Message.success("更新成功！");
+                this.$Message.success('更新成功！');
                 this.updateUserFormLoading = false;
                 this.updateUserModalVisible = false;
               }
@@ -425,14 +411,11 @@ export default {
             password: md5(this.resetPasswordForm.password)
           };
           this.$axios
-            .put(
-              "/admin/admin_user/reset_password/" + this.resetPasswordForm.id,
-              options
-            )
+            .put('/admin/admin_user/reset_password/' + this.resetPasswordForm.id, options)
             .then(res => {
               if (res.code == 0) {
                 this.getUserLists();
-                this.$Message.success("修改成功");
+                this.$Message.success('修改成功');
                 this.resetPasswordFormLoading = false;
                 this.resetPasswordModalVisible = false;
               }

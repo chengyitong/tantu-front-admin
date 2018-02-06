@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import imgView from "../my_components/img-view/img-view";
+import imgView from '../my_components/img-view/img-view';
 export default {
   data() {
     return {
@@ -73,11 +73,11 @@ export default {
         award: null, // 奖品
         status: null // 活动状态：1草稿，2发布，3评奖，4公示，5结束
       },
-      datePickerValue: ["", ""],
+      datePickerValue: ['', ''],
       datePickerOptions: {
         shortcuts: [
           {
-            text: "最近一周",
+            text: '最近一周',
             value() {
               const end = new Date();
               const start = new Date();
@@ -86,7 +86,7 @@ export default {
             }
           },
           {
-            text: "最近一个月",
+            text: '最近一个月',
             value() {
               const end = new Date();
               const start = new Date();
@@ -95,7 +95,7 @@ export default {
             }
           },
           {
-            text: "最近三个月",
+            text: '最近三个月',
             value() {
               const end = new Date();
               const start = new Date();
@@ -106,34 +106,34 @@ export default {
         ]
       },
       // 活动列表
-      imgSrc: "", // 当前点击的图片链接
+      imgSrc: '', // 当前点击的图片链接
       showImg: false, // 显示放大的图片
       list: [],
       list_columns: [
         {
-          type: "index",
+          type: 'index',
           width: 50,
-          align: "center",
-          fixed: "left"
+          align: 'center',
+          fixed: 'left'
         },
         {
-          title: "类型",
-          key: "event_type",
+          title: '类型',
+          key: 'event_type',
           sortable: true,
           width: 110,
-          align: "center",
-          fixed: "left",
+          align: 'center',
+          fixed: 'left',
           render: (h, params) => {
             let event_type = params.row.event_type;
-            let event_type_str = event_type == 0 ? "赛事" : "任务";
-            let event_type_color = event_type == 0 ? "green" : "red";
+            let event_type_str = event_type == 0 ? '赛事' : '任务';
+            let event_type_color = event_type == 0 ? 'green' : 'red';
             return h(
-              "Tag",
+              'Tag',
               {
                 props: {
                   color: event_type_color,
-                  type: "dot",
-                  size: "small"
+                  type: 'dot',
+                  size: 'small'
                 }
               },
               event_type_str
@@ -141,41 +141,38 @@ export default {
           }
         },
         {
-          title: "活动名称",
-          key: "subject",
+          title: '活动名称',
+          key: 'subject',
           width: 340,
-          fixed: "left",
+          fixed: 'left',
           render: (h, params) => {
-            return h(
-              "span",
-              "（ID:" + params.row.id + "） " + params.row.subject
-            );
+            return h('span', '（ID:' + params.row.id + '） ' + params.row.subject);
           }
         },
         {
-          title: "投稿数量",
-          key: "product_count",
+          title: '投稿数量',
+          key: 'product_count',
           width: 110,
-          align: "center",
+          align: 'center',
           sortable: true,
           render: (h, params) => {
             return h(
-              "Poptip",
+              'Poptip',
               {
                 props: {
-                  content: "点击数字查看投稿明细",
-                  trigger: "hover",
+                  content: '点击数字查看投稿明细',
+                  trigger: 'hover',
                   transfer: true,
-                  placement: "top"
+                  placement: 'top'
                 }
               },
               [
                 h(
-                  "Button",
+                  'Button',
                   {
                     props: {
-                      type: "success",
-                      size: "small"
+                      type: 'success',
+                      size: 'small'
                     }
                     // on: {
                     //   click: () => {
@@ -190,29 +187,29 @@ export default {
           }
         },
         {
-          title: "参与人数",
-          key: "user_count",
+          title: '参与人数',
+          key: 'user_count',
           width: 110,
-          align: "center",
+          align: 'center',
           sortable: true,
           render: (h, params) => {
             return h(
-              "Poptip",
+              'Poptip',
               {
                 props: {
-                  content: "点击数字查看参与明细",
-                  trigger: "hover",
+                  content: '点击数字查看参与明细',
+                  trigger: 'hover',
                   transfer: true,
-                  placement: "top"
+                  placement: 'top'
                 }
               },
               [
                 h(
-                  "Button",
+                  'Button',
                   {
                     props: {
-                      type: "warning",
-                      size: "small"
+                      type: 'warning',
+                      size: 'small'
                     }
                     // on: {
                     //   click: () => {
@@ -227,51 +224,51 @@ export default {
           }
         },
         {
-          title: "开始日期",
-          key: "start_time",
+          title: '开始日期',
+          key: 'start_time',
           width: 110,
           sortable: true
         },
         {
-          title: "结束日期",
-          key: "end_time",
+          title: '结束日期',
+          key: 'end_time',
           width: 110,
           sortable: true
         },
         {
-          title: "奖品",
-          key: "award",
+          title: '奖品',
+          key: 'award',
           width: 240,
           sortable: true
         },
         {
-          title: "主页缩略图",
-          key: "subject_banner_index",
+          title: '首页活动缩略图',
+          key: 'subject_banner_index',
           width: 160,
-          align: "center",
+          align: 'center',
           render: (h, params) => {
             return h(
-              "Poptip",
+              'Poptip',
               {
                 props: {
-                  content: "主页缩略图",
-                  trigger: "hover",
+                  content: '首页活动缩略图',
+                  trigger: 'hover',
                   transfer: true,
-                  placement: "left"
+                  placement: 'left'
                 }
               },
               [
-                h("img", {
+                h('img', {
                   domProps: {
-                    src: params.row.subject_banner_index + "-h160?_="
+                    src: params.row.subject_banner_index + '-h160?_='
                   },
                   style: {
-                    marginTop: "5px",
-                    width: "100%",
-                    height: "100%",
-                    maxWidth: "200px",
-                    maxHeight: "160px",
-                    cursor: "pointer"
+                    marginTop: '5px',
+                    width: '100%',
+                    height: '100%',
+                    maxWidth: '200px',
+                    maxHeight: '160px',
+                    cursor: 'pointer'
                   },
                   on: {
                     click: () => {
@@ -280,18 +277,18 @@ export default {
                   }
                 }),
                 h(
-                  "div",
+                  'div',
                   {
-                    slot: "content"
+                    slot: 'content'
                   },
                   [
-                    h("img", {
+                    h('img', {
                       domProps: {
-                        src: params.row.subject_banner_index + "-h160?_="
+                        src: params.row.subject_banner_index + '-h160?_='
                       },
                       style: {
-                        maxWidth: "500px",
-                        maxHeight: "400px"
+                        maxWidth: '500px',
+                        maxHeight: '400px'
                       }
                     })
                   ]
@@ -301,89 +298,33 @@ export default {
           }
         },
         {
-          title: "首页Banner图",
-          key: "subject_banner_detail",
+          title: '活动列表缩略图',
+          key: 'subject_banner_list',
           width: 160,
-          align: "center",
+          align: 'center',
           render: (h, params) => {
             return h(
-              "Poptip",
+              'Poptip',
               {
                 props: {
-                  content: "首页Banner图",
-                  trigger: "hover",
+                  content: '活动列表缩略图',
+                  trigger: 'hover',
                   transfer: true,
-                  placement: "left"
+                  placement: 'left'
                 }
               },
               [
-                h("img", {
+                h('img', {
                   domProps: {
-                    src: params.row.subject_banner_detail + "-h160?_="
+                    src: params.row.subject_banner_list + '-h160?_='
                   },
                   style: {
-                    marginTop: "5px",
-                    width: "100%",
-                    height: "100%",
-                    maxWidth: "200px",
-                    maxHeight: "160px",
-                    cursor: "pointer"
-                  },
-                  on: {
-                    click: () => {
-                      this.clickImg(params.row.subject_banner_detail);
-                    }
-                  }
-                }),
-                h(
-                  "div",
-                  {
-                    slot: "content"
-                  },
-                  [
-                    h("img", {
-                      domProps: {
-                        src: params.row.subject_banner_detail + "-h160?_="
-                      },
-                      style: {
-                        maxWidth: "500px",
-                        maxHeight: "400px"
-                      }
-                    })
-                  ]
-                )
-              ]
-            );
-          }
-        },
-        {
-          title: "列表缩略图",
-          key: "subject_banner_list",
-          width: 160,
-          align: "center",
-          render: (h, params) => {
-            return h(
-              "Poptip",
-              {
-                props: {
-                  content: "列表缩略图",
-                  trigger: "hover",
-                  transfer: true,
-                  placement: "left"
-                }
-              },
-              [
-                h("img", {
-                  domProps: {
-                    src: params.row.subject_banner_list + "-h160?_="
-                  },
-                  style: {
-                    marginTop: "5px",
-                    width: "100%",
-                    height: "100%",
-                    maxWidth: "200px",
-                    maxHeight: "160px",
-                    cursor: "pointer"
+                    marginTop: '5px',
+                    width: '100%',
+                    height: '100%',
+                    maxWidth: '200px',
+                    maxHeight: '160px',
+                    cursor: 'pointer'
                   },
                   on: {
                     click: () => {
@@ -392,18 +333,18 @@ export default {
                   }
                 }),
                 h(
-                  "div",
+                  'div',
                   {
-                    slot: "content"
+                    slot: 'content'
                   },
                   [
-                    h("img", {
+                    h('img', {
                       domProps: {
-                        src: params.row.subject_banner_list + "-h160?_="
+                        src: params.row.subject_banner_list + '-h160?_='
                       },
                       style: {
-                        maxWidth: "500px",
-                        maxHeight: "400px"
+                        maxWidth: '500px',
+                        maxHeight: '400px'
                       }
                     })
                   ]
@@ -413,52 +354,108 @@ export default {
           }
         },
         {
-          title: "排序",
-          key: "sortnum",
+          title: '活动详情页缩略图',
+          key: 'subject_banner_detail',
+          width: 160,
+          align: 'center',
+          render: (h, params) => {
+            return h(
+              'Poptip',
+              {
+                props: {
+                  content: '活动详情页缩略图',
+                  trigger: 'hover',
+                  transfer: true,
+                  placement: 'left'
+                }
+              },
+              [
+                h('img', {
+                  domProps: {
+                    src: params.row.subject_banner_detail + '-h160?_='
+                  },
+                  style: {
+                    marginTop: '5px',
+                    width: '100%',
+                    height: '100%',
+                    maxWidth: '200px',
+                    maxHeight: '160px',
+                    cursor: 'pointer'
+                  },
+                  on: {
+                    click: () => {
+                      this.clickImg(params.row.subject_banner_detail);
+                    }
+                  }
+                }),
+                h(
+                  'div',
+                  {
+                    slot: 'content'
+                  },
+                  [
+                    h('img', {
+                      domProps: {
+                        src: params.row.subject_banner_detail + '-h160?_='
+                      },
+                      style: {
+                        maxWidth: '500px',
+                        maxHeight: '400px'
+                      }
+                    })
+                  ]
+                )
+              ]
+            );
+          }
+        },
+        {
+          title: '排序',
+          key: 'sortnum',
           width: 80,
           sortable: true
         },
         {
-          title: "外链",
-          key: "link",
+          title: '外链',
+          key: 'link',
           width: 100,
           sortable: true,
           render: (h, params) => {
             let link = params.row.link;
-            if (link == "") {
+            if (link == '') {
               return h(
-                "Tag",
+                'Tag',
                 {
                   props: {
-                    color: "red",
-                    type: "dot",
-                    size: "small"
+                    color: 'red',
+                    type: 'dot',
+                    size: 'small'
                   }
                 },
-                "无"
+                '无'
               );
             } else {
               return h(
-                "Poptip",
+                'Poptip',
                 {
                   props: {
                     content: link,
-                    trigger: "hover",
+                    trigger: 'hover',
                     transfer: true,
-                    placement: "top"
+                    placement: 'top'
                   }
                 },
                 [
                   h(
-                    "Tag",
+                    'Tag',
                     {
                       props: {
-                        color: "green",
-                        type: "dot",
-                        size: "small"
+                        color: 'green',
+                        type: 'dot',
+                        size: 'small'
                       }
                     },
-                    "有"
+                    '有'
                   )
                 ]
               );
@@ -466,69 +463,128 @@ export default {
           }
         },
         {
-          title: "操作",
-          key: "action",
+          title: '操作',
+          key: 'action',
           width: 130,
-          align: "center",
-          fixed: "right",
+          align: 'center',
+          fixed: 'right',
           render: (h, params) => {
             let currentRow = params.row;
             let status = params.row.status; // 1草稿，2发布，3评奖，4公示，5结束
-            let status_str = ["", "草稿", "进行中", "评奖中", "公示中", "已结束"];
-            if (status == 1 || status == 2) {
-              return h("span", [
-                h("p", status_str[status]),
+            let status_str = ['', '草稿', '进行中', '评奖中', '公示中', '已结束'];
+            if (status == 2) {
+              return h('span', [
+                h('p', status_str[status]),
                 h(
-                  "a",
+                  'a',
                   {
                     props: {
-                      type: "primary",
-                      size: "small"
+                      type: 'primary',
+                      size: 'small'
                     },
                     on: {
                       click: () => {
-                        this.$router.push("/activity/edit/" + currentRow.id);
+                        this.$router.push('/activity/edit/' + currentRow.id);
                       }
                     }
                   },
-                  "编辑详情"
+                  '编辑详情'
+                )
+              ]);
+            } else if (status == 1) {
+              return h('span', [
+                h('p', status_str[status]),
+                h(
+                  'a',
+                  {
+                    props: {
+                      type: 'primary',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.$router.push('/activity/edit/' + currentRow.id);
+                      }
+                    }
+                  },
+                  '编辑详情'
+                ),
+                h(
+                  'Poptip',
+                  {
+                    props: {
+                      confirm: true,
+                      title: '您确定要删除这条数据吗?',
+                      transfer: true,
+                      placement: 'top-end'
+                    },
+                    on: {
+                      'on-ok': () => {
+                        currentRow.isDeleting = true;
+                        this.$axios
+                          .delete('/admin/event/' + params.row.id)
+                          .then(res => {
+                            this.$Message.success('删除成功');
+                            this.getActivityLists();
+                          })
+                          .catch(error => {
+                            currentRow.isDeleting = false;
+                          });
+                      }
+                    }
+                  },
+                  [
+                    h(
+                      'a',
+                      {
+                        props: {
+                          type: 'error',
+                          size: 'small',
+                          placement: 'top',
+                          loading: currentRow.isDeleting
+                        },
+                        style: {
+                          marginLeft: '10px'
+                        }
+                      },
+                      '删除'
+                    )
+                  ]
                 )
               ]);
             } else {
-              return h("span", [
-                h("p", status_str[status]),
+              return h('span', [
+                h('p', status_str[status]),
                 h(
-                  "a",
+                  'a',
                   {
                     props: {
-                      type: "primary",
-                      size: "small"
+                      type: 'primary',
+                      size: 'small'
                     },
                     on: {
                       click: () => {
-                        this.$router.push("/activity/edit/" + currentRow.id);
+                        this.$router.push('/activity/edit/' + currentRow.id);
                       }
                     }
                   },
-                  "编辑详情"
+                  '编辑详情'
                 ),
-                h("p", [
+                h('p', [
                   h(
-                    "a",
+                    'a',
                     {
                       props: {
-                        type: "primary",
-                        size: "small"
+                        type: 'primary',
+                        size: 'small'
                       },
                       on: {
                         click: () => {
-                          this.$router.push(
-                            "/activity/publicity/" + currentRow.id
-                          );
+                          this.$router.push('/activity/publicity/' + currentRow.id);
                         }
                       }
                     },
-                    "编辑公示"
+                    '编辑公示'
                   )
                 ])
               ]);
@@ -712,74 +768,74 @@ export default {
       product_list: [],
       product_list_columns: [
         {
-          type: "index",
+          type: 'index',
           width: 50,
-          align: "center",
-          fixed: "left"
+          align: 'center',
+          fixed: 'left'
         },
         {
-          title: "ID",
-          key: "id",
+          title: 'ID',
+          key: 'id',
           width: 80,
-          align: "center",
+          align: 'center',
           sortable: true
         },
         {
-          title: "预览图",
-          key: "imgkey",
+          title: '预览图',
+          key: 'imgkey',
           width: 150,
-          align: "center",
+          align: 'center',
           render: (h, params) => {
-            return h("img", {
+            return h('img', {
               domProps: {
                 src: params.row.imgkey
               },
               style: {
-                marginTop: "5px",
-                maxWidth: "140px",
-                maxHeight: "60px"
+                marginTop: '5px',
+                maxWidth: '140px',
+                maxHeight: '60px'
               }
             });
           }
         },
         {
-          title: "名称",
-          key: "name",
+          title: '名称',
+          key: 'name',
           width: 180,
           sortable: true
         },
         {
-          title: "分类",
-          key: "classname",
+          title: '分类',
+          key: 'classname',
           sortable: true
         },
         {
-          title: "标签",
-          key: "tagname",
+          title: '标签',
+          key: 'tagname',
           sortable: true
         },
         {
-          title: "颜色",
-          key: "colorname",
+          title: '颜色',
+          key: 'colorname',
           sortable: true
         },
         {
-          title: "状态",
-          key: "status",
+          title: '状态',
+          key: 'status',
           width: 130,
-          align: "center",
+          align: 'center',
           sortable: true,
           render: (h, params) => {
             let status = params.row.status;
-            let status_str = status == 1 ? "已上架" : "已下架";
-            let status_color = status == 1 ? "green" : "red";
+            let status_str = status == 1 ? '已上架' : '已下架';
+            let status_color = status == 1 ? 'green' : 'red';
             return h(
-              "Tag",
+              'Tag',
               {
                 props: {
                   color: status_color,
-                  type: "dot",
-                  size: "small"
+                  type: 'dot',
+                  size: 'small'
                 }
               },
               status_str
@@ -787,27 +843,27 @@ export default {
           }
         },
         {
-          title: "用户",
-          key: "nickname",
+          title: '用户',
+          key: 'nickname',
           sortable: true
         },
         {
-          title: "属性",
-          key: "isfree",
+          title: '属性',
+          key: 'isfree',
           width: 120,
-          align: "center",
+          align: 'center',
           sortable: true,
           render: (h, params) => {
             let isfree = params.row.isfree;
-            let isfree_str = isfree == true ? "免费" : "收费";
-            let isfree_color = isfree == true ? "green" : "red";
+            let isfree_str = isfree == true ? '免费' : '收费';
+            let isfree_color = isfree == true ? 'green' : 'red';
             return h(
-              "Tag",
+              'Tag',
               {
                 props: {
                   color: isfree_color,
-                  type: "dot",
-                  size: "small"
+                  type: 'dot',
+                  size: 'small'
                 }
               },
               isfree_str
@@ -815,25 +871,25 @@ export default {
           }
         },
         {
-          title: "上传时间",
-          key: "ctime",
+          title: '上传时间',
+          key: 'ctime',
           width: 160,
           sortable: true
         },
         {
-          title: "操作",
-          key: "action",
+          title: '操作',
+          key: 'action',
           width: 130,
-          align: "center",
+          align: 'center',
           render: (h, params) => {
             let currentRow = params.row;
-            return h("span", [
+            return h('span', [
               h(
-                "Button",
+                'Button',
                 {
                   props: {
-                    type: "primary",
-                    size: "small"
+                    type: 'primary',
+                    size: 'small'
                   },
                   on: {
                     click: () => {
@@ -841,19 +897,19 @@ export default {
                     }
                   }
                 },
-                "编辑"
+                '编辑'
               ),
               h(
-                "Poptip",
+                'Poptip',
                 {
                   props: {
                     confirm: true,
-                    title: "您确定要删除这条数据吗?",
+                    title: '您确定要删除这条数据吗?',
                     transfer: true,
-                    placement: "top-end"
+                    placement: 'top-end'
                   },
                   on: {
-                    "on-ok": () => {
+                    'on-ok': () => {
                       currentRow.isDeleting = true;
                       this.list.splice(params.index, 1);
                     }
@@ -861,19 +917,19 @@ export default {
                 },
                 [
                   h(
-                    "Button",
+                    'Button',
                     {
                       props: {
-                        type: "error",
-                        size: "small",
-                        placement: "top",
+                        type: 'error',
+                        size: 'small',
+                        placement: 'top',
                         loading: currentRow.isDeleting
                       },
                       style: {
-                        margin: "0 5px"
+                        margin: '0 5px'
                       }
                     },
-                    "删除"
+                    '删除'
                   )
                 ]
               )
@@ -889,23 +945,23 @@ export default {
       user_list: [],
       user_list_columns: [
         {
-          type: "index",
+          type: 'index',
           width: 50,
-          align: "center"
+          align: 'center'
         },
         {
-          title: "用户ID",
-          key: "uid",
+          title: '用户ID',
+          key: 'uid',
           sortable: true
         },
         {
-          title: "用户昵称",
-          key: "nickname",
+          title: '用户昵称',
+          key: 'nickname',
           sortable: true
         },
         {
-          title: "投稿数量",
-          key: "count",
+          title: '投稿数量',
+          key: 'count',
           sortable: true
         }
       ],
@@ -914,7 +970,7 @@ export default {
     };
   },
   components: {
-    "img-view": imgView
+    'img-view': imgView
   },
   mounted: function() {
     this.$nextTick(function() {
@@ -927,23 +983,23 @@ export default {
       let datePickerValue = this.datePickerValue;
       let start_time = datePickerValue[0];
       let end_time = datePickerValue[1];
-      if (start_time == "" || start_time == undefined) {
+      if (start_time == '' || start_time == undefined) {
         this.searchForm.start_time = [];
       } else {
         this.searchForm.start_time = [start_time];
       }
-      if (end_time == "" || end_time == undefined) {
+      if (end_time == '' || end_time == undefined) {
         this.searchForm.end_time = [];
       } else {
         this.searchForm.end_time = [end_time];
       }
 
-      if (this.searchForm.type == "") this.searchForm.type = null;
-      if (this.searchForm.status == "") this.searchForm.status = null;
-      if (this.searchForm.subject == "") this.searchForm.subject = null;
-      if (this.searchForm.award == "") this.searchForm.award = null;
+      if (this.searchForm.type == '') this.searchForm.type = null;
+      if (this.searchForm.status == '') this.searchForm.status = null;
+      if (this.searchForm.subject == '') this.searchForm.subject = null;
+      if (this.searchForm.award == '') this.searchForm.award = null;
 
-      this.$axios.get("/admin/event", { params: this.searchForm }).then(res => {
+      this.$axios.get('/admin/event', { params: this.searchForm }).then(res => {
         this.list = res.data.list;
         this.count = res.data.count;
         if (res.data.count > 0) {
@@ -966,29 +1022,29 @@ export default {
     // 点击查看投稿数量明细
     productCountModal() {
       let data = this.$mock.mock({
-        "list|1-10": [
+        'list|1-10': [
           {
-            "id|+1": 10000,
-            "imgkey|1": [
-              "http://mis.tantupix.com/static/uploadfiles/event/59cfc071dd7e2.jpg",
-              "http://mis.tantupix.com/static/uploadfiles/event/59cfc07fa8913.jpg",
-              "http://mis.tantupix.com/static/uploadfiles/event/59cfc0876bcc3.jpg",
-              "http://mis.tantupix.com/static/uploadfiles/event/59cfc407d1a91.jpg"
+            'id|+1': 10000,
+            'imgkey|1': [
+              'http://mis.tantupix.com/static/uploadfiles/event/59cfc071dd7e2.jpg',
+              'http://mis.tantupix.com/static/uploadfiles/event/59cfc07fa8913.jpg',
+              'http://mis.tantupix.com/static/uploadfiles/event/59cfc0876bcc3.jpg',
+              'http://mis.tantupix.com/static/uploadfiles/event/59cfc407d1a91.jpg'
             ], // 预览图
-            size: "@integer(1024, 102400)", // 大小
-            foldername: "@ctitle(2, 6)", // 相册
-            name: "@ctitle(2, 18)", // 图片名称
-            classids: "@range(7, 9)", // 分类id
-            classname: "@ctitle(2,5)", // 分类名称
-            tagids: "@range(3, 7)", // 标签id
-            tagname: "@ctitle(2, 4)", // 标签名称
-            colorids: "@range(4, 6)", // 颜色id
-            colorvalue: "@color", // 颜色值
-            "status|1": [0, 1], // 状态：0-下架；1-上架
-            "haspass|1": [-2, -1, 0, 1], // 审核结果：-2：待处理；-1:未通过；0:待审核；1:已发布
-            nickname: "@ctitle(2, 8)", // 用户昵称
-            "isfree|1": [true, false], // 是否收费 boolean
-            ctime: "@datetime" // 上传时间
+            size: '@integer(1024, 102400)', // 大小
+            foldername: '@ctitle(2, 6)', // 相册
+            name: '@ctitle(2, 18)', // 图片名称
+            classids: '@range(7, 9)', // 分类id
+            classname: '@ctitle(2,5)', // 分类名称
+            tagids: '@range(3, 7)', // 标签id
+            tagname: '@ctitle(2, 4)', // 标签名称
+            colorids: '@range(4, 6)', // 颜色id
+            colorvalue: '@color', // 颜色值
+            'status|1': [0, 1], // 状态：0-下架；1-上架
+            'haspass|1': [-2, -1, 0, 1], // 审核结果：-2：待处理；-1:未通过；0:待审核；1:已发布
+            nickname: '@ctitle(2, 8)', // 用户昵称
+            'isfree|1': [true, false], // 是否收费 boolean
+            ctime: '@datetime' // 上传时间
           }
         ]
       });
@@ -998,12 +1054,12 @@ export default {
     // 点击查看参与用户明细
     userCountModal() {
       let data = this.$mock.mock({
-        "list|1-20": [
+        'list|1-20': [
           {
-            "id|+1": 10000,
-            "uid|+1": 10000,
-            nickname: "@ctitle(2, 8)", // 用户昵称
-            count: "@natural(60, 100)" // 投稿数量
+            'id|+1': 10000,
+            'uid|+1': 10000,
+            nickname: '@ctitle(2, 8)', // 用户昵称
+            count: '@natural(60, 100)' // 投稿数量
           }
         ]
       });

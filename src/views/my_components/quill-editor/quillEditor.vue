@@ -4,7 +4,7 @@
       <!-- quill-editor -->
       <!-- <quill-editor ref="myQuillEditor" :content="content" @change="onEditorChange($event)" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" @ready="onEditorReady($event)"></quill-editor> -->
       <quill-editor ref="myQuillEditor" :content="content" :options="editorOption" @change="onEditorChange($event)" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" @ready="onEditorReady($event)"></quill-editor>
-      <Upload ref="upload" :action="'http://' + upload_domain" :data="upload_data" :before-upload="beforeUpload" :on-success="uploadSuccess" style="display: none;">
+      <Upload ref="upload" :action="upload_domain" :data="upload_data" :before-upload="beforeUpload" :on-success="uploadSuccess" style="display: none;">
         <Button type="ghost" icon="ios-cloud-upload-outline" id="imgInput">Upload files</Button>
       </Upload>
     </div>
@@ -77,7 +77,8 @@ export default {
       return this.$axios
         .post("/admin/upload/token/free", { type })
         .then(res => {
-          this.upload_domain = res.data.upload_domain;
+          this.upload_domain =
+            window.location.protocol + "//" + res.data.upload_domain;
           let key = res.data.keyPrefix;
           if (file != undefined) {
             let ext = this.$util.getFileExtension(file.name);

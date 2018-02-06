@@ -41,7 +41,7 @@
           </RadioGroup>
         </FormItem>
         <FormItem label="选择图片" v-show="formValidate.a_9_user_id !== '' && formValidate.folder_id !== ''">
-          <Upload ref="upload" multiple type="drag" :data="upload_data" :action="'http://'+upload_domain" :show-upload-list="true" :default-file-list="defaultList" :on-success="handleSuccess" :on-error="handleError" :format="['jpg','jpeg','png']" :max-size="max_size" :on-format-error="handleFormatError" :on-exceeded-size="handleMaxSize" :before-upload="handleBeforeUpload">
+          <Upload ref="upload" multiple type="drag" :data="upload_data" :action="upload_domain" :show-upload-list="true" :default-file-list="defaultList" :on-success="handleSuccess" :on-error="handleError" :format="['jpg','jpeg','png']" :max-size="max_size" :on-format-error="handleFormatError" :on-exceeded-size="handleMaxSize" :before-upload="handleBeforeUpload">
             <div style="padding: 20px 0">
               <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
               <p>点击或将图片拖拽到这里上传</p>
@@ -176,7 +176,8 @@ export default {
           }
         })
         .then(res => {
-          this.upload_domain = res.data.upload_domain;
+          this.upload_domain =
+            window.location.protocol + "//" + res.data.upload_domain;
           let key = res.data.keyPrefix;
           if (file != undefined) {
             let ext = this.$util.getFileExtension(file.name);
@@ -209,13 +210,13 @@ export default {
             this.$Notice.success({
               title: "上传成功",
               desc: "文件 " + file.name + " 上传成功",
-              duration: 0
+              duration: 10
             });
           } else {
             this.$Notice.warning({
               title: "上传错误",
               desc: "文件 " + file.name + " 上传失败，原因： " + response.msg,
-              duration: 0
+              duration: 10
             });
           }
           this.$Spin.hide();
@@ -225,7 +226,7 @@ export default {
           this.$Notice.warning({
             title: "上传错误",
             desc: "文件 " + file.name + " 上传失败，原因： " + error.data.msg,
-            duration: 0
+            duration: 10
           });
         });
     },
@@ -238,7 +239,7 @@ export default {
       this.$Notice.warning({
         title: "文件格式不正确",
         desc: "文件 " + file.name + " 格式不正确，请上传 jpg 或 png 格式的图片。",
-        duration: 0
+        duration: 10
       });
     },
     // 超出文件大小限制
@@ -251,7 +252,7 @@ export default {
           " 太大，不能超过 " +
           (this.max_size / 1024).toFixed(2) +
           " M。",
-        duration: 0
+        duration: 10
       });
     }
   }

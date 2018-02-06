@@ -35,7 +35,7 @@
         </Form-item>
         <Form-item label="Banner图" prop="img_url">
           <Input v-model="addBannerForm.img_url" disabled placeholder="请上传Banner图片" size="large" @keyup.enter.native="addBanner('addBannerForm')"></Input>
-          <Upload ref="add_banner_upload" action="//upload.qiniu.com/" :data="upload_data" :show-upload-list="false" :on-success="addBannerHandleSuccess" :format="['jpg','jpeg','png']">
+          <Upload ref="add_banner_upload" :action="upload_domain" :data="upload_data" :show-upload-list="false" :before-upload="handleBeforeUpload" :on-success="addBannerHandleSuccess" :format="['jpg','jpeg','png']">
             <Button type="primary" icon="ios-cloud-upload-outline">上传Banner图片</Button>
           </Upload>
         </Form-item>
@@ -66,7 +66,7 @@
         </Form-item>
         <Form-item label="Banner图" prop="img_url">
           <Input v-model="updateBannerForm.img_url" disabled placeholder="请输入Banner图片的链接" size="large" @keyup.enter.native="updateBanner('updateBannerForm')"></Input>
-          <Upload ref="edit_banner_upload" action="//upload.qiniu.com/" :data="upload_data" :show-upload-list="false" :on-success="addBannerHandleSuccess" :format="['jpg','jpeg','png']">
+          <Upload ref="edit_banner_upload" :action="upload_domain" :data="upload_data" :show-upload-list="false" :before-upload="handleBeforeUpload" :on-success="addBannerHandleSuccess" :format="['jpg','jpeg','png']">
             <Button type="primary" icon="ios-cloud-upload-outline">上传Banner图片</Button>
           </Upload>
         </Form-item>
@@ -246,6 +246,7 @@ export default {
           }
         ]
       },
+      upload_domain: "",
       upload_data: {},
       uploadList: [],
       addBannerFormLoading: false,
@@ -264,28 +265,47 @@ export default {
   },
   methods: {
     // 获取上传七牛token
-    getFreeUploadToken(type) {
-      this.$axios.post("/admin/upload/token/free", { type }).then(res => {
-        let options = {
-          token: res.data.token,
-          key: res.data.keyPrefix
-        };
-        this.upload_data = options;
-      });
+    getFreeUploadToken(type, file) {
+      return this.$axios
+        .post("/admin/upload/token/free", { type })
+        .then(res => {
+          this.upload_domain =
+            window.location.protocol + "//" + res.data.upload_domain;
+          let key = res.data.keyPrefix;
+          if (file != undefined) {
+            let ext = this.$util.getFileExtension(file.name);
+            key = key + md5(file.name).substring(26, 32) + "." + ext;
+          }
+          this.upload_data = {
+            token: res.data.token,
+            key
+          };
+        });
+    },
+    // 上传之前的操作
+    handleBeforeUpload(file) {
+      return this.getFreeUploadToken("banner", file);
     },
     // 上传成功
-    addBannerHandleSuccess(res, file) {
-      let upload_ret = JSON.stringify(res);
-      this.$axios.post(res.hReturnUrl, { upload_ret }).then(resp => {
-        let banner_url = resp.data.full_url;
-        this.addBannerForm.img_url = banner_url;
-        this.updateBannerForm.img_url = banner_url;
-        this.getFreeUploadToken("banner");
-      });
+    addBannerHandleSuccess(response, file, fileList) {
+      this.$axios
+        .post(response.hReturnUrl, { upload_ret: JSON.stringify(response) })
+        .then(res => {
+          let banner_url = res.data.full_url;
+          this.addBannerForm.img_url = banner_url;
+          this.updateBannerForm.img_url = banner_url;
+          this.$Message.success("上传成功");
+        })
+        .catch(error => {
+          this.$Notice.warning({
+            title: "上传错误",
+            desc: "文件 " + file.name + " 上传失败，原因： " + error,
+            duration: 0
+          });
+        });
     },
     // 点击“添加Banner”按钮
     addBannerDialog() {
-      this.getFreeUploadToken("banner");
       this.addBannerForm.img_url = "";
       this.addBannerModalVisible = true;
     },
@@ -370,7 +390,6 @@ export default {
               this.updateBannerForm
             )
             .then(res => {
-              console.log(res);
               if (res.code == 0) {
                 this.getBannerLists();
                 this.$Message.success("更新成功！");
