@@ -4,11 +4,8 @@
       <Form-item label="用户ID" prop="a_9_id">
         <Input v-model="searchForm.a_9_id" placeholder="用户ID" @keyup.enter.native="searchForm.page=1;getUserLists()"></Input>
       </Form-item>
-      <Form-item label="用户名" prop="a_9_account">
-        <Input v-model="searchForm.a_9_account" placeholder="用户名" @keyup.enter.native="searchForm.page=1;getUserLists()"></Input>
-      </Form-item>
       <Form-item label="昵称" prop="a_9_nickname">
-        <Input v-model="searchForm.a_9_nickname" placeholder="昵称" @keyup.enter.native="searchForm.page=1;getUserLists()"></Input>
+        <Input v-model="searchForm.a_9_nickname" placeholder="用户昵称" @keyup.enter.native="searchForm.page=1;getUserLists()"></Input>
       </Form-item>
       <Form-item label="手机号码" prop="mobile_9_num">
         <Input v-model="searchForm.mobile_9_num" placeholder="手机号码" @keyup.enter.native="searchForm.page=1;getUserLists()"></Input>
@@ -123,20 +120,20 @@
 </template>
 
 <script>
-import md5 from "md5";
+import md5 from 'md5';
 export default {
   data() {
     const validePhone = (rule, value, callback) => {
       var re = /^1[0-9]{10}$/;
       if (!re.test(value)) {
-        callback(new Error("请输入正确格式的手机号码"));
+        callback(new Error('请输入正确格式的手机号码'));
       } else {
         callback();
       }
     };
     const valideRePassword = (rule, value, callback) => {
       if (value !== this.resetPasswordForm.password) {
-        callback(new Error("两次输入密码不一致"));
+        callback(new Error('两次输入密码不一致'));
       } else {
         callback();
       }
@@ -146,7 +143,6 @@ export default {
         page: 1,
         page_size: 10,
         a_9_id: null, // 用户ID
-        a_9_account: null, // 用户名
         a_9_nickname: null, // 用户昵称
         a_9_is_recommend: null, // 是否推荐 0-否；1-是
         a_9_status: 1, // 账号状态：1:正常；2:普通禁用；3:永久封号
@@ -160,7 +156,7 @@ export default {
       datePickerOptions: {
         shortcuts: [
           {
-            text: "最近一周",
+            text: '最近一周',
             value() {
               const end = new Date();
               const start = new Date();
@@ -169,7 +165,7 @@ export default {
             }
           },
           {
-            text: "最近一个月",
+            text: '最近一个月',
             value() {
               const end = new Date();
               const start = new Date();
@@ -178,7 +174,7 @@ export default {
             }
           },
           {
-            text: "最近三个月",
+            text: '最近三个月',
             value() {
               const end = new Date();
               const start = new Date();
@@ -197,89 +193,74 @@ export default {
         email_account: null // 邮箱账号
       },
       addUserFormRules: {
-        mobile_num: [
-          { required: true, message: "请输入手机号码" },
-          { validator: validePhone }
-        ],
-        nickname: [
-          { required: true, message: "请输入用户昵称，用于展示在前端", trigger: "blur" }
-        ],
-        password: [{ required: true, message: "请输入登录密码", trigger: "blur" }]
+        mobile_num: [{ required: true, message: '请输入手机号码' }, { validator: validePhone }],
+        nickname: [{ required: true, message: '请输入用户昵称，用于展示在前端', trigger: 'blur' }],
+        password: [{ required: true, message: '请输入登录密码', trigger: 'blur' }]
       },
       list: [],
       list_columns: [
         {
-          type: "selection",
-          fixed: "left",
+          type: 'selection',
+          fixed: 'left',
           width: 60,
-          align: "center"
+          align: 'center'
         },
         {
-          title: "昵称",
-          key: "nickname",
+          title: '昵称',
+          key: 'nickname',
           width: 120,
-          fixed: "left",
-          align: "center",
+          fixed: 'left',
+          align: 'center',
           render: (h, params) => {
             let is_recommend = params.row.is_recommend;
-            let is_recommend_str = is_recommend == 0 ? "【否】" : "【是】";
-            return h("span", [
-              h("p", params.row.nickname),
-              h("p", "是否推荐" + is_recommend_str),
-              h("p", "ID:" + params.row.id)
-            ]);
+            let is_recommend_str = is_recommend == 0 ? '【否】' : '【是】';
+            return h('span', [h('p', params.row.nickname), h('p', '是否推荐' + is_recommend_str), h('p', 'ID:' + params.row.id)]);
           }
         },
         {
-          title: "用户名",
-          key: "account",
-          width: 120,
-          sortable: true
-        },
-        {
-          title: "头像",
-          key: "avatar",
+          title: '头像',
+          key: 'avatar',
           sortable: true,
           width: 100,
-          align: "center",
+          align: 'center',
           render: (h, params) => {
             return h(
-              "Poptip",
+              'Poptip',
               {
                 props: {
-                  content: "缩略图",
-                  trigger: "hover",
+                  content: '缩略图',
+                  trigger: 'hover',
                   transfer: true,
-                  placement: "right"
+                  placement: 'right'
                 }
               },
               [
-                h("img", {
+                h('img', {
                   domProps: {
                     src: params.row.avatar,
                     alt: params.row.nickname,
                     title: params.row.nickname
                   },
                   style: {
-                    marginTop: "5px",
-                    width: "50px",
-                    height: "50px",
-                    cursor: "pointer"
+                    marginTop: '5px',
+                    width: '50px',
+                    height: '50px',
+                    cursor: 'pointer'
                   }
                 }),
                 h(
-                  "div",
+                  'div',
                   {
-                    slot: "content"
+                    slot: 'content'
                   },
                   [
-                    h("img", {
+                    h('img', {
                       domProps: {
                         src: params.row.avatar
                       },
                       style: {
-                        maxWidth: "200px",
-                        maxHeight: "200px"
+                        maxWidth: '200px',
+                        maxHeight: '200px'
                       }
                     })
                   ]
@@ -289,58 +270,58 @@ export default {
           }
         },
         {
-          title: "手机号码",
-          key: "mobile_9_num",
+          title: '手机号码',
+          key: 'mobile_9_num',
           width: 160,
-          align: "center",
+          align: 'center',
           sortable: true,
           render: (h, params) => {
             let mobile = params.row.mobile;
             if (!mobile || !mobile.num) return false;
             let is_verified = mobile.is_verified; // 0:未验证；1:已验证
             let is_secrecy = mobile.is_secrecy; // 0:保密；1:不保密
-            let is_verified_str = "";
-            let is_verified_color = "";
-            let is_secrecy_str = "";
-            let is_secrecy_color = "";
+            let is_verified_str = '';
+            let is_verified_color = '';
+            let is_secrecy_str = '';
+            let is_secrecy_color = '';
             switch (is_verified) {
               case 0:
-                is_verified_str = "未验证";
-                is_verified_color = "yellow";
+                is_verified_str = '未验证';
+                is_verified_color = 'yellow';
                 break;
               case 1:
-                is_verified_str = "已验证";
-                is_verified_color = "green";
+                is_verified_str = '已验证';
+                is_verified_color = 'green';
                 break;
             }
             switch (is_secrecy) {
               case 0:
-                is_secrecy_str = "保密";
-                is_secrecy_color = "green";
+                is_secrecy_str = '保密';
+                is_secrecy_color = 'green';
                 break;
               case 1:
-                is_secrecy_str = "不保密";
-                is_secrecy_color = "yellow";
+                is_secrecy_str = '不保密';
+                is_secrecy_color = 'yellow';
                 break;
             }
-            return h("span", [
-              h("span", mobile.num),
+            return h('span', [
+              h('span', mobile.num),
               h(
-                "Tag",
+                'Tag',
                 {
                   props: {
                     color: is_verified_color,
-                    size: "small"
+                    size: 'small'
                   }
                 },
                 is_verified_str
               ),
               h(
-                "Tag",
+                'Tag',
                 {
                   props: {
                     color: is_secrecy_color,
-                    size: "small"
+                    size: 'small'
                   }
                 },
                 is_secrecy_str
@@ -349,58 +330,58 @@ export default {
           }
         },
         {
-          title: "邮箱",
-          key: "email",
+          title: '邮箱',
+          key: 'email',
           width: 180,
-          align: "center",
+          align: 'center',
           sortable: true,
           render: (h, params) => {
             let email = params.row.email;
             if (!email || !email.account) return false;
             let is_verified = email.is_verified; // 0:未验证；1:已验证
             let is_secrecy = email.is_secrecy; // 0:保密；1:不保密
-            let is_verified_str = "";
-            let is_verified_color = "";
-            let is_secrecy_str = "";
-            let is_secrecy_color = "";
+            let is_verified_str = '';
+            let is_verified_color = '';
+            let is_secrecy_str = '';
+            let is_secrecy_color = '';
             switch (is_verified) {
               case 0:
-                is_verified_str = "未验证";
-                is_verified_color = "yellow";
+                is_verified_str = '未验证';
+                is_verified_color = 'yellow';
                 break;
               case 1:
-                is_verified_str = "已验证";
-                is_verified_color = "green";
+                is_verified_str = '已验证';
+                is_verified_color = 'green';
                 break;
             }
             switch (is_secrecy) {
               case 0:
-                is_secrecy_str = "保密";
-                is_secrecy_color = "green";
+                is_secrecy_str = '保密';
+                is_secrecy_color = 'green';
                 break;
               case 1:
-                is_secrecy_str = "不保密";
-                is_secrecy_color = "yellow";
+                is_secrecy_str = '不保密';
+                is_secrecy_color = 'yellow';
                 break;
             }
-            return h("span", [
-              h("span", email.account),
+            return h('span', [
+              h('span', email.account),
               h(
-                "Tag",
+                'Tag',
                 {
                   props: {
                     color: is_verified_color,
-                    size: "small"
+                    size: 'small'
                   }
                 },
                 is_verified_str
               ),
               h(
-                "Tag",
+                'Tag',
                 {
                   props: {
                     color: is_secrecy_color,
-                    size: "small"
+                    size: 'small'
                   }
                 },
                 is_secrecy_str
@@ -409,34 +390,34 @@ export default {
           }
         },
         {
-          title: "QQ号",
-          key: "qq",
+          title: 'QQ号',
+          key: 'qq',
           width: 120,
           sortable: true,
           render: (h, params) => {
             let qq = params.row.qq;
             if (!qq || !qq.account) return false;
             let is_secrecy = qq.is_secrecy; // 0:保密；1:不保密
-            let is_secrecy_str = "";
-            let is_secrecy_color = "";
+            let is_secrecy_str = '';
+            let is_secrecy_color = '';
             switch (is_secrecy) {
               case 0:
-                is_secrecy_str = "保密";
-                is_secrecy_color = "green";
+                is_secrecy_str = '保密';
+                is_secrecy_color = 'green';
                 break;
               case 1:
-                is_secrecy_str = "不保密";
-                is_secrecy_color = "yellow";
+                is_secrecy_str = '不保密';
+                is_secrecy_color = 'yellow';
                 break;
             }
-            return h("span", [
-              h("p", qq.account),
+            return h('span', [
+              h('p', qq.account),
               h(
-                "Tag",
+                'Tag',
                 {
                   props: {
                     color: is_secrecy_color,
-                    size: "small"
+                    size: 'small'
                   }
                 },
                 is_secrecy_str
@@ -445,34 +426,34 @@ export default {
           }
         },
         {
-          title: "微信号",
-          key: "weixin",
+          title: '微信号',
+          key: 'weixin',
           width: 120,
           sortable: true,
           render: (h, params) => {
             let weixin = params.row.weixin;
             if (!weixin || !weixin.account) return false;
             let is_secrecy = weixin.is_secrecy; // 0:保密；1:不保密
-            let is_secrecy_str = "";
-            let is_secrecy_color = "";
+            let is_secrecy_str = '';
+            let is_secrecy_color = '';
             switch (is_secrecy) {
               case 0:
-                is_secrecy_str = "保密";
-                is_secrecy_color = "green";
+                is_secrecy_str = '保密';
+                is_secrecy_color = 'green';
                 break;
               case 1:
-                is_secrecy_str = "不保密";
-                is_secrecy_color = "yellow";
+                is_secrecy_str = '不保密';
+                is_secrecy_color = 'yellow';
                 break;
             }
-            return h("span", [
-              h("span", weixin.account),
+            return h('span', [
+              h('span', weixin.account),
               h(
-                "Tag",
+                'Tag',
                 {
                   props: {
                     color: is_secrecy_color,
-                    size: "small"
+                    size: 'small'
                   }
                 },
                 is_secrecy_str
@@ -481,90 +462,90 @@ export default {
           }
         },
         {
-          title: "关注用户数",
-          key: "statistic.follows",
+          title: '关注用户数',
+          key: 'statistic.follows',
           width: 120,
-          align: "center",
+          align: 'center',
           sortable: true,
           render: (h, params) => {
             if (!params.row.statistic) return false;
-            return h("span", params.row.statistic.follows);
+            return h('span', params.row.statistic.follows);
           }
         },
         {
-          title: "拥有粉丝数",
-          key: "statistic.fans",
+          title: '拥有粉丝数',
+          key: 'statistic.fans',
           width: 120,
-          align: "center",
+          align: 'center',
           sortable: true,
           render: (h, params) => {
             if (!params.row.statistic) return false;
-            return h("span", params.row.statistic.fans);
+            return h('span', params.row.statistic.fans);
           }
         },
         {
-          title: "总作品数",
-          key: "statistic.products",
+          title: '总作品数',
+          key: 'statistic.products',
           width: 120,
-          align: "center",
+          align: 'center',
           sortable: true,
           render: (h, params) => {
             if (!params.row.statistic) return false;
-            return h("span", params.row.statistic.products);
+            return h('span', params.row.statistic.products);
           }
         },
         {
-          title: "上次登录时间",
-          key: "login_time",
+          title: '上次登录时间',
+          key: 'login_time',
           width: 160,
           sortable: true
         },
         {
-          title: "注册时间",
-          key: "create_time",
+          title: '注册时间',
+          key: 'create_time',
           width: 160,
-          align: "center",
+          align: 'center',
           sortable: true
         },
         {
-          title: "其他信息",
-          key: "其他信息",
+          title: '其他信息',
+          key: '其他信息',
           width: 110,
           render: (h, params) => {
             return h(
-              "Poptip",
+              'Poptip',
               {
                 props: {
-                  content: "其他信息",
-                  trigger: "hover",
+                  content: '其他信息',
+                  trigger: 'hover',
                   transfer: true,
-                  placement: "left"
+                  placement: 'left'
                 }
               },
               [
                 h(
-                  "Tag",
+                  'Tag',
                   {
                     props: {
-                      color: "green",
-                      size: "small"
+                      color: 'green',
+                      size: 'small'
                     }
                   },
-                  "其他信息"
+                  '其他信息'
                 ),
                 h(
-                  "div",
+                  'div',
                   {
-                    slot: "content"
+                    slot: 'content'
                   },
                   [
-                    h("p", "出生日期：" + params.row.birth),
-                    h("p", "学校：" + params.row.school),
-                    h("p", "所在地：" + params.row.address),
-                    h("p", "职业：" + params.row.occupation),
-                    h("p", "空间签名：" + params.row.signature),
-                    h("p", "自我介绍：" + params.row.introduce),
-                    h("p", "摄影装备：" + params.row.equip)
+                    h('p', '出生日期：' + params.row.birth),
+                    h('p', '学校：' + params.row.school),
+                    h('p', '所在地：' + params.row.address),
+                    h('p', '职业：' + params.row.occupation),
+                    h('p', '空间签名：' + params.row.signature),
+                    h('p', '自我介绍：' + params.row.introduce),
+                    h('p', '摄影装备：' + params.row.equip)
                   ]
                 )
               ]
@@ -572,88 +553,85 @@ export default {
           }
         },
         {
-          title: "账号绑定",
-          key: "账号绑定",
+          title: '账号绑定',
+          key: '账号绑定',
           width: 110,
           render: (h, params) => {
             let qq = params.row.qq;
             let weixin = params.row.weixin;
-            let qq_str = "未绑定";
-            let weixin_str = "未绑定";
+            let qq_str = '未绑定';
+            let weixin_str = '未绑定';
 
-            if (qq)
-              qq_str = "昵称（" + qq.nickname + "）；openid（" + qq.openid + "）";
-            if (weixin)
-              weixin_str =
-                "昵称（" + weixin.nickname + "）；openid（" + weixin.openid + "）";
+            if (qq) qq_str = '昵称（' + qq.nickname + '）；openid（' + qq.openid + '）';
+            if (weixin) weixin_str = '昵称（' + weixin.nickname + '）；openid（' + weixin.openid + '）';
 
             return h(
-              "Poptip",
+              'Poptip',
               {
                 props: {
-                  content: "账号绑定",
-                  trigger: "hover",
+                  content: '账号绑定',
+                  trigger: 'hover',
                   transfer: true,
-                  placement: "left"
+                  placement: 'left'
                 }
               },
               [
                 h(
-                  "Tag",
+                  'Tag',
                   {
                     props: {
-                      color: "yellow",
-                      size: "small"
+                      color: 'yellow',
+                      size: 'small'
                     }
                   },
-                  "账号绑定"
+                  '账号绑定'
                 ),
                 h(
-                  "div",
+                  'div',
                   {
-                    slot: "content"
+                    slot: 'content'
                   },
-                  [h("p", "QQ：" + qq_str), h("p", "微信：" + weixin_str)]
+                  [h('p', 'QQ：' + qq_str), h('p', '微信：' + weixin_str)]
                 )
               ]
             );
           }
         },
         {
-          title: "认证状态",
-          key: "cert",
+          title: '认证状态',
+          key: 'cert',
           width: 110,
           render: (h, params) => {
             let cert = params.row.cert;
             let status = 1;
             if (cert != null) status = cert.status;
-            let status_str = ""; // 认证状态：1：未认证，2：认证中，3：通过认证，4不通过（驳回）
-            let status_color = "";
+            let status_str = ''; // 认证状态：1：未认证，2：认证中，3：通过认证，4不通过（驳回）
+            let status_color = '';
             switch (status) {
               case 1:
-                status_str = "未认证";
-                status_color = "blue";
+                status_str = '未认证';
+                status_color = 'blue';
                 break;
               case 2:
-                status_str = "认证中";
-                status_color = "yellow";
+                status_str = '认证中';
+                status_color = 'yellow';
                 break;
               case 3:
-                status_str = "已认证";
-                status_color = "green";
+                status_str = '已认证';
+                status_color = 'green';
                 break;
               case 4:
-                status_str = "认证失败";
-                status_color = "red";
+                status_str = '认证失败';
+                status_color = 'red';
                 break;
             }
 
             return h(
-              "Tag",
+              'Tag',
               {
                 props: {
                   color: status_color,
-                  size: "small"
+                  size: 'small'
                 }
               },
               status_str
@@ -661,52 +639,52 @@ export default {
           }
         },
         {
-          title: "账号状态",
-          key: "status",
+          title: '账号状态',
+          key: 'status',
           width: 100,
           sortable: true,
-          align: "center",
-          fixed: "right",
+          align: 'center',
+          fixed: 'right',
           render: (h, params) => {
             let status = params.row.status;
-            let reason = params.row.reason || "--";
-            let _str = "";
-            let _type = "";
-            let _content = "";
+            let reason = params.row.reason || '--';
+            let _str = '';
+            let _type = '';
+            let _content = '';
             switch (status) {
               case 1:
-                _str = "正常";
-                _type = "success";
-                _content = "点击按钮禁用或封号！";
+                _str = '正常';
+                _type = 'success';
+                _content = '点击按钮禁用或封号！';
                 break;
               case 2:
-                _str = "已禁用";
-                _type = "warning";
-                _content = "禁用的原因：" + reason + "；点击按钮解除禁用！";
+                _str = '已禁用';
+                _type = 'warning';
+                _content = '禁用的原因：' + reason + '；点击按钮解除禁用！';
                 break;
               case 3:
-                _str = "已封号";
-                _type = "error";
-                _content = "永久封号的原因：" + reason + "；永久封号后不可解封！";
+                _str = '已封号';
+                _type = 'error';
+                _content = '永久封号的原因：' + reason + '；永久封号后不可解封！';
                 break;
             }
             return h(
-              "Poptip",
+              'Poptip',
               {
                 props: {
                   content: _content,
-                  trigger: "hover",
+                  trigger: 'hover',
                   transfer: true,
-                  placement: "top"
+                  placement: 'top'
                 }
               },
               [
                 h(
-                  "Button",
+                  'Button',
                   {
                     props: {
                       type: _type,
-                      size: "small"
+                      size: 'small'
                     },
                     on: {
                       click: () => {
@@ -723,22 +701,22 @@ export default {
           }
         },
         {
-          title: "操作",
-          key: "action",
-          fixed: "right",
+          title: '操作',
+          key: 'action',
+          fixed: 'right',
           width: 100,
-          align: "center",
+          align: 'center',
           render: (h, params) => {
             let currentRow = params.row;
             return h(
-              "Button",
+              'Button',
               {
                 props: {
-                  type: "primary",
-                  size: "small"
+                  type: 'primary',
+                  size: 'small'
                 },
                 style: {
-                  marginLeft: "5px"
+                  marginLeft: '5px'
                 },
                 on: {
                   click: () => {
@@ -747,7 +725,7 @@ export default {
                   }
                 }
               },
-              "重置密码"
+              '重置密码'
             );
           }
         }
@@ -756,30 +734,23 @@ export default {
       isShowPage: false,
       // 修改用户状态
       updateStatusForm: {
-        id: "",
+        id: '',
         status: 1,
-        reason: ""
+        reason: ''
       },
       updateStatusModalVisible: false,
       updateStatusFormLoading: false,
       // 重置密码
       resetPasswordForm: {
-        id: "",
-        password: "",
-        confirm_password: ""
+        id: '',
+        password: '',
+        confirm_password: ''
       },
       resetPasswordModalVisible: false,
       resetPasswordFormLoading: false,
       resetPasswordFormRules: {
-        password: [
-          { required: true, message: "请输入新密码", trigger: "blur" },
-          { min: 6, message: "请至少输入6个字符", trigger: "blur" },
-          { max: 32, message: "最多输入32个字符", trigger: "blur" }
-        ],
-        confirm_password: [
-          { required: true, message: "请再次输入新密码", trigger: "blur" },
-          { validator: valideRePassword, trigger: "blur" }
-        ]
+        password: [{ required: true, message: '请输入新密码', trigger: 'blur' }, { min: 6, message: '请至少输入6个字符', trigger: 'blur' }, { max: 32, message: '最多输入32个字符', trigger: 'blur' }],
+        confirm_password: [{ required: true, message: '请再次输入新密码', trigger: 'blur' }, { validator: valideRePassword, trigger: 'blur' }]
       }
     };
   },
@@ -800,36 +771,34 @@ export default {
     // 批量推荐
     userRecommends() {
       if (this.user_ids.length == 0) {
-        this.$Message.warning("请选择需要推荐的用户");
+        this.$Message.warning('请选择需要推荐的用户');
         return false;
       }
-      this.$axios
-        .get("/admin/user/recommends", { params: { ids: this.user_ids } })
-        .then(res => {
-          this.getUserLists();
-          this.$Message.success("推荐成功");
-        });
+      this.$axios.get('/admin/user/recommends', { params: { ids: this.user_ids } }).then(res => {
+        this.getUserLists();
+        this.$Message.success('推荐成功');
+      });
     },
     // 批量取消推荐
     userCancelRecommends() {
       if (this.user_ids.length == 0) {
-        this.$Message.warning("请选择需要取消推荐的用户");
+        this.$Message.warning('请选择需要取消推荐的用户');
         return false;
       }
       this.$axios
-        .get("/admin/user/cancel_recommends", {
+        .get('/admin/user/cancel_recommends', {
           params: { ids: this.user_ids }
         })
         .then(res => {
           this.getUserLists();
-          this.$Message.success("取消成功");
+          this.$Message.success('取消成功');
         });
     },
     // 获取用户列表
     getUserLists() {
       let params = this.$util.deleteEmptyObj(this.searchForm);
       this.table_loading = true;
-      this.$axios.get("/admin/user", { params }).then(res => {
+      this.$axios.get('/admin/user', { params }).then(res => {
         this.list = res.data.list;
         this.count = res.data.count;
         this.table_loading = false;
@@ -857,12 +826,12 @@ export default {
           this.addUserFormLoading = true;
           this.addUserForm.password = md5(this.addUserForm.password);
           this.$axios
-            .post("/admin/user/", this.addUserForm)
+            .post('/admin/user/', this.addUserForm)
             .then(res => {
               if (res.code == 0) {
                 this.$refs[name].resetFields();
                 this.getUserLists();
-                this.$Message.success("添加成功！");
+                this.$Message.success('添加成功！');
                 this.addUserFormLoading = false;
                 this.addUserModalVisible = false;
               }
@@ -907,13 +876,13 @@ export default {
         if (valid) {
           this.resetPasswordFormLoading = true;
           this.$axios
-            .put("/admin/user/reset_password/" + this.resetPasswordForm.id, {
+            .put('/admin/user/reset_password/' + this.resetPasswordForm.id, {
               password: md5(this.resetPasswordForm.password)
             })
             .then(res => {
               if (res.code == 0) {
                 this.getUserLists();
-                this.$Message.success("修改成功！");
+                this.$Message.success('修改成功！');
                 this.resetPasswordFormLoading = false;
                 this.resetPasswordModalVisible = false;
               }

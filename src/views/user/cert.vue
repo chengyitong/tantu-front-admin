@@ -1,16 +1,14 @@
 <template>
   <div>
+    <img-view v-if="showImg" @click="showImg = false;" :imgSrc="imgSrc"></img-view>
     <Form class="search-form" ref="searchForm" :model="searchForm" label-position="right" :label-width="70" inline>
-      <Form-item label="认证ID" prop="id">
-        <Input v-model="searchForm.id" placeholder="认证资料ID" @keyup.enter.native="getUserCertLists"></Input>
-      </Form-item>
       <Form-item label="用户ID" prop="user_id">
         <Input v-model="searchForm.user_id" placeholder="用户ID" @keyup.enter.native="getUserCertLists"></Input>
       </Form-item>
       <Form-item label="认证类型" prop="type">
         <Select v-model="searchForm.type" filterable clearable placeholder="默认全部" @on-change="getUserCertLists" style="width: 141px;">
           <Option :value="1" :key="1">个人</Option>
-          <Option :value="2" :key="2">机构/企业</Option>
+          <Option :value="2" :key="2">企业/机构</Option>
         </Select>
       </Form-item>
       <Form-item label="认证状态" prop="status">
@@ -18,7 +16,7 @@
           <Option :value="1" :key="1">未认证</Option>
           <Option :value="2" :key="2">认证中</Option>
           <Option :value="3" :key="3">已认证</Option>
-          <Option :value="4" :key="4">认证失败</Option>
+          <Option :value="4" :key="4">已驳回</Option>
         </Select>
       </Form-item>
       <Button type="primary" @click="getUserCertLists">
@@ -32,25 +30,68 @@
     <Table :loading="table_loading" :columns="list_columns" :data="list"></Table>
     <Page v-if="count > 0" :total="count" show-total :page-size-opts="[10,20,30,40]" show-sizer @on-change="handlePageChange" @on-page-size-change="handlePageSizeChange"></Page>
 
-    <!-- 添加用户弹框 -->
-    <Modal v-model="addUserModalVisible" title="添加用户">
+    <!-- 查看认证资料弹框 -->
+    <Modal v-model="certInfoModalVisible" title="认证资料" width="920">
       <div slot="footer">
-        <Button type="text" size="large" @click="addUserCancel('addUserForm')">取消</Button>
-        <Button type="primary" size="large" :loading="addUserFormLoading" @click="addUser('addUserForm')">确定</Button>
+        <Button type="text" size="large" @click="certInfoModalVisible=false">关闭</Button>
+        <Button v-if="certInfoDetail.status==2" type="primary" size="large" @click="updateStatusModal(certInfoDetail.id)">审核</Button>
       </div>
-      <Form ref="addUserForm" :model="addUserForm" :rules="addUserFormRules" label-position="right" :label-width="80">
-        <Form-item label="手机号" prop="mobile_num">
-          <Input v-model="addUserForm.mobile_num" placeholder="请输入手机号，可用于登录"></Input>
+      <Form label-position="right" :label-width="160">
+        <Form-item label="当前认证状态">
+          <template v-if="certInfoDetail.status == 2">认证中，等待审核&nbsp;&nbsp;<Button type="primary" size="small" @click="updateStatusModal(certInfoDetail.id)">审核</Button></template>
+          <template v-if="certInfoDetail.status == 3">认证通过&nbsp;&nbsp;{{certInfoDetail.result}}</template>
+          <template v-if="certInfoDetail.status == 4">认证不通过，原因：{{certInfoDetail.result}}</template>
         </Form-item>
-        <Form-item label="昵称" prop="nickname">
-          <Input v-model="addUserForm.nickname" placeholder="请输入用户昵称，用于展示在前端"></Input>
+        <Form-item label="认证类型">
+          <template v-if="certInfoDetail.type == 1">个人</template>
+          <template v-if="certInfoDetail.type == 2">企业/机构</template>
         </Form-item>
-        <Form-item label="邮箱" prop="email_account">
-          <Input v-model="addUserForm.email_account" placeholder="请输入邮箱，可用于登录"></Input>
-        </Form-item>
-        <Form-item label="登录密码" prop="password">
-          <Input type="password" v-model="addUserForm.password" placeholder="请输入登录密码，默认密码六个8"></Input>
-        </Form-item>
+        <template v-if="certInfoDetail.type == 1">
+          <Form-item label="真实姓名">
+            {{certInfoDetail.realname}}
+          </Form-item>
+          <Form-item label="身份证号码">
+            {{certInfoDetail.card_num}}
+          </Form-item>
+          <Form-item label="身份证到期日期">
+            <template v-if="certInfoDetail.is_long == 1">长期</template>
+            <template v-else>{{certInfoDetail.card_date}}</template>
+          </Form-item>
+          <Form-item label="手持身份证信息面照片">
+            <img :src="certInfoDetail.card_img_a" @click="clickImg(certInfoDetail.card_img_a)" alt="" width="300">
+          </Form-item>
+          <Form-item label="手持身份证国徽面照片">
+            <img :src="certInfoDetail.card_img_b" @click="clickImg(certInfoDetail.card_img_b)" alt="" width="300">
+          </Form-item>
+        </template>
+
+        <template v-if="certInfoDetail.type == 2">
+          <Form-item label="公司全称">
+            {{certInfoDetail.company_name}}
+          </Form-item>
+          <Form-item label="统一社会信用代码">
+            {{certInfoDetail.social_code}}
+          </Form-item>
+          <Form-item label="联系人姓名">
+            {{certInfoDetail.contact_name}}
+          </Form-item>
+          <Form-item label="联系人手机">
+            {{certInfoDetail.contact_phone}}
+          </Form-item>
+          <Form-item label="营业执照副本">
+            <img :src="certInfoDetail.business_license_img" @click="clickImg(certInfoDetail.business_license_img)" alt="" width="300">
+          </Form-item>
+          <Form-item label="法人手持身份证信息面照片">
+            <img :src="certInfoDetail.card_img_a" @click="clickImg(certInfoDetail.card_img_a)" alt="" width="300">
+          </Form-item>
+          <Form-item label="法人手持身份证国徽面照片">
+            <img :src="certInfoDetail.card_img_b" @click="clickImg(certInfoDetail.card_img_b)" alt="" width="300">
+          </Form-item>
+          <Form-item label="法人身份证到期日期">
+            <template v-if="certInfoDetail.is_long == 1">长期</template>
+            <template v-else>{{certInfoDetail.card_date}}</template>
+          </Form-item>
+        </template>
       </Form>
     </Modal>
 
@@ -76,37 +117,21 @@
 </template>
 
 <script>
-import md5 from "md5";
+import imgView from '../my_components/img-view/img-view';
 export default {
   data() {
-    const validePhone = (rule, value, callback) => {
-      var re = /^1[0-9]{10}$/;
-      if (!re.test(value)) {
-        callback(new Error("请输入正确格式的手机号"));
-      } else {
-        callback();
-      }
-    };
-    const valideRePassword = (rule, value, callback) => {
-      if (value !== this.resetPasswordForm.password) {
-        callback(new Error("两次输入密码不一致"));
-      } else {
-        callback();
-      }
-    };
     return {
       searchForm: {
         page: 1,
         page_size: 10,
-        id: "", // 认证资料ID
-        user_id: "", // 用户ID
-        type: 1, // 认证类型：1-个人；2-机构/企业
-        status: "" // 认证状态: 1:未认证；2:认证中；3:已认证；4:认证失败
+        user_id: '', // 用户ID
+        type: '', // 认证类型：1-个人；2-企业/机构
+        status: '' // 认证状态: 1:未认证；2:认证中；3:已认证；4:认证审核不通过
       },
       datePickerOptions: {
         shortcuts: [
           {
-            text: "最近一周",
+            text: '最近一周',
             value() {
               const end = new Date();
               const start = new Date();
@@ -115,7 +140,7 @@ export default {
             }
           },
           {
-            text: "最近一个月",
+            text: '最近一个月',
             value() {
               const end = new Date();
               const start = new Date();
@@ -124,7 +149,7 @@ export default {
             }
           },
           {
-            text: "最近三个月",
+            text: '最近三个月',
             value() {
               const end = new Date();
               const start = new Date();
@@ -134,78 +159,59 @@ export default {
           }
         ]
       },
-      addUserFormLoading: false,
-      addUserModalVisible: false,
-      addUserForm: {
-        nickname: "", // 昵称，必填,account: null, // 账号，不传则默认为昵称
-        password: "", // 密码md5 必填
-        mobile_num: "", // 手机号
-        email_account: "" // 邮箱账号
-      },
-      addUserFormRules: {
-        mobile_num: [
-          { required: true, message: "请输入手机号码" },
-          { validator: validePhone }
-        ],
-        nickname: [
-          { required: true, message: "请输入用户昵称，用于展示在前端", trigger: "blur" }
-        ],
-        password: [{ required: true, message: "请输入登录密码", trigger: "blur" }]
-      },
       table_loading: false,
       list: [],
       list_columns: [
         {
-          title: "认证类型",
-          key: "type",
-          width: 120,
-          align: "center",
-          sortable: true
+          title: '用户昵称',
+          key: 'nickname',
+          render: (h, params) => {
+            return h('span', params.row.user.nickname + '（ID：' + params.row.user.id + '）');
+          }
         },
         {
-          title: "头像",
-          key: "avatar",
-          sortable: true,
+          title: '用户头像',
+          key: 'avatar',
           width: 100,
-          align: "center",
+          align: 'center',
           render: (h, params) => {
             return h(
-              "Poptip",
+              'Poptip',
               {
                 props: {
-                  content: "缩略图",
-                  trigger: "hover",
+                  content: '用户头像',
+                  trigger: 'hover',
                   transfer: true,
-                  placement: "right"
+                  placement: 'right'
                 }
               },
               [
-                h("img", {
+                h('img', {
                   domProps: {
-                    src: params.row.avatar,
-                    alt: params.row.nickname,
-                    title: params.row.nickname
+                    src: params.row.user.avatar,
+                    alt: params.row.user.nickname,
+                    title: params.row.user.nickname
                   },
                   style: {
-                    marginTop: "5px",
-                    width: "50px",
-                    height: "50px",
-                    cursor: "pointer"
+                    marginTop: '5px',
+                    width: '50px',
+                    height: '50px',
+                    cursor: 'pointer'
                   }
                 }),
                 h(
-                  "div",
+                  'div',
                   {
-                    slot: "content"
+                    slot: 'content'
                   },
                   [
-                    h("img", {
+                    h('img', {
                       domProps: {
-                        src: params.row.avatar
+                        src: params.row.user.avatar
                       },
                       style: {
-                        maxWidth: "200px",
-                        maxHeight: "200px"
+                        maxWidth: '200px',
+                        maxHeight: '200px'
                       }
                     })
                   ]
@@ -215,95 +221,77 @@ export default {
           }
         },
         {
-          title: "申请认证时间",
-          key: "create_at",
-          width: 160,
-          sortable: true
-        },
-        {
-          title: "审核时间",
-          key: "create_at",
-          width: 160,
-          sortable: true
-        },
-        {
-          title: "认证资料",
-          key: "认证资料",
+          title: '认证类型',
+          key: 'type',
+          align: 'center',
           render: (h, params) => {
+            let type = params.row.type;
+            let type_color = '';
+            let type_str = '';
+            if (type == 1) {
+              type_color = 'blue';
+              type_str = '个人';
+            }
+            if (type == 2) {
+              type_color = 'green';
+              type_str = '企业/机构';
+            }
             return h(
-              "Poptip",
+              'Tag',
               {
                 props: {
-                  content: "认证资料",
-                  trigger: "hover",
-                  transfer: true,
-                  placement: "left"
+                  color: type_color,
+                  size: 'small'
                 }
               },
-              [
-                h(
-                  "Tag",
-                  {
-                    props: {
-                      color: "green",
-                      size: "small"
-                    }
-                  },
-                  "认证资料"
-                ),
-                h(
-                  "div",
-                  {
-                    slot: "content"
-                  },
-                  [
-                    h("p", "出生日期：" + params.row.birth),
-                    h("p", "学校：" + params.row.school),
-                    h("p", "所在地：" + params.row.address),
-                    h("p", "职业：" + params.row.occupation),
-                    h("p", "空间签名：" + params.row.signature),
-                    h("p", "自我介绍：" + params.row.introduce),
-                    h("p", "摄影装备：" + params.row.equip)
-                  ]
-                )
-              ]
+              type_str
             );
           }
         },
         {
-          title: "认证状态",
-          key: "cert",
+          title: '申请认证时间',
+          key: 'apply_time',
+          sortable: true
+        },
+        {
+          title: '处理时间',
+          key: 'handle_time',
+          sortable: true
+        },
+        {
+          title: '认证状态',
+          key: 'status',
           width: 110,
+          align: 'center',
           render: (h, params) => {
-            let cert = params.row.cert;
-            let status = cert.status;
-            let status_str = "";
-            let status_color = "";
+            let status = params.row.status;
+            let status_str = '';
+            let status_color = '';
             switch (status) {
               case 1:
-                status_str = "未认证";
-                status_color = "blue";
+                status_str = '未认证';
+                status_color = 'blue';
                 break;
               case 2:
-                status_str = "认证中";
-                status_color = "yellow";
+                status_str = '认证中';
+                status_color = 'yellow';
                 break;
               case 3:
-                status_str = "已认证";
-                status_color = "green";
+                status_str = '已认证';
+                status_color = 'green';
                 break;
               case 4:
-                status_str = "认证失败";
-                status_color = "red";
+                status_str = '已驳回';
+                status_color = 'red';
                 break;
             }
 
             return h(
-              "Tag",
+              'Tag',
               {
                 props: {
                   color: status_color,
-                  size: "small"
+                  size: 'small'
                 }
               },
               status_str
@@ -311,143 +299,51 @@ export default {
           }
         },
         {
-          title: "账号状态",
-          key: "status",
-          width: 110,
-          sortable: true,
-          align: "center",
-          fixed: "right",
+          title: '操作',
+          key: '认证资料',
+          align: 'right',
           render: (h, params) => {
-            let status = params.row.status;
-            let reason = params.row.reason;
-            let _str = "";
-            let _type = "";
-            let _content = "";
-            switch (status) {
-              case 1:
-                _str = "正常";
-                _type = "success";
-                _content = "点击按钮禁用或封号！";
-                break;
-              case 2:
-                _str = "已禁用";
-                _type = "warning";
-                _content = "禁用的原因：" + reason + "；点击按钮解除禁用！";
-                break;
-              case 3:
-                _str = "已封号";
-                _type = "error";
-                _content = "永久封号的原因：" + reason + "；永久封号后不可解封！";
-                break;
+            let operate_str = '查看详情';
+            if (params.row.status == 2) {
+              operate_str = '审核';
             }
             return h(
-              "Poptip",
+              'Button',
               {
                 props: {
-                  content: _content,
-                  trigger: "hover",
-                  transfer: true,
-                  placement: "top"
+                  type: 'primary',
+                  size: 'small'
+                },
+                on: {
+                  click: () => {
+                    this.certInfoDetail = params.row;
+                    this.certInfoModalVisible = true;
+                  }
                 }
               },
-              [
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: _type,
-                      size: "small"
-                    },
-                    on: {
-                      click: () => {
-                        // this.productCountModal(params.row);
-                        // TODO：进行账号状态修改
-                        // this.updateStatusModal(params.row);
-                      }
-                    }
-                  },
-                  _str
-                )
-              ]
+              operate_str
             );
-          }
-        },
-        {
-          title: "操作",
-          key: "action",
-          fixed: "right",
-          width: 160,
-          align: "center",
-          render: (h, params) => {
-            let currentRow = params.row;
-            return h("span", [
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "small"
-                  },
-                  style: {
-                    marginLeft: "5px"
-                  },
-                  on: {
-                    click: () => {
-                      // this.show(params.index)
-                    }
-                  }
-                },
-                "审核"
-              ),
-              h(
-                "Poptip",
-                {
-                  props: {
-                    confirm: true,
-                    title: "您确定要删除这条数据吗?",
-                    transfer: true,
-                    placement: "top-end"
-                  },
-                  on: {
-                    "on-ok": () => {
-                      currentRow.isDeleting = true;
-                      this.list.splice(params.index, 1);
-                    }
-                  }
-                },
-                [
-                  h(
-                    "Button",
-                    {
-                      props: {
-                        type: "error",
-                        size: "small",
-                        placement: "top",
-                        loading: currentRow.isDeleting
-                      },
-                      style: {
-                        margin: "0 5px"
-                      }
-                    },
-                    "删除"
-                  )
-                ]
-              )
-            ]);
           }
         }
       ],
       count: 0, // 总数据条数
       isShowPage: false,
+      certInfoModalVisible: false,
+      certInfoDetail: {}, // 认证资料
       // 审核用户认证资料
       updateStatusForm: {
-        id: "", // 认证申请id
+        id: '', // 认证申请id
         status: 3, // 认证状态：3-通过；4-驳回
-        result: "" // 驳回原因
+        result: '' // 驳回原因
       },
       updateStatusModalVisible: false,
-      updateStatusFormLoading: false
+      updateStatusFormLoading: false,
+      imgSrc: '', // 当前点击的图片链接
+      showImg: false // 显示放大的图片
     };
+  },
+  components: {
+    'img-view': imgView
   },
   mounted: function() {
     this.$nextTick(function() {
@@ -458,13 +354,12 @@ export default {
     // 获取用户认证列表
     getUserCertLists() {
       this.table_loading = true;
-      this.$axios
-        .get("/admin/user_cert", { params: this.searchForm })
-        .then(res => {
-          this.list = res.data.list;
-          this.count = res.data.count;
-          this.table_loading = false;
-        });
+      let params = this.$util.deleteEmptyObj(this.searchForm);
+      this.$axios.get('/admin/user_cert', { params }).then(res => {
+        this.list = res.data.list;
+        this.count = res.data.count;
+        this.table_loading = false;
+      });
     },
     // 翻页
     handlePageChange(cur_page) {
@@ -476,33 +371,39 @@ export default {
       this.searchForm.page_size = page_size;
       this.getUserCertLists();
     },
+    // 查看缩略图的放大图
+    clickImg(src) {
+      this.showImg = true;
+      this.imgSrc = src;
+    },
     // 点击审核按钮
-    updateStatusModal(row) {
+    updateStatusModal(id) {
       this.updateStatusModalVisible = true;
-      let options = {
-        id: row.id,
-        status: row.status,
-        reason: row.reason
-      };
-      this.updateStatusForm = options;
+      this.updateStatusForm.id = id;
     },
     // 取消审核
     updateStatusCancel(name) {
       this.updateStatusModalVisible = false;
+      this.updateStatusForm.id = null;
       this.$refs[name].resetFields();
     },
-    // 提交审核结构
+    // 提交审核结果
     updateStatus(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
-          this.addUserFormLoading = true;
+          if (this.updateStatusForm.status == 4 && this.updateStatusForm.result.length == 0) {
+            this.$Message.warning('驳回需要填写原因');
+            return false;
+          }
+          this.updateStatusFormLoading = true;
           this.$axios
-            .put("/admin/user/", { params: this.updateStatusForm })
+            .put('/admin/user_cert/check', this.updateStatusForm)
             .then(res => {
               if (res.code == 0) {
                 this.$refs[name].resetFields();
-                this.getUserLists();
-                this.$Message.success("添加成功！");
+                this.getUserCertLists();
+                this.$Message.success('审核结果已提交');
+                this.certInfoModalVisible = false;
                 this.updateStatusFormLoading = false;
                 this.updateStatusModalVisible = false;
               }

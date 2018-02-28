@@ -1,5 +1,5 @@
 <style lang="less">
-@import "./login.less";
+@import './login.less';
 </style>
 
 <template>
@@ -37,17 +37,17 @@
 </template>
 
 <script>
-import md5 from "md5";
+import md5 from 'md5';
 export default {
   data() {
     return {
       loginForm: {
-        username: "",
-        password: ""
+        username: '',
+        password: ''
       },
       rules: {
-        username: [{ required: true, message: "账号不能为空", trigger: "blur" }],
-        password: [{ required: true, message: "密码不能为空", trigger: "blur" }]
+        username: [{ required: true, message: '账号不能为空', trigger: 'blur' }],
+        password: [{ required: true, message: '密码不能为空', trigger: 'blur' }]
       }
     };
   },
@@ -64,21 +64,18 @@ export default {
             username: this.loginForm.username,
             password: md5(this.loginForm.password)
           };
-          this.$store.commit("isLoginLoading", true);
+          this.$store.commit('isLoginLoading', true);
           this.$axios
-            .post("/admin/auth/login", options)
+            .post('/admin/auth/login', options)
             .then(res => {
-              this.$store.commit(
-                "setAvator",
-                "http://og91leroh.bkt.clouddn.com/static/admin/avator.jpg"
-              );
-              this.$cookie.set("tt_a_un", this.loginForm.username);
-              this.$cookie.set("tt_a_login_time", this.getNowFormatDate());
-              this.$store.commit("isLoginLoading", false);
-              this.$router.push({ path: "/home" });
+              this.$store.commit('setAvator', '../../src/images/profile_photo.jpg');
+              this.$cookie.set('tt_a_un', this.loginForm.username);
+              this.$cookie.set('tt_a_login_time', this.getNowFormatDate());
+              this.$store.commit('isLoginLoading', false);
+              this.$router.push({ path: '/home' });
             })
             .catch(error => {
-              this.$store.commit("isLoginLoading", false);
+              this.$store.commit('isLoginLoading', false);
             });
         }
       });
@@ -91,23 +88,12 @@ export default {
       let H = date.getHours();
       let M = date.getMinutes();
       let S = date.getSeconds();
-      month = month < 10 && month >= 1 ? "0" + month : month;
-      strDate = strDate < 10 && strDate >= 0 ? "0" + strDate : strDate;
-      H = H < 10 && H >= 0 ? "0" + H : H;
-      M = M < 10 && M >= 0 ? "0" + M : M;
-      S = S < 10 && S >= 0 ? "0" + S : S;
-      let currentdate =
-        date.getFullYear() +
-        "-" +
-        month +
-        "-" +
-        strDate +
-        " " +
-        H +
-        ":" +
-        M +
-        ":" +
-        S;
+      month = month < 10 && month >= 1 ? '0' + month : month;
+      strDate = strDate < 10 && strDate >= 0 ? '0' + strDate : strDate;
+      H = H < 10 && H >= 0 ? '0' + H : H;
+      M = M < 10 && M >= 0 ? '0' + M : M;
+      S = S < 10 && S >= 0 ? '0' + S : S;
+      let currentdate = date.getFullYear() + '-' + month + '-' + strDate + ' ' + H + ':' + M + ':' + S;
       return currentdate;
     }
   }

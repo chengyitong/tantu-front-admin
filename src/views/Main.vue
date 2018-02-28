@@ -1,5 +1,5 @@
 <style lang="less">
-@import "./main.less";
+@import './main.less';
 </style>
 <template>
   <div id="main" class="main" :class="{'main-hide-text': hideMenuText}">
@@ -56,7 +56,7 @@
                   <Icon type="arrow-down-b"></Icon>
                 </a>
                 <DropdownMenu slot="list">
-                  <DropdownItem name="ownSpace">个人中心</DropdownItem>
+                  <!-- <DropdownItem name="ownSpace">个人中心</DropdownItem> -->
                   <DropdownItem name="loginout" divided>退出登录</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
@@ -78,12 +78,12 @@
   </div>
 </template>
 <script>
-import sidebarMenu from "./main_components/sidebarMenu.vue";
-import tagsPageOpened from "./main_components/tagsPageopened.vue";
-import breadcrumbNav from "./main_components/breadcrumbNav.vue";
-import themeDropdownMenu from "./main_components/themeDropdownMenu.vue";
-import sidebarMenuShrink from "./main_components/sidebarMenuShrink.vue";
-import util from "../libs/util.js";
+import sidebarMenu from './main_components/sidebarMenu.vue';
+import tagsPageOpened from './main_components/tagsPageopened.vue';
+import breadcrumbNav from './main_components/breadcrumbNav.vue';
+import themeDropdownMenu from './main_components/themeDropdownMenu.vue';
+import sidebarMenuShrink from './main_components/sidebarMenuShrink.vue';
+import util from '../libs/util.js';
 
 export default {
   components: {
@@ -97,10 +97,10 @@ export default {
     return {
       spanLeft: 4,
       spanRight: 20,
-      currentPageName: "",
+      currentPageName: '',
       hideMenuText: false,
-      userName: "",
-      showFullScreenBtn: window.navigator.userAgent.indexOf("MSIE") < 0,
+      userName: '',
+      showFullScreenBtn: window.navigator.userAgent.indexOf('MSIE') < 0,
       isFullScreen: false,
       messageCount: 0,
       lockScreenSize: 0
@@ -120,7 +120,7 @@ export default {
       return this.$store.state.currentPath; // 当前面包屑数组
     },
     menuIconColor() {
-      return this.$store.state.menuTheme === "dark" ? "white" : "#495060";
+      return this.$store.state.menuTheme === 'dark' ? 'white' : '#495060';
     },
     avatorPath() {
       return localStorage.avatorImgPath;
@@ -128,12 +128,12 @@ export default {
   },
   methods: {
     init() {
-      this.$store.commit("setCurrentPageName", this.$route.name);
+      this.$store.commit('setCurrentPageName', this.$route.name);
       let pathArr = util.setCurrentPath(this, this.$route.name);
       if (pathArr.length >= 2) {
-        this.$store.commit("addOpenSubmenu", pathArr[1].name);
+        this.$store.commit('addOpenSubmenu', pathArr[1].name);
       }
-      this.userName = this.$cookie.get("tt_a_un");
+      this.userName = this.$cookie.get('tt_a_un');
       let messageCount = 3;
       this.messageCount = messageCount.toString();
     },
@@ -141,25 +141,25 @@ export default {
       this.hideMenuText = !this.hideMenuText;
     },
     handleClickUserDropdown(name) {
-      if (name === "ownSpace") {
-        util.openPage(this, "ownspace_index", "个人中心");
-      } else if (name === "loginout") {
-        this.$axios.get("/admin/auth/logout").then(res => {
+      if (name === 'ownSpace') {
+        util.openPage(this, 'ownspace_index', '个人中心');
+      } else if (name === 'loginout') {
+        this.$axios.get('/admin/auth/logout').then(res => {
           // 退出登录
-          this.$cookie.remove("__token__");
-          this.$cookie.remove("tt_a_un");
-          this.$cookie.remove("_p");
-          this.$cookie.remove("hasGreet");
-          this.$cookie.remove("access");
-          this.$cookie.remove("locking");
-          this.$cookie.remove("tt_a_login_time");
-          this.$Notice.close("greeting");
-          this.$store.commit("clearOpenedSubmenu");
+          this.$cookie.remove('__token__');
+          this.$cookie.remove('tt_a_un');
+          this.$cookie.remove('_p');
+          this.$cookie.remove('hasGreet');
+          this.$cookie.remove('access');
+          this.$cookie.remove('locking');
+          this.$cookie.remove('tt_a_login_time');
+          this.$Notice.close('greeting');
+          this.$store.commit('clearOpenedSubmenu');
           // 回复默认样式
           let themeLink = document.querySelector('link[name="theme"]');
-          themeLink.setAttribute("href", "");
+          themeLink.setAttribute('href', '');
           // 清空打开的页面等数据，但是保存主题数据
-          let theme = "";
+          let theme = '';
           if (localStorage.theme) {
             theme = localStorage.theme;
           }
@@ -168,13 +168,13 @@ export default {
             localStorage.theme = theme;
           }
           this.$router.push({
-            name: "login"
+            name: 'login'
           });
         });
       }
     },
     handleFullScreen() {
-      let main = document.getElementById("main");
+      let main = document.getElementById('main');
       if (this.isFullScreen) {
         if (document.exitFullscreen) {
           document.exitFullscreen();
@@ -198,91 +198,90 @@ export default {
       }
     },
     showMessage() {
-      util.openPage(this, "message_index", "消息中心");
+      util.openPage(this, 'message_index', '消息中心');
     },
     lockScreen() {
-      let lockScreenBack = document.getElementById("lock_screen_back");
-      lockScreenBack.style.transition = "all 3s";
+      let lockScreenBack = document.getElementById('lock_screen_back');
+      lockScreenBack.style.transition = 'all 3s';
       lockScreenBack.style.zIndex = 10000;
-      lockScreenBack.style.boxShadow =
-        "0 0 0 " + this.lockScreenSize + "px #667aa6 inset";
+      lockScreenBack.style.boxShadow = '0 0 0 ' + this.lockScreenSize + 'px #667aa6 inset';
       this.showUnlock = true;
-      this.$store.commit("lock");
-      this.$cookie.set("last_page_name", this.$route.name); // 本地存储锁屏之前打开的页面以便解锁后打开
+      this.$store.commit('lock');
+      this.$cookie.set('last_page_name', this.$route.name); // 本地存储锁屏之前打开的页面以便解锁后打开
       setTimeout(() => {
-        lockScreenBack.style.transition = "all 0s";
+        lockScreenBack.style.transition = 'all 0s';
         this.$router.push({
-          name: "locking"
+          name: 'locking'
         });
       }, 800);
     }
   },
   watch: {
     $route(to) {
-      this.$store.commit("setCurrentPageName", to.name);
+      this.$store.commit('setCurrentPageName', to.name);
       let pathArr = util.setCurrentPath(this, to.name);
       if (pathArr.length > 2) {
-        this.$store.commit("addOpenSubmenu", pathArr[1].name);
+        this.$store.commit('addOpenSubmenu', pathArr[1].name);
       }
     }
   },
   mounted() {
     this.init();
     // 全屏相关
-    document.addEventListener("fullscreenchange", () => {
+    document.addEventListener('fullscreenchange', () => {
       this.isFullScreen = !this.isFullScreen;
     });
-    document.addEventListener("mozfullscreenchange", () => {
+    document.addEventListener('mozfullscreenchange', () => {
       this.isFullScreen = !this.isFullScreen;
     });
-    document.addEventListener("webkitfullscreenchange", () => {
+    document.addEventListener('webkitfullscreenchange', () => {
       this.isFullScreen = !this.isFullScreen;
     });
-    document.addEventListener("msfullscreenchange", () => {
+    document.addEventListener('msfullscreenchange', () => {
       this.isFullScreen = !this.isFullScreen;
     });
     // 锁屏相关
-    let lockScreenBack = document.getElementById("lock_screen_back");
+    let lockScreenBack = document.getElementById('lock_screen_back');
     let x = document.body.clientWidth;
     let y = document.body.clientHeight;
     let r = Math.sqrt(x * x + y * y);
     let size = parseInt(r);
     this.lockScreenSize = size;
-    window.addEventListener("resize", () => {
+    window.addEventListener('resize', () => {
       let x = document.body.clientWidth;
       let y = document.body.clientHeight;
       let r = Math.sqrt(x * x + y * y);
       let size = parseInt(r);
       this.lockScreenSize = size;
-      lockScreenBack.style.transition = "all 0s";
-      lockScreenBack.style.width = lockScreenBack.style.height = size + "px";
+      lockScreenBack.style.transition = 'all 0s';
+      lockScreenBack.style.width = lockScreenBack.style.height = size + 'px';
     });
-    lockScreenBack.style.width = lockScreenBack.style.height = size + "px";
+    lockScreenBack.style.width = lockScreenBack.style.height = size + 'px';
     // 问候信息相关
-    if (!this.$cookie.get("hasGreet")) {
+    if (!this.$cookie.get('hasGreet')) {
       let now = new Date();
       let hour = now.getHours();
       let greetingWord = {
-        title: "",
-        words: ""
+        title: '',
+        words: ''
       };
-      let userName = this.$cookie.get("tt_a_un");
+      let userName = this.$cookie.get('tt_a_un');
       if (hour < 6) {
-        greetingWord = { title: "凌晨好~" + userName, words: "早起的鸟儿有虫吃~" };
+        greetingWord = { title: '凌晨好~' + userName, words: '早起的鸟儿有虫吃~' };
       } else if (hour >= 6 && hour < 9) {
-        greetingWord = { title: "早上好~" + userName, words: "来一杯咖啡开启美好的一天~" };
+        greetingWord = { title: '早上好~' + userName, words: '来一杯咖啡开启美好的一天~' };
       } else if (hour >= 9 && hour < 12) {
-        greetingWord = { title: "上午好~" + userName, words: "工作要加油哦~" };
+        greetingWord = { title: '上午好~' + userName, words: '工作要加油哦~' };
       } else if (hour >= 12 && hour < 14) {
-        greetingWord = { title: "中午好~" + userName, words: "午饭要吃饱~" };
+        greetingWord = { title: '中午好~' + userName, words: '午饭要吃饱~' };
       } else if (hour >= 14 && hour < 17) {
-        greetingWord = { title: "下午好~" + userName, words: "下午也要活力满满哦~" };
+        greetingWord = { title: '下午好~' + userName, words: '下午也要活力满满哦~' };
       } else if (hour >= 17 && hour < 19) {
-        greetingWord = { title: "傍晚好~" + userName, words: "下班没事陪爸妈聊聊天吧~" };
+        greetingWord = { title: '傍晚好~' + userName, words: '下班没事陪爸妈聊聊天吧~' };
       } else if (hour >= 19 && hour < 21) {
-        greetingWord = { title: "晚上好~" + userName, words: "工作之余品一品书香吧~" };
+        greetingWord = { title: '晚上好~' + userName, words: '工作之余品一品书香吧~' };
       } else {
-        greetingWord = { title: "深夜好~" + userName, words: "夜深了，注意休息哦~" };
+        greetingWord = { title: '深夜好~' + userName, words: '夜深了，注意休息哦~' };
       }
       this.$Notice.config({
         top: 130
@@ -291,45 +290,42 @@ export default {
         title: greetingWord.title,
         desc: greetingWord.words,
         duration: 4,
-        name: "greeting"
+        name: 'greeting'
       });
-      this.$cookie.set("hasGreet", 1);
+      this.$cookie.set('hasGreet', 1);
     }
   },
   created() {
     // 权限菜单过滤相关
-    this.$store.commit("updateMenulist");
+    this.$store.commit('updateMenulist');
     // 查找当前用户之前登录时设置的主题
-    let name = this.$cookie.get("tt_a_un");
+    let name = this.$cookie.get('tt_a_un');
     if (localStorage.theme) {
       let hasThisUser = JSON.parse(localStorage.theme).some(item => {
         if (item.userName === name) {
-          this.$store.commit("changeMenuTheme", item.menuTheme);
-          this.$store.commit("changeMainTheme", item.mainTheme);
+          this.$store.commit('changeMenuTheme', item.menuTheme);
+          this.$store.commit('changeMainTheme', item.mainTheme);
           return true;
         } else {
           return false;
         }
       });
       if (!hasThisUser) {
-        this.$store.commit("changeMenuTheme", "dark");
-        this.$store.commit("changeMainTheme", "b");
+        this.$store.commit('changeMenuTheme', 'dark');
+        this.$store.commit('changeMainTheme', 'b');
       }
     } else {
-      this.$store.commit("changeMenuTheme", "dark");
-      this.$store.commit("changeMainTheme", "b");
+      this.$store.commit('changeMenuTheme', 'dark');
+      this.$store.commit('changeMainTheme', 'b');
     }
     // 根据用户设置主题
-    if (this.$store.state.theme !== "b") {
-      let stylesheetPath =
-        "http://og91leroh.bkt.clouddn.com/static/admin/css/" +
-        this.$store.state.theme +
-        ".css";
+    if (this.$store.state.theme !== 'b') {
+      let stylesheetPath = 'http://og91leroh.bkt.clouddn.com/static/admin/css/' + this.$store.state.theme + '.css';
       let themeLink = document.querySelector('link[name="theme"]');
-      themeLink.setAttribute("href", stylesheetPath);
+      themeLink.setAttribute('href', stylesheetPath);
     }
     // 显示打开的页面的列表
-    this.$store.commit("setOpenedList");
+    this.$store.commit('setOpenedList');
   }
 };
 </script>
