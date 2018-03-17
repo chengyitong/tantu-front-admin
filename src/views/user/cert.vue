@@ -299,6 +299,41 @@ export default {
           }
         },
         {
+          title: '签约情况',
+          key: 'status',
+          width: 110,
+          align: 'center',
+          render: (h, params) => {
+            let status = params.row.user.user_sign.status;
+            let type = params.row.user.user_sign.type;
+            let type_str = '';
+            let type_color = '';
+            if (status == 1) {
+              type_str = '未签约';
+              type_color = 'blue';
+            } else {
+              if (type == 3) {
+                type_str = '独家';
+                type_color = 'green';
+              } else if (type == 2) {
+                type_str = '非独家';
+                type_color = 'red';
+              }
+            }
+
+            return h(
+              'Tag',
+              {
+                props: {
+                  color: type_color,
+                  size: 'small'
+                }
+              },
+              type_str
+            );
+          }
+        },
+        {
           title: '操作',
           key: '认证资料',
           align: 'right',

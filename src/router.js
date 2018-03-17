@@ -300,13 +300,23 @@ export const appRouter = [
         }
       },
       {
-        path: 'repository',
-        title: '图片库',
-        name: 'picture_repository',
+        path: 'community',
+        title: '图片社区',
+        name: 'picture_community',
         icon: 'android-image',
         available: true,
         component: resolve => {
-          require(['./views/picture/repository.vue'], resolve);
+          require(['./views/picture/community.vue'], resolve);
+        }
+      },
+      {
+        path: 'market',
+        title: '图片市场',
+        name: 'picture_market',
+        icon: 'android-cart',
+        available: true,
+        component: resolve => {
+          require(['./views/picture/market.vue'], resolve);
         }
       },
       {

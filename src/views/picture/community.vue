@@ -114,8 +114,8 @@
         <Form-item label="图片状态" prop="status">
           <RadioGroup v-model="updateProductForm.status">
             <Radio :label="1" disabled>待处理</Radio>
-            <Radio :label="2" disabled>待审核</Radio>
-            <Radio :label="3" disabled>不通过</Radio>
+            <!-- <Radio :label="2" disabled>待审核</Radio>
+            <Radio :label="3" disabled>不通过</Radio> -->
             <Radio :label="4">已上架</Radio>
             <Radio :label="5">已下架</Radio>
           </RadioGroup>
@@ -142,7 +142,7 @@
 </template>
 
 <script>
-import imgView from "../my_components/img-view/img-view";
+import imgView from '../my_components/img-view/img-view';
 export default {
   data() {
     return {
@@ -164,7 +164,7 @@ export default {
       datePickerOptions: {
         shortcuts: [
           {
-            text: "最近一周",
+            text: '最近一周',
             value() {
               const end = new Date();
               const start = new Date();
@@ -173,7 +173,7 @@ export default {
             }
           },
           {
-            text: "最近一个月",
+            text: '最近一个月',
             value() {
               const end = new Date();
               const start = new Date();
@@ -182,7 +182,7 @@ export default {
             }
           },
           {
-            text: "最近三个月",
+            text: '最近三个月',
             value() {
               const end = new Date();
               const start = new Date();
@@ -193,87 +193,87 @@ export default {
         ]
       },
       // 图片列表
-      imgSrc: "", // 当前点击的图片链接
+      imgSrc: '', // 当前点击的图片链接
       showImg: false, // 显示放大的图片
       table_loading: false,
       list: [],
       list_columns: [
         {
-          type: "selection",
+          type: 'selection',
           width: 60,
-          align: "center",
-          fixed: "left"
+          align: 'center',
+          fixed: 'left'
         },
         {
-          title: "缩略图",
-          key: "imgkey",
+          title: '缩略图',
+          key: 'imgkey',
           width: 150,
-          align: "center",
-          fixed: "left",
+          align: 'center',
+          fixed: 'left',
           render: (h, params) => {
             let is_recommend = params.row.is_recommend;
-            let is_recommend_str = is_recommend == 0 ? "【否】" : "【是】";
+            let is_recommend_str = is_recommend == 0 ? '【否】' : '【是】';
             return h(
-              "span",
+              'span',
               {
                 style: {
-                  display: "block",
-                  margin: "0 auto"
+                  display: 'block',
+                  margin: '0 auto'
                 }
               },
               [
                 h(
-                  "Poptip",
+                  'Poptip',
                   {
                     props: {
-                      content: "缩略图",
-                      trigger: "hover",
+                      content: '缩略图',
+                      trigger: 'hover',
                       transfer: true,
-                      placement: "right"
+                      placement: 'right'
                     }
                   },
                   [
-                    h("img", {
+                    h('img', {
                       domProps: {
-                        src: params.row.thumbkey + "-h160?_=",
+                        src: params.row.thumbkey + '-h160?_=',
                         alt: params.row.name,
                         title: params.row.name
                       },
                       style: {
-                        display: "block",
-                        margin: "5px auto 3px",
-                        maxWidth: "140px",
-                        maxHeight: "40px",
-                        cursor: "pointer"
+                        display: 'block',
+                        margin: '5px auto 3px',
+                        maxWidth: '140px',
+                        maxHeight: '40px',
+                        cursor: 'pointer'
                       },
                       on: {
                         click: () => {
-                          this.clickImg(params.row.thumbkey + "-topimg?_=");
+                          this.clickImg(params.row.thumbkey + '-topimg?_=');
                         }
                       }
                     }),
                     h(
-                      "div",
+                      'div',
                       {
-                        slot: "content"
+                        slot: 'content'
                       },
                       [
-                        h("img", {
+                        h('img', {
                           domProps: {
-                            src: params.row.thumbkey + "-nlist?_=",
+                            src: params.row.thumbkey + '-nlist?_=',
                             alt: params.row.name,
                             title: params.row.name
                           },
                           style: {
-                            display: "block",
-                            margin: "5px auto 3px",
-                            maxWidth: "300px",
-                            maxHeight: "300px",
-                            cursor: "pointer"
+                            display: 'block',
+                            margin: '5px auto 3px',
+                            maxWidth: '300px',
+                            maxHeight: '300px',
+                            cursor: 'pointer'
                           },
                           on: {
                             click: () => {
-                              this.clickImg(params.row.thumbkey + "-topimg?_=");
+                              this.clickImg(params.row.thumbkey + '-topimg?_=');
                             }
                           }
                         })
@@ -282,75 +282,68 @@ export default {
                   ]
                 ),
                 h(
-                  "span",
+                  'span',
                   {
                     style: {
-                      display: "block",
-                      margin: "0 auto 3px auto"
+                      display: 'block',
+                      margin: '0 auto 3px auto'
                     }
                   },
-                  "是否推荐" + is_recommend_str
+                  '是否推荐' + is_recommend_str
                 ),
                 h(
-                  "a",
+                  'a',
                   {
                     domProps: {
-                      href: "/admin/product/download/" + params.row.id,
-                      target: "_blank"
+                      href: '/admin/product/download/' + params.row.id,
+                      target: '_blank'
                     },
                     style: {
-                      display: "block",
-                      margin: "0 auto 5px auto"
+                      display: 'block',
+                      margin: '0 auto 5px auto'
                     }
                   },
-                  "下载（" + (params.row.size / 1024 / 1024).toFixed(2) + "M）"
+                  '下载（' + (params.row.size / 1024 / 1024).toFixed(2) + 'M）'
                 )
               ]
             );
           }
         },
         {
-          title: "图片名称",
-          key: "name",
+          title: '图片名称',
+          key: 'name',
           width: 200,
           sortable: true,
           render: (h, params) => {
-            return h("span", [
-              h("p", params.row.name == null ? "" : params.row.name),
-              h("p", "图片ID：" + params.row.id)
-            ]);
+            return h('span', [h('p', params.row.name == null ? '' : params.row.name), h('p', '图片ID：' + params.row.id), h('p', '图片编号：' + params.row.identifier)]);
           }
         },
         {
-          title: "图片简介",
-          key: "desc",
+          title: '图片简介',
+          key: 'desc',
           width: 200,
           sortable: true,
           render: (h, params) => {
-            return h("span", params.row.desc == null ? "" : params.row.desc);
+            return h('span', params.row.desc == null ? '' : params.row.desc);
           }
         },
         {
-          title: "图片分类",
-          key: "category",
+          title: '图片分类',
+          key: 'category',
           width: 180,
           sortable: true,
           render: (h, params) => {
             let category = params.row.category;
             let category_arr = [];
-            for (
-              let i = 0, category_len = category.length;
-              i < category_len;
-              i++
-            ) {
+            for (let i = 0, category_len = category.length; i < category_len; i++) {
               category_arr.push(category[i].name);
             }
-            return h("span", category_arr.toString());
+            return h('span', category_arr.toString());
           }
         },
         {
-          title: "图片标签",
-          key: "tag",
+          title: '图片标签',
+          key: 'tag',
           width: 180,
           sortable: true,
           render: (h, params) => {
@@ -359,12 +352,12 @@ export default {
             for (let i = 0, tag_len = tag.length; i < tag_len; i++) {
               tag_arr.push(tag[i].name);
             }
-            return h("span", tag_arr.toString());
+            return h('span', tag_arr.toString());
           }
         },
         {
-          title: "图片颜色",
-          key: "color",
+          title: '图片颜色',
+          key: 'color',
           width: 180,
           sortable: true,
           render: (h, params) => {
@@ -373,48 +366,48 @@ export default {
             for (let i = 0, color_len = color.length; i < color_len; i++) {
               color_arr.push(color[i].name);
             }
-            return h("span", color_arr.toString());
+            return h('span', color_arr.toString());
           }
         },
         {
-          title: "图片状态",
-          key: "status",
+          title: '图片状态',
+          key: 'status',
           width: 130,
-          align: "center",
+          align: 'center',
           sortable: true,
           render: (h, params) => {
             let status = params.row.status;
-            let status_str = "";
-            let status_color = "";
+            let status_str = '';
+            let status_color = '';
             switch (status) {
               case 1:
-                status_str = "待处理";
-                status_color = "yellow";
+                status_str = '待处理';
+                status_color = 'yellow';
                 break;
               case 2:
-                status_str = "待审核";
-                status_color = "blue";
+                status_str = '待审核';
+                status_color = 'blue';
                 break;
               case 3:
-                status_str = "不通过";
-                status_color = "red";
+                status_str = '不通过';
+                status_color = 'red';
                 break;
               case 4:
-                status_str = "已上架";
-                status_color = "green";
+                status_str = '已上架';
+                status_color = 'green';
                 break;
               case 5:
-                status_str = "已下架";
-                status_color = "red";
+                status_str = '已下架';
+                status_color = 'red';
                 break;
             }
             return h(
-              "Tag",
+              'Tag',
               {
                 props: {
                   color: status_color,
-                  type: "dot",
-                  size: "small"
+                  type: 'dot',
+                  size: 'small'
                 }
               },
               status_str
@@ -422,36 +415,36 @@ export default {
           }
         },
         {
-          title: "图片类型",
-          key: "type",
+          title: '图片类型',
+          key: 'type',
           width: 120,
-          align: "center",
+          align: 'center',
           sortable: true,
           render: (h, params) => {
             let type = params.row.type;
-            let type_str = "";
-            let type_color = "";
+            let type_str = '';
+            let type_color = '';
             switch (type) {
               case 1:
-                type_str = "版权";
-                type_color = "yellow";
+                type_str = '版权';
+                type_color = 'yellow';
                 break;
               case 2:
-                type_str = "售卖";
-                type_color = "blue";
+                type_str = '售卖';
+                type_color = 'blue';
                 break;
               case 3:
-                type_str = "免费";
-                type_color = "green";
+                type_str = '免费';
+                type_color = 'green';
                 break;
             }
             return h(
-              "Tag",
+              'Tag',
               {
                 props: {
                   color: type_color,
-                  type: "dot",
-                  size: "small"
+                  type: 'dot',
+                  size: 'small'
                 }
               },
               type_str
@@ -459,40 +452,40 @@ export default {
           }
         },
         {
-          title: "图片方向",
-          key: "rotate",
+          title: '图片方向',
+          key: 'rotate',
           width: 120,
-          align: "center",
+          align: 'center',
           sortable: true,
           render: (h, params) => {
             let rotate = params.row.rotate;
-            let _str = "";
-            let _color = "";
+            let _str = '';
+            let _color = '';
             switch (rotate) {
               case 0:
-                _str = "横向";
-                _color = "yellow";
+                _str = '横向';
+                _color = 'yellow';
                 break;
               case 1:
-                _str = "横向";
-                _color = "yellow";
+                _str = '横向';
+                _color = 'yellow';
                 break;
               case 2:
-                _str = "竖向";
-                _color = "blue";
+                _str = '竖向';
+                _color = 'blue';
                 break;
               case 3:
-                _str = "正方";
-                _color = "green";
+                _str = '正方';
+                _color = 'green';
                 break;
             }
             return h(
-              "Tag",
+              'Tag',
               {
                 props: {
                   color: _color,
-                  type: "dot",
-                  size: "small"
+                  type: 'dot',
+                  size: 'small'
                 }
               },
               _str
@@ -500,74 +493,71 @@ export default {
           }
         },
         {
-          title: "图片分辨率",
-          key: "width",
+          title: '图片分辨率',
+          key: 'width',
           width: 150,
-          align: "center",
+          align: 'center',
           sortable: true,
           render: (h, params) => {
-            return h("span", params.row.width + " * " + params.row.height);
+            return h('span', params.row.width + ' * ' + params.row.height);
           }
         },
         {
-          title: "用户昵称（ID）",
-          key: "nickname",
+          title: '用户昵称（ID）',
+          key: 'nickname',
           width: 200,
           sortable: true,
           render: (h, params) => {
-            return h(
-              "span",
-              params.row.user.nickname + "（ID:" + params.row.user.id + "）"
-            );
+            return h('span', params.row.user.nickname + '（ID:' + params.row.user.id + '）');
           }
         },
         {
-          title: "上传时间",
-          key: "create_time",
+          title: '上传时间',
+          key: 'create_time',
           width: 160,
           sortable: true
         },
         {
-          title: "EXIF信息",
-          key: "EXIF",
+          title: 'EXIF信息',
+          key: 'EXIF',
           width: 110,
           render: (h, params) => {
             return h(
-              "Poptip",
+              'Poptip',
               {
                 props: {
-                  content: "EXIF信息",
-                  trigger: "hover",
+                  content: 'EXIF信息',
+                  trigger: 'hover',
                   transfer: true,
-                  placement: "left"
+                  placement: 'left'
                 }
               },
               [
                 h(
-                  "Tag",
+                  'Tag',
                   {
                     props: {
-                      color: "green",
-                      size: "small"
+                      color: 'green',
+                      size: 'small'
                     }
                   },
-                  "EXIF信息"
+                  'EXIF信息'
                 ),
                 h(
-                  "div",
+                  'div',
                   {
-                    slot: "content"
+                    slot: 'content'
                   },
                   [
-                    h("p", "品牌：" + params.row.exif_brand),
-                    h("p", "型号：" + params.row.exif_model),
-                    h("p", "焦距：" + params.row.exif_focal_length),
-                    h("p", "光圈：" + params.row.exif_f_number),
-                    h("p", "快门：" + params.row.exif_shutter),
-                    h("p", "ISO：" + params.row.exif_iso),
-                    h("p", "曝光：" + params.row.exif_exposure),
-                    h("p", "镜头：" + params.row.exif_camera_lens),
-                    h("p", "拍摄时间：" + params.row.exif_taketime)
+                    h('p', '品牌：' + params.row.exif_brand),
+                    h('p', '型号：' + params.row.exif_model),
+                    h('p', '焦距：' + params.row.exif_focal_length),
+                    h('p', '光圈：' + params.row.exif_f_number),
+                    h('p', '快门：' + params.row.exif_shutter),
+                    h('p', 'ISO：' + params.row.exif_iso),
+                    h('p', '曝光：' + params.row.exif_exposure),
+                    h('p', '镜头：' + params.row.exif_camera_lens),
+                    h('p', '拍摄时间：' + params.row.exif_taketime)
                   ]
                 )
               ]
@@ -575,62 +565,59 @@ export default {
           }
         },
         {
-          title: "活动信息",
-          key: "events",
+          title: '活动信息',
+          key: 'events',
           width: 110,
           render: (h, params) => {
             if (params.row.events.length == 0) {
-              return h("span", "未参加活动");
+              return h('span', '未参加活动');
             }
             return h(
-              "Poptip",
+              'Poptip',
               {
                 props: {
-                  content: "活动信息",
-                  trigger: "hover",
+                  content: '活动信息',
+                  trigger: 'hover',
                   transfer: true,
-                  placement: "left"
+                  placement: 'left'
                 }
               },
               [
                 h(
-                  "Tag",
+                  'Tag',
                   {
                     props: {
-                      color: "yellow",
-                      size: "small"
+                      color: 'yellow',
+                      size: 'small'
                     }
                   },
-                  "活动信息"
+                  '活动信息'
                 ),
                 h(
-                  "div",
+                  'div',
                   {
-                    slot: "content"
+                    slot: 'content'
                   },
-                  [
-                    h("p", "活动ID：" + params.row.events[0].id),
-                    h("p", "活动名称：" + params.row.events[0].subject)
-                  ]
+                  [h('p', '活动ID：' + params.row.events[0].id), h('p', '活动名称：' + params.row.events[0].subject)]
                 )
               ]
             );
           }
         },
         {
-          title: "操作",
-          key: "action",
+          title: '操作',
+          key: 'action',
           width: 60,
-          align: "center",
-          fixed: "right",
+          align: 'center',
+          fixed: 'right',
           render: (h, params) => {
             let currentRow = params.row;
             return h(
-              "Button",
+              'Button',
               {
                 props: {
-                  type: "primary",
-                  size: "small"
+                  type: 'primary',
+                  size: 'small'
                 },
                 on: {
                   click: () => {
@@ -638,7 +625,7 @@ export default {
                   }
                 }
               },
-              "编辑"
+              '编辑'
             );
           }
         }
@@ -655,7 +642,7 @@ export default {
     };
   },
   components: {
-    "img-view": imgView
+    'img-view': imgView
   },
   mounted: function() {
     this.$nextTick(function() {
@@ -667,14 +654,14 @@ export default {
   methods: {
     // 获取所有分类列表用于编辑图片
     getCategoryLists() {
-      this.$axios.get("/admin/category").then(res => {
+      this.$axios.get('/admin/category').then(res => {
         this.categoryOptions = res.data.list;
       });
     },
     // 获取所有颜色列表用于编辑图片
     getColorLists() {
       this.$axios
-        .get("/admin/color")
+        .get('/admin/color')
         .then(res => {
           this.colorOptions = res.data.list;
         })
@@ -684,7 +671,7 @@ export default {
     getProductLists() {
       this.table_loading = true;
       let params = this.$util.deleteEmptyObj(this.searchForm);
-      this.$axios.get("/admin/product", { params }).then(res => {
+      this.$axios.get('/admin/product', { params }).then(res => {
         this.table_loading = false;
         this.$Spin.hide();
         this.list = res.data.list;
@@ -713,7 +700,7 @@ export default {
     },
     // 设置图片颜色的背景
     setColorStyle(color) {
-      return "background-color:" + color;
+      return 'background-color:' + color;
     },
     // 点击编辑按钮
     updateProductModal(row) {
@@ -756,14 +743,11 @@ export default {
     updateProduct() {
       this.updateProductFormLoading = true;
       this.$axios
-        .put(
-          "/admin/product/" + this.updateProductForm.id,
-          this.updateProductForm
-        )
+        .put('/admin/product/' + this.updateProductForm.id, this.updateProductForm)
         .then(res => {
           if (res.code == 0) {
             this.getProductLists();
-            this.$Message.success("更新成功！");
+            this.$Message.success('更新成功！');
             this.updateProductFormLoading = false;
             this.updateProductModalVisible = false;
           }
@@ -782,39 +766,37 @@ export default {
     // 批量推荐
     productRecommends() {
       if (this.product_ids.length == 0) {
-        this.$Message.warning("请选择需要推荐的图片");
+        this.$Message.warning('请选择需要推荐的图片');
         return false;
       }
-      this.$axios
-        .get("/admin/product/recommends", { params: { ids: this.product_ids } })
-        .then(res => {
-          this.getProductLists();
-          this.$Message.success("推荐成功");
-        });
+      this.$axios.get('/admin/product/recommends', { params: { ids: this.product_ids } }).then(res => {
+        this.getProductLists();
+        this.$Message.success('推荐成功');
+      });
     },
     // 批量取消推荐
     productCancelRecommends() {
       if (this.product_ids.length == 0) {
-        this.$Message.warning("请选择需要取消推荐的图片");
+        this.$Message.warning('请选择需要取消推荐的图片');
         return false;
       }
       this.$axios
-        .get("/admin/product/cancel_recommends", {
+        .get('/admin/product/cancel_recommends', {
           params: { ids: this.product_ids }
         })
         .then(res => {
           this.getProductLists();
-          this.$Message.success("取消推荐成功");
+          this.$Message.success('取消推荐成功');
         });
     },
     // 批量上下架
     changeStatus(status) {
-      let status_str = "";
-      if (status === 4) status_str = "上架";
-      if (status === 5) status_str = "下架";
+      let status_str = '';
+      if (status === 4) status_str = '上架';
+      if (status === 5) status_str = '下架';
 
       if (this.product_ids.length == 0) {
-        this.$Message.warning("请选择需要" + status_str + "的图片");
+        this.$Message.warning('请选择需要' + status_str + '的图片');
         return false;
       }
       let params = {
@@ -822,9 +804,9 @@ export default {
         status,
         pass_str: null // 审核不通过的时候填写不通过的原因
       };
-      this.$axios.get("/admin/product/change_status", { params }).then(res => {
+      this.$axios.get('/admin/product/change_status', { params }).then(res => {
         this.getProductLists();
-        this.$Message.success(status_str + "成功");
+        this.$Message.success(status_str + '成功');
       });
     }
   }
