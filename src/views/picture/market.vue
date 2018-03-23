@@ -166,7 +166,12 @@
             <template v-else-if="productDetail.sale_info.copyright_type == 3">无</template>
           </td>
           <td>版权证明资料</td>
-          <td colspan="3">{{productDetail.sale_info.copyright_file_name || '--'}}</td>
+          <td colspan="3">
+            <template v-if="productDetail.sale_info.copyright_file_name != ''">
+              <a :href="'/Admin/SaleInfo/CopyrightFile?product_id='+productDetail.id" target="_blank">下载</a>
+            </template>
+            <template v-else>--</template>
+          </td>
         </tr>
       </table>
     </Modal>

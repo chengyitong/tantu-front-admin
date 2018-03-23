@@ -117,6 +117,7 @@ export default {
         {
           title: '用户昵称',
           key: 'money',
+          width: 150,
           render: (h, params) => {
             return h('span', params.row.user.nickname + '（ID：' + params.row.user.id + '）');
           }
@@ -152,7 +153,7 @@ export default {
           render: (h, params) => {
             let type = params.row.account_type;
             let type_str = '';
-            let receivable_account = JSON.parse(params.row.receivable_account);
+            let receivable_account = params.row.receivable_account;
             if (type == 1) {
               type_str = receivable_account.payee + '-' + params.row.account_num + '-支付宝';
             }
@@ -160,6 +161,14 @@ export default {
               type_str = receivable_account.payee + '-' + params.row.account_num + '-' + receivable_account.bank + receivable_account.branch;
             }
             return h('span', type_str);
+          }
+        },
+        {
+          title: '用户绑定的手机号',
+          key: 'tel',
+          width: 160,
+          render: (h, params) => {
+            return h('span', params.row.user.tel);
           }
         },
         {
@@ -171,7 +180,7 @@ export default {
         {
           title: '处理时间',
           key: 'update_time',
-          width: '160',
+          width: 160,
           sortable: true
         },
         {
