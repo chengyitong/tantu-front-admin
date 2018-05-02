@@ -260,7 +260,7 @@ export default {
               [
                 h('img', {
                   domProps: {
-                    src: params.row.subject_banner_index + '-h160?_='
+                    src: params.row.subject_banner_index
                   },
                   style: {
                     marginTop: '5px',
@@ -284,7 +284,7 @@ export default {
                   [
                     h('img', {
                       domProps: {
-                        src: params.row.subject_banner_index + '-h160?_='
+                        src: params.row.subject_banner_index
                       },
                       style: {
                         maxWidth: '500px',
@@ -316,7 +316,7 @@ export default {
               [
                 h('img', {
                   domProps: {
-                    src: params.row.subject_banner_list + '-h160?_='
+                    src: params.row.subject_banner_list
                   },
                   style: {
                     marginTop: '5px',
@@ -340,7 +340,7 @@ export default {
                   [
                     h('img', {
                       domProps: {
-                        src: params.row.subject_banner_list + '-h160?_='
+                        src: params.row.subject_banner_list
                       },
                       style: {
                         maxWidth: '500px',
@@ -372,7 +372,7 @@ export default {
               [
                 h('img', {
                   domProps: {
-                    src: params.row.subject_banner_detail + '-h160?_='
+                    src: params.row.subject_banner_detail
                   },
                   style: {
                     marginTop: '5px',
@@ -396,7 +396,63 @@ export default {
                   [
                     h('img', {
                       domProps: {
-                        src: params.row.subject_banner_detail + '-h160?_='
+                        src: params.row.subject_banner_detail
+                      },
+                      style: {
+                        maxWidth: '500px',
+                        maxHeight: '400px'
+                      }
+                    })
+                  ]
+                )
+              ]
+            );
+          }
+        },
+        {
+          title: 'APP活动封面',
+          key: 'subject_banner_app',
+          width: 160,
+          align: 'center',
+          render: (h, params) => {
+            return h(
+              'Poptip',
+              {
+                props: {
+                  content: 'APP活动封面',
+                  trigger: 'hover',
+                  transfer: true,
+                  placement: 'left'
+                }
+              },
+              [
+                h('img', {
+                  domProps: {
+                    src: params.row.subject_banner_app
+                  },
+                  style: {
+                    marginTop: '5px',
+                    width: '100%',
+                    height: '100%',
+                    maxWidth: '200px',
+                    maxHeight: '160px',
+                    cursor: 'pointer'
+                  },
+                  on: {
+                    click: () => {
+                      this.clickImg(params.row.subject_banner_app);
+                    }
+                  }
+                }),
+                h(
+                  'div',
+                  {
+                    slot: 'content'
+                  },
+                  [
+                    h('img', {
+                      domProps: {
+                        src: params.row.subject_banner_app
                       },
                       style: {
                         maxWidth: '500px',
@@ -589,174 +645,6 @@ export default {
                 ])
               ]);
             }
-
-            // if (status == 1) {
-            //   return h("span", [
-            //     h(
-            //       "a",
-            //       {
-            //         props: {
-            //           type: "primary",
-            //           size: "small"
-            //         },
-            //         on: {
-            //           click: () => {
-            //             this.$router.push("/activity/edit/" + currentRow.id);
-            //             // this.productCountModal(params.row);
-            //           }
-            //         }
-            //       },
-            //       "编辑草稿"
-            //     ),
-            //     h(
-            //       "Poptip",
-            //       {
-            //         props: {
-            //           confirm: true,
-            //           title: "您确定要删除这条数据吗?",
-            //           transfer: true,
-            //           placement: "top-end"
-            //         },
-            //         on: {
-            //           "on-ok": () => {
-            //             currentRow.isDeleting = true;
-            //             this.$axios
-            //               .delete("/admin/event/" + params.row.id)
-            //               .then(res => {
-            //                 this.$Message.success("删除成功");
-            //                 this.getActivityLists();
-            //               })
-            //               .catch(error => {
-            //                 currentRow.isDeleting = false;
-            //               });
-            //           }
-            //         }
-            //       },
-            //       [
-            //         h(
-            //           "a",
-            //           {
-            //             props: {
-            //               type: "error",
-            //               size: "small",
-            //               placement: "top",
-            //               loading: currentRow.isDeleting
-            //             },
-            //             style: {
-            //               marginLeft: "10px"
-            //             }
-            //           },
-            //           "删除"
-            //         )
-            //       ]
-            //     )
-            //   ]);
-            // }
-            // if (status == 3) {
-            //   return h("span", [
-            //     h("p", "公示中"),
-            //     h(
-            //       "a",
-            //       {
-            //         props: {
-            //           type: "primary",
-            //           size: "small"
-            //         },
-            //         on: {
-            //           click: () => {
-            //             this.$router.push("/activity/edit/" + currentRow.id);
-            //           }
-            //         }
-            //       },
-            //       "编辑详情"
-            //     ),
-            //     h("p", [
-            //       h(
-            //         "a",
-            //         {
-            //           props: {
-            //             type: "primary",
-            //             size: "small"
-            //           },
-            //           on: {
-            //             click: () => {
-            //               this.$router.push(
-            //                 "/activity/publicity/" + currentRow.id
-            //               );
-            //             }
-            //           }
-            //         },
-            //         "编辑公示"
-            //       )
-            //     ])
-            //   ]);
-            // }
-            // // 1草稿，2发布，3评奖，4公示，5结束
-            // if (status == 2) {
-            //   return h("span", [
-            //     h("p", "进行中"),
-            //     h(
-            //       "a",
-            //       {
-            //         props: {
-            //           type: "primary",
-            //           size: "small"
-            //         },
-            //         on: {
-            //           click: () => {
-            //             this.$router.push("/activity/edit/" + currentRow.id);
-            //             // this.productCountModal(params.row);
-            //           }
-            //         }
-            //       },
-            //       "编辑"
-            //     )
-            //   ]);
-            // }
-            // if (status == 4) {
-            //   // return h("span", "公示中");
-            //   return h("span", [
-            //     h("p", "公示中"),
-            //     h(
-            //       "a",
-            //       {
-            //         props: {
-            //           type: "primary",
-            //           size: "small"
-            //         },
-            //         on: {
-            //           click: () => {
-            //             this.$router.push("/activity/edit/" + currentRow.id);
-            //             // this.productCountModal(params.row);
-            //           }
-            //         }
-            //       },
-            //       "编辑"
-            //     )
-            //   ]);
-            // }
-            // if (status == 5) {
-            //   // return h("span", "已结束");
-            //   return h("span", [
-            //     h("p", "已结束"),
-            //     h(
-            //       "a",
-            //       {
-            //         props: {
-            //           type: "primary",
-            //           size: "small"
-            //         },
-            //         on: {
-            //           click: () => {
-            //             this.$router.push("/activity/edit/" + currentRow.id);
-            //             // this.productCountModal(params.row);
-            //           }
-            //         }
-            //       },
-            //       "编辑"
-            //     )
-            //   ]);
-            // }
           }
         }
       ],

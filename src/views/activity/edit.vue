@@ -47,6 +47,12 @@
         <Button type="primary" icon="ios-cloud-upload-outline" id="subject_banner_detail">上传活动详情页缩略图</Button> 建议尺寸：1920 * 520
       </Upload>
     </Form-item>
+    <Form-item label="APP活动封面" prop="subject_banner_app">
+      <Input v-model="formValidate.subject_banner_app" disabled placeholder="请上传APP活动封面" size="large" @keyup.enter.native="addBanner('addBannerForm')"></Input>
+      <Upload ref="subject_banner_app_upload" :action="upload_domain" :data="upload_data" :before-upload="beforeUpload" :on-success="uploadSuccess" :format="['jpg','jpeg','png']">
+        <Button type="primary" icon="ios-cloud-upload-outline" id="subject_banner_app">上传APP活动封面</Button> 建议尺寸：750 * 424
+      </Upload>
+    </Form-item>
     <FormItem label="活动外链" prop="link">
       <Input v-model="formValidate.link" placeholder="请填写活动外链"></Input>
     </FormItem>
@@ -78,6 +84,7 @@ export default {
         subject_banner_index: '', // 首页活动缩略图
         subject_banner_detail: '', // 活动详情页缩略图
         subject_banner_list: '', // 活动列表缩略图
+        subject_banner_app: '', // APP活动封面
         link: '', // 首页外链url
         status: '', // 活动状态：1草稿，2发布，3评奖，4公示，5结束
         description: '' // 活动介绍
@@ -153,6 +160,14 @@ export default {
             trigger: 'blur'
           }
         ],
+        subject_banner_app: [
+          {
+            required: true,
+            type: 'url',
+            message: '请上传APP活动封面',
+            trigger: 'blur'
+          }
+        ],
         description: [
           {
             required: true,
@@ -191,6 +206,7 @@ export default {
           subject_banner_index: res.data.subject_banner_index, // 首页活动缩略图
           subject_banner_detail: res.data.subject_banner_detail, // 活动详情页缩略图
           subject_banner_list: res.data.subject_banner_list, // 活动列表缩略图
+          subject_banner_app: res.data.subject_banner_app, // APP活动封面
           link: res.data.link, // 首页外链url
           status: res.data.status, // 活动状态：1草稿，2发布，3评奖，4公示，5结束
           description: res.data.description // 活动介绍

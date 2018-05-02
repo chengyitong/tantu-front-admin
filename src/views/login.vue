@@ -68,7 +68,7 @@ export default {
           this.$axios
             .post('/admin/auth/login', options)
             .then(res => {
-              this.$store.commit('setAvator', '../../src/images/profile_photo.jpg');
+              this.$store.commit('setAvator', 'https://static.tantupix.com/pc/images/default_avatar.jpg');
               this.$cookie.set('tt_a_un', this.loginForm.username);
               this.$cookie.set('tt_a_login_time', this.getNowFormatDate());
               this.$store.commit('isLoginLoading', false);

@@ -159,14 +159,8 @@
           <td>¥{{(parseInt(productDetail.sale_info.price)/100).toFixed(2) || '0.00'}}</td>
         </tr>
         <tr>
-          <td>版权类型</td>
-          <td>
-            <template v-if="productDetail.sale_info.copyright_type == 1">肖像权</template>
-            <template v-else-if="productDetail.sale_info.copyright_type == 2">物权</template>
-            <template v-else-if="productDetail.sale_info.copyright_type == 3">无</template>
-          </td>
           <td>版权证明资料</td>
-          <td colspan="3">
+          <td colspan="5">
             <template v-if="productDetail.sale_info.copyright_file_name != ''">
               <a :href="'/Admin/SaleInfo/CopyrightFile?product_id='+productDetail.id" target="_blank">下载</a>
             </template>

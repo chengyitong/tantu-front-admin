@@ -632,6 +632,46 @@ export const appRouter = [
     ]
   },
   {
+    path: '/app',
+    icon: 'ios-gear',
+    name: 'app',
+    title: 'APP配置管理',
+    component: Main,
+    available: true,
+    children: [
+      {
+        path: 'hot_tag',
+        title: '热门标签管理',
+        name: 'hot_tag',
+        icon: 'ios-pricetag',
+        available: true,
+        component: resolve => {
+          require(['./views/app/hot_tag.vue'], resolve);
+        }
+      },
+      {
+        path: 'find_cover',
+        title: '作品封面管理',
+        name: 'find_cover',
+        icon: 'image',
+        available: true,
+        component: resolve => {
+          require(['./views/app/find_cover.vue'], resolve);
+        }
+      },
+      {
+        path: 'category_cover',
+        title: '分类封面管理',
+        name: 'category_cover',
+        icon: 'images',
+        available: true,
+        component: resolve => {
+          require(['./views/app/category_cover.vue'], resolve);
+        }
+      }
+    ]
+  },
+  {
     path: '/access-test',
     icon: 'lock-combination',
     title: '权限测试页',

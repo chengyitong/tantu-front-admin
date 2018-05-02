@@ -28,7 +28,7 @@ Vue.use(iView);
 
 // 自动设置语言
 const navLang = navigator.language;
-const localLang = (navLang === 'zh-CN' || navLang === 'en-US') ? navLang : false;
+const localLang = navLang === 'zh-CN' || navLang === 'en-US' ? navLang : false;
 const lang = window.localStorage.getItem('language') || localLang || 'zh-CN';
 
 Vue.config.lang = lang;
@@ -49,7 +49,8 @@ const router = new VueRouter(RouterConfig);
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start();
   Util.title(to.meta.title);
-  if (Cookies.get('locking') === '1' && to.name !== 'locking') {  // 判断当前是否是锁定状态
+  if (Cookies.get('locking') === '1' && to.name !== 'locking') {
+    // 判断当前是否是锁定状态
     iView.LoadingBar.finish();
     next(false);
     router.replace({
@@ -59,11 +60,13 @@ router.beforeEach((to, from, next) => {
     iView.LoadingBar.finish();
     next(false);
   } else {
-    if (!Cookies.get('tt_a_un') && to.name !== 'login') {  // 判断是否已经登录且前往的页面不是登录页
+    if (!Cookies.get('tt_a_un') && to.name !== 'login') {
+      // 判断是否已经登录且前往的页面不是登录页
       next({
         name: 'login'
       });
-    } else if (Cookies.get('tt_a_un') && to.name === 'login') {  // 判断是否已经登录且前往的是登录页
+    } else if (Cookies.get('tt_a_un') && to.name === 'login') {
+      // 判断是否已经登录且前往的是登录页
       next({
         name: 'home'
       });
@@ -89,77 +92,80 @@ const service = axios.create({
   timeout: 30000 // 请求超时时间
 });
 // request 拦截器
-service.interceptors.request.use((config) => {
-  iView.LoadingBar.start();
-  config.withCredentials = true; // 设置发送post请求自动set cookie
-  // POST 传参序列化
-  if (config.method === 'post') {
-    config.data = qs.stringify(config.data);
-  }
-  // PUT 传参序列化
-  if (config.method === 'put') {
-    config.data = qs.stringify(config.data);
-  }
-  return config;
-}, (error) => {
-  iView.Message.error(error);
-  return Promise.reject(error);
-});
-// response 拦截器
-service.interceptors.response.use((res) => {
-  iView.LoadingBar.finish();
-  if (res.data.code !== 0) {
-    // 用户未登录
-    if (res.data.code === 1) {
-      Cookies.remove('tt_a_un');
-      Cookies.remove('_p');
-      Cookies.remove('hasGreet');
-      Cookies.remove('access');
-      Cookies.remove('locking');
-      Cookies.remove('tt_a_login_time');
-      store.commit('clearOpenedSubmenu');
-      // 回复默认样式
-      let themeLink = document.querySelector('link[name="theme"]');
-      themeLink.setAttribute('href', '');
-      // 清空打开的页面等数据，但是保存主题数据
-      let theme = '';
-      if (localStorage.theme) {
-        theme = localStorage.theme;
-      }
-      localStorage.clear();
-      if (theme) {
-        localStorage.theme = theme;
-      }
-      router.push({
-        name: 'login'
-      });
-    } else {
-      iView.Message.error(res.data.msg);
-      return Promise.reject(res);
+service.interceptors.request.use(
+  config => {
+    iView.LoadingBar.start();
+    config.withCredentials = true; // 设置发送post请求自动set cookie
+    // POST 传参序列化
+    if (config.method === 'post') {
+      config.data = qs.stringify(config.data);
     }
+    // PUT 传参序列化
+    if (config.method === 'put') {
+      config.data = qs.stringify(config.data);
+    }
+    return config;
+  },
+  error => {
+    iView.Message.error(error);
+    return Promise.reject(error);
   }
-  return res.data;
-}, (error) => {
-  let status = error.response.status;
-  if (status == 401) {
-    router.push({ path: '/401' });
-  } else if (status == 404) {
-    router.push({ path: '/404' });
-  } else {
-    iView.Message.error(error.message);
-  }
+);
+// response 拦截器
+service.interceptors.response.use(
+  res => {
+    iView.LoadingBar.finish();
+    if (res.data.code !== 0) {
+      // 用户未登录
+      if (res.data.code === 1) {
+        Cookies.remove('tt_a_un');
+        Cookies.remove('_p');
+        Cookies.remove('hasGreet');
+        Cookies.remove('access');
+        Cookies.remove('locking');
+        Cookies.remove('tt_a_login_time');
+        store.commit('clearOpenedSubmenu');
+        // 回复默认样式
+        let themeLink = document.querySelector('link[name="theme"]');
+        themeLink.setAttribute('href', '');
+        // 清空打开的页面等数据，但是保存主题数据
+        let theme = '';
+        if (localStorage.theme) {
+          theme = localStorage.theme;
+        }
+        localStorage.clear();
+        if (theme) {
+          localStorage.theme = theme;
+        }
+        router.push({
+          name: 'login'
+        });
+      } else {
+        iView.Message.error(res.data.msg);
+        return Promise.reject(res);
+      }
+    }
+    return res.data;
+  },
+  error => {
+    let status = error.response.status;
+    if (status == 401) {
+      router.push({ path: '/401' });
+    } else if (status == 404) {
+      router.push({ path: '/404' });
+    } else {
+      iView.Message.error(error.message);
+    }
 
-  return Promise.reject(error.message);
-});
+    return Promise.reject(error.message);
+  }
+);
 Vue.prototype.$axios = service;
 
 // 状态管理
 const store = new Vuex.Store({
   state: {
-    routers: [
-      otherRouter,
-      ...appRouter
-    ],
+    routers: [otherRouter, ...appRouter],
     menuList: [],
     tagsList: [...otherRouter.children],
     pageOpenedList: [],
@@ -170,16 +176,14 @@ const store = new Vuex.Store({
         path: '',
         name: 'home_index'
       }
-    ],  // 面包屑数组
-    openedSubmenuArr: [],  // 要展开的菜单数组
+    ], // 面包屑数组
+    openedSubmenuArr: [], // 要展开的菜单数组
     menuTheme: '', // 主题
     theme: '',
     loginLoading: false,
     token: ''
   },
-  getters: {
-
-  },
+  getters: {},
   mutations: {
     setTagsList: (state, list) => {
       state.tagsList.push(...list);
@@ -200,7 +204,7 @@ const store = new Vuex.Store({
       state.pageOpenedList.splice(1, 0, openedPage);
       localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList);
     },
-    setOpenedList: (state) => {
+    setOpenedList: state => {
       state.pageOpenedList = localStorage.pageOpenedList ? JSON.parse(localStorage.pageOpenedList) : [otherRouter.children[0]];
     },
     setCurrentPath: (state, pathArr) => {
@@ -222,7 +226,7 @@ const store = new Vuex.Store({
         state.openedSubmenuArr.push(name);
       }
     },
-    clearOpenedSubmenu: (state) => {
+    clearOpenedSubmenu: state => {
       state.openedSubmenuArr.length = 0;
     },
     changeMenuTheme: (state, theme) => {
@@ -231,16 +235,16 @@ const store = new Vuex.Store({
     changeMainTheme: (state, mainTheme) => {
       state.theme = mainTheme;
     },
-    lock: (state) => {
+    lock: state => {
       Cookies.set('locking', '1');
     },
-    unlock: (state) => {
+    unlock: state => {
       Cookies.set('locking', '0');
     },
     setMenuList: (state, menulist) => {
       state.menuList = menulist;
     },
-    updateMenulist: (state) => {
+    updateMenulist: state => {
       let accessCode = parseInt(Cookies.get('access'));
       let menuList = [];
       appRouter.forEach((item, index) => {
@@ -294,8 +298,7 @@ const store = new Vuex.Store({
       state.token = token;
     }
   },
-  actions: {
-  }
+  actions: {}
 });
 
 new Vue({
@@ -311,7 +314,7 @@ new Vue({
   },
   created() {
     let tagsList = [];
-    appRouter.map((item) => {
+    appRouter.map(item => {
       if (item.children.length <= 1) {
         tagsList.push(item.children[0]);
       } else {
